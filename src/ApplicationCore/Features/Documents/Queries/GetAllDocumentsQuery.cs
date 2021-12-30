@@ -29,7 +29,8 @@ namespace ApplicationCore.Features.Documents.Queries
         }
     }
 
-    internal class GetAllDocumentsQueryHandler : IRequestHandler<GetAllDocumentsQuery, PaginatedResult<GetAllDocumentsQueryResponse>>
+    internal class GetAllDocumentsQueryHandler : 
+        IRequestHandler<GetAllDocumentsQuery, PaginatedResult<GetAllDocumentsQueryResponse>>
     {
         readonly ILogger _logger;
         readonly IUserSession _userSession;

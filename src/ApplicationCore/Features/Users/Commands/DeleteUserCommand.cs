@@ -22,7 +22,6 @@ namespace ApplicationCore.Features.Users.Commands
         readonly UserManager<AppUser> _userManager;
         readonly IFileService _fileService;
 
-
         public DeleteUserCommandHandler(
             ILogger<DeleteUserCommandHandler> logger,
             IUserSession userSession,

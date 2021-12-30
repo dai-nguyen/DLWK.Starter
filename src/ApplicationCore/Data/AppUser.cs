@@ -1,6 +1,7 @@
 ﻿using ApplicationCore.Interfaces;
 using ApplicationCore.Models;
 using Microsoft.AspNetCore.Identity;
+using NpgsqlTypes;
 
 namespace ApplicationCore.Data
 {
@@ -15,6 +16,8 @@ namespace ApplicationCore.Data
         public string FirstName { get; set; } = "";
         public string LastName { get; set; } = "";
         public string ProfilePictureUrl { get; set; } = "";
+
+        public NpgsqlTsVector SearchVector { get; set; }
 
         public IEnumerable<CustomAttribute> CustomAttributes { get; set; } = Enumerable.Empty<CustomAttribute>();
     }

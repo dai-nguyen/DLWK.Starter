@@ -30,7 +30,6 @@
     <Folder Include="Helpers\" />
     <Folder Include="Mappers\" />
     <Folder Include="Middleware\" />
-    <Folder Include="Resources\Features\Users\Commands\" />
     <Folder Include="Resources\Features\Users\Queries\" />
   </ItemGroup>
 

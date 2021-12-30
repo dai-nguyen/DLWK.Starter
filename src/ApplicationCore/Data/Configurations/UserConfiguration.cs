@@ -11,13 +11,12 @@ namespace ApplicationCore.Data.Configurations
             builder.Property(_ => _.LastName).HasMaxLength(100);
             builder.Property(_ => _.ProfilePictureUrl).HasMaxLength(255);
 
-            builder.HasIndex(_ => new
-            {
-                _.UserName,
-                _.FirstName,
-                _.LastName,
-                _.Email
-            }).IsTsVectorExpressionIndex("english");
+            builder.HasGeneratedTsVectorColumn(_ =>
+                _.SearchVector,
+                "english",
+                _ => new { _.UserName, _.FirstName, _.LastName, _.Email })
+                .HasIndex(_ => _.SearchVector)
+                .HasMethod("GIN");
 
             builder.Property(_ => _.CustomAttributes)
                 .HasColumnType("jsonb");            
