@@ -23,10 +23,11 @@ var columnWriters = new Dictionary<string, ColumnWriterBase>
     {"exception", new ExceptionColumnWriter(NpgsqlDbType.Text) },
     {"properties", new LogEventSerializedColumnWriter(NpgsqlDbType.Jsonb) },
     {"machine_name", new SinglePropertyColumnWriter("MachineName", PropertyWriteMethod.ToString, NpgsqlDbType.Text, "l") },
-    {"user_name", new SinglePropertyColumnWriter("UserId", PropertyWriteMethod.ToString, NpgsqlDbType.Text) }
+    {"user_id", new SinglePropertyColumnWriter("UserId", PropertyWriteMethod.ToString, NpgsqlDbType.Text) }
 };
 
 Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
     .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Information)
     .Enrich.FromLogContext()
     .Enrich.WithMachineName()
@@ -36,13 +37,9 @@ Log.Logger = new LoggerConfiguration()
         tableName,
         columnWriters,
         needAutoCreateTable: true)    
-    .CreateBootstrapLogger();
+    .CreateLogger();
 
-builder.Host.UseSerilog((context, services, configuration) => configuration
-    .ReadFrom.Configuration(context.Configuration)
-    .ReadFrom.Services(services)
-    .Enrich.FromLogContext()
-    .WriteTo.Console());
+builder.Host.UseSerilog();
 
 builder.WebHost.ConfigureServices((context, services) =>
 {

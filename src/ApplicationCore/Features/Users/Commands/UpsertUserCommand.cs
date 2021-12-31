@@ -74,14 +74,14 @@ namespace ApplicationCore.Features.Users.Commands
 
                 if (found != null)
                 {
-                    return Result<string>.Fail(string.Format(_localizer["UserName {0} already exists"], command.UserName));
+                    return Result<string>.Fail(string.Format(_localizer["UserName {0} is already used."], command.UserName));
                 }
 
                 found = await _userManager.FindByEmailAsync(command.Email);
 
                 if (found != null)
                 {
-                    return Result<string>.Fail(string.Format(_localizer["Email {0} already exists"], command.Email));
+                    return Result<string>.Fail(string.Format(_localizer["Email {0} is already used."], command.Email));
                 }
 
                 var entity = _mapper.Map<AppUser>(command);
@@ -91,11 +91,7 @@ namespace ApplicationCore.Features.Users.Commands
                     return Result<string>.Fail(_localizer["Unable to map to AppUser"]);
                 }
 
-                entity.Id = Guid.NewGuid().ToString();
-                entity.DateCreated = DateTime.UtcNow;
-                entity.DateUpdated = DateTime.UtcNow;
-                entity.CreatedBy = _userSession.UserId;
-                entity.UpdatedBy = _userSession.UserId;
+                entity.Id = Guid.NewGuid().ToString();                
 
                 var created = await _userManager.CreateAsync(entity, command.Password);
 
@@ -136,10 +132,7 @@ namespace ApplicationCore.Features.Users.Commands
                 {
                     return Result<string>.Fail(_localizer["Unable to map to AppUser"]);
                 }
-
-                entity.DateUpdated = DateTime.UtcNow;
-                entity.UpdatedBy = _userSession.UserId;
-
+                
                 var updated = await _userManager.UpdateAsync(entity);
 
                 if (!updated.Succeeded)

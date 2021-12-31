@@ -36,8 +36,10 @@ namespace ApplicationCore.Data
                 switch (entry.State)
                 {
                     case EntityState.Added:                        
-                        entry.Entity.DateCreated = DateTime.UtcNow;
+                        entry.Entity.DateCreated = DateTime.UtcNow;                        
                         entry.Entity.CreatedBy = _userSession.UserId;
+                        entry.Entity.DateUpdated = DateTime.UtcNow;
+                        entry.Entity.UpdatedBy = _userSession.UserId;
                         break;
 
                     case EntityState.Modified:
