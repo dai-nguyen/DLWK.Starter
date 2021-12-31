@@ -31,6 +31,11 @@
             return new PaginatedResult<T>(false, default, messages);
         }
 
+        public static PaginatedResult<T> Failure(string message)
+        {
+            return new PaginatedResult<T>(false, default, new string[] { message });
+        }
+
         public static PaginatedResult<T> Success(
             IEnumerable<T> data, 
             int count, 

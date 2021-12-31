@@ -14,7 +14,8 @@ namespace ApplicationCore.Features.Documents.Queries
         public string Id { get; set; }
     }
 
-    internal class GetDocumentByIdQueryHandler : IRequestHandler<GetDocumentByIdQuery, Result<GetDocumentByIdQueryResponse>>
+    internal class GetDocumentByIdQueryHandler : 
+        IRequestHandler<GetDocumentByIdQuery, Result<GetDocumentByIdQueryResponse>>
     {
         readonly ILogger _logger;
         readonly IUserSession _userSession;
@@ -43,9 +44,14 @@ namespace ApplicationCore.Features.Documents.Queries
         {
             try
             {
-                var data = await _dbContext.Documents.FindAsync(request.Id);
+                var entity = await _dbContext.Documents.FindAsync(request.Id);
 
-                return data != null ? Result<GetDocumentByIdQueryResponse>.Success(_mapper.Map<GetDocumentByIdQueryResponse>(data)) : Result<GetDocumentByIdQueryResponse>.Success();
+                if (entity == null)
+                {
+                    return Result<GetDocumentByIdQueryResponse>.Fail(_localizer["Document Not Found"]);
+                }
+
+                return Result<GetDocumentByIdQueryResponse>.Success(_mapper.Map<GetDocumentByIdQueryResponse>(entity));
 
             }
             catch (Exception ex)

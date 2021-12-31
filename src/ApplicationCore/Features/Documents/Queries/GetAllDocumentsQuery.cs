@@ -64,6 +64,7 @@ namespace ApplicationCore.Features.Documents.Queries
                     request.OrderBy = "Id";
 
                 var query = _dbContext.Documents
+                    .AsNoTracking()
                     .AsQueryable();
 
                 if (!string.IsNullOrEmpty(request.SearchString) 
@@ -100,7 +101,7 @@ namespace ApplicationCore.Features.Documents.Queries
                     request, _userSession.UserId);
             }
 
-            return PaginatedResult<GetAllDocumentsQueryResponse>.Failure(new string[] { _localizer["Internal Error"] });
+            return PaginatedResult<GetAllDocumentsQueryResponse>.Failure(_localizer["Internal Error"]);
         }
     }
 
