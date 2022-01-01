@@ -9,6 +9,7 @@ namespace Web.Middleware
         public string Username { get; set; }
 
         public string Password { get; set; }
+        public bool RememberMe { get; set; }
     }
 
     //https://github.com/dotnet/aspnetcore/issues/13601
@@ -29,13 +30,27 @@ namespace Web.Middleware
             HttpContext context, 
             SignInManager<AppUser> signInMgr)
         {
-            if (context.Request.Path == "/login" && context.Request.Query.ContainsKey("key"))
+            if (context.Request.Path == "/login" 
+                && context.Request.Query.ContainsKey("key"))
             {
                 var key = Guid.Parse(context.Request.Query["key"]);
+
+                if (!Logins.ContainsKey(key))
+                {
+                    context.Response.Redirect("/pages/authentication/login");
+                    return;
+                }
+
                 var info = Logins[key];
 
-                var result = await signInMgr.PasswordSignInAsync(info.Username, info.Password, false, lockoutOnFailure: true);
-                info.Password = null;
+                var result = await signInMgr.PasswordSignInAsync(
+                    info.Username, 
+                    info.Password, 
+                    info.RememberMe, 
+                    lockoutOnFailure: true);
+
+                info.Password = String.Empty;
+
                 if (result.Succeeded)
                 {
                     Logins.Remove(key);
@@ -43,9 +58,8 @@ namespace Web.Middleware
                     return;
                 }                
                 else
-                {
-                    //TODO: Proper error handling
-                    context.Response.Redirect("/loginfailed");
+                {                    
+                    context.Response.Redirect("/pages/authentication/login");
                     return;
                 }
             }

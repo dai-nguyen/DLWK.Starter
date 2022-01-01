@@ -24,6 +24,7 @@ namespace Web.Pages.Pages.Authentication
         string Username { get; set; }
         string Password { get; set; }
         bool RememberMe { get; set; }
+        string ErrorMessage { get; set; } = "";
 
         bool PasswordVisibility;
         InputType PasswordInput = InputType.Password;
@@ -62,10 +63,20 @@ namespace Web.Pages.Pages.Authentication
         {
             try
             {
+                if (string.IsNullOrEmpty(Username)
+                    || string.IsNullOrWhiteSpace(Username)
+                    || string.IsNullOrEmpty(Password)
+                    || string.IsNullOrWhiteSpace(Password))
+                {
+                    ErrorMessage = "Invalid Username and/or Password";
+                    return;
+                }
+
                 var user = await _userManager.FindByNameAsync(Username);
                 
                 if (user == null)
                 {
+                    ErrorMessage = "Invalid Username and/or Password";
                     return;
                 }
 
@@ -75,20 +86,28 @@ namespace Web.Pages.Pages.Authentication
                 {
                     var result = await _signinManager.CheckPasswordSignInAsync(user, Password, true);
 
-                    if (result == Microsoft.AspNetCore.Identity.SignInResult.Success)
+                    if (result == SignInResult.Success)
                     {
                         Guid key = Guid.NewGuid();
-                        BlazorCookieLoginMiddleware.Logins[key] = new LoginInfo { Username = Username, Password = Password };
+                        BlazorCookieLoginMiddleware.Logins[key] = new LoginInfo 
+                        { 
+                            Username = Username, 
+                            Password = Password,
+                            RememberMe = RememberMe
+                        };
                         _navigationManager.NavigateTo($"/login?key={key}", true);                        
                     }
+                    else
+                        ErrorMessage = "Invalid Username and/or Password";
                 }
                 else
                 {
-
+                    ErrorMessage = "Invalid Username and/or Password";
                 }
             }
             catch (Exception ex)
             {
+                ErrorMessage = "Internal Server Error. Please try again later.";
                 _logger.LogError(ex, "Error trying to login.");
             }
 
