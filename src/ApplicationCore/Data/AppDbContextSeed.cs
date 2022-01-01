@@ -15,7 +15,7 @@ namespace ApplicationCore.Data
             int retryForAvail = retry.Value;
 
             try
-            {
+            {                
                 if (!dbContext.Roles.Any())
                 {
                     foreach (var role in GetPreconfiguredRoles())
@@ -28,6 +28,7 @@ namespace ApplicationCore.Data
                 {
                     var defaultUser = new AppUser()
                     {
+                        Id = Guid.NewGuid().ToString(),
                         UserName = "admin",
                         Email = "admin@starter.com",
                     };

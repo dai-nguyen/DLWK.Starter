@@ -1,6 +1,6 @@
 ﻿namespace ApplicationCore.Interfaces
 {
-    public interface IUserSession
+    public interface IUserSessionService
     {
         string UserId { get; }
     }

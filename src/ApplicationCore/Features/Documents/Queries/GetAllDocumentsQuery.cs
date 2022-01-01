@@ -33,14 +33,14 @@ namespace ApplicationCore.Features.Documents.Queries
         IRequestHandler<GetAllDocumentsQuery, PaginatedResult<GetAllDocumentsQueryResponse>>
     {
         readonly ILogger _logger;
-        readonly IUserSession _userSession;
-        readonly IStringLocalizer<GetAllDocumentsQueryHandler> _localizer;
+        readonly IUserSessionService _userSession;
+        readonly IStringLocalizer _localizer;
         readonly AppDbContext _dbContext;        
         readonly IMapper _mapper;        
 
         public GetAllDocumentsQueryHandler(
             ILogger<GetAllDocumentsQueryHandler> logger,
-            IUserSession userSession,
+            IUserSessionService userSession,
             AppDbContext dbContext,
             IStringLocalizer<GetAllDocumentsQueryHandler> localizer,
             IMapper mapper)

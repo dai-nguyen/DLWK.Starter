@@ -5,6 +5,17 @@ using Serilog.Sinks.PostgreSQL;
 using Serilog.Sinks.PostgreSQL.ColumnWriters;
 using System.Security.Cryptography.X509Certificates;
 using Web.Data;
+using ApplicationCore;
+using ApplicationCore.Interfaces;
+using Web.Services;
+using ApplicationCore.Data;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using ApplicationCore.Helpers;
+using Microsoft.AspNetCore.Components.Authorization;
+using Web;
+using Microsoft.AspNetCore.Components.Server;
+using Web.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -85,10 +96,35 @@ builder.WebHost.ConfigureServices((context, services) =>
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
+builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<AppUser>>();
+builder.Services.AddScoped<IHostEnvironmentAuthenticationStateProvider>(sp =>
+{
+    var provider = (ServerAuthenticationStateProvider)sp.GetRequiredService<AuthenticationStateProvider>();
+    return provider;
+});
 builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddMudServices();
 
+builder.Services.UseApplicationCore(builder.Configuration);
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IUserSessionService, UserSessionService>();
+
+
 var app = builder.Build();
+
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var dbContext = services.GetRequiredService<AppDbContext>();
+    dbContext.Database.EnsureCreated();
+    dbContext.Database.Migrate();
+
+    var logFactory = services.GetRequiredService<ILoggerFactory>();
+    var userManager = services.GetRequiredService<UserManager<AppUser>>();
+    var roleManager = services.GetRequiredService<RoleManager<AppRole>>();
+    AsyncHelper.RunSync(() => AppDbContextSeed.SeedAsync(dbContext, userManager, roleManager, logFactory));
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -104,6 +140,11 @@ if (!string.IsNullOrEmpty(certData) || !string.IsNullOrEmpty(certPath))
 app.UseStaticFiles();
 
 app.UseRouting();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.UseMiddleware<BlazorCookieLoginMiddleware>();
 
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");

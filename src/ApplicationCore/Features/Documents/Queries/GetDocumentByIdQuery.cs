@@ -18,15 +18,15 @@ namespace ApplicationCore.Features.Documents.Queries
         IRequestHandler<GetDocumentByIdQuery, Result<GetDocumentByIdQueryResponse>>
     {
         readonly ILogger _logger;
-        readonly IUserSession _userSession;
-        readonly IStringLocalizer<GetDocumentByIdQueryHandler> _localizer;
+        readonly IUserSessionService _userSession;
+        readonly IStringLocalizer _localizer;
         readonly AppDbContext _dbContext;
 
         readonly IMapper _mapper;
 
         public GetDocumentByIdQueryHandler(
-            ILogger logger,
-            IUserSession userSession,
+            ILogger<GetDocumentByIdQueryHandler> logger,
+            IUserSessionService userSession,
             IStringLocalizer<GetDocumentByIdQueryHandler> localizer,
             AppDbContext dbContext,
             IMapper mapper)

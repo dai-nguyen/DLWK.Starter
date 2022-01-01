@@ -11,7 +11,7 @@ namespace ApplicationCore.Data
     public class AppDbContext : AuditableDbContext
     {
         readonly ILoggerFactory _loggerFactory;
-        readonly IUserSession _userSession;
+        readonly IUserSessionService _userSession;
 
         public DbSet<Document> Documents { get; set; }
         public DbSet<DocumentType> DocumentTypes { get; set; }
@@ -20,7 +20,7 @@ namespace ApplicationCore.Data
         public AppDbContext(
             DbContextOptions options,
             ILoggerFactory loggerFactory,
-            IUserSession userSession) 
+            IUserSessionService userSession) 
             : base(options)
         {
             _loggerFactory = loggerFactory;

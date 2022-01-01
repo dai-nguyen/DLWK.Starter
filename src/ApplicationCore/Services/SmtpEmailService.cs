@@ -17,12 +17,12 @@ namespace ApplicationCore.Services
     public class SmtpEmailService : IEmailService
     {
         readonly ILogger _logger;
-        readonly IUserSession _userSession;
+        readonly IUserSessionService _userSession;
         readonly EmailConfiguration _config;
 
         public SmtpEmailService(
             ILogger<SmtpEmailService> logger,
-            IUserSession userSession,
+            IUserSessionService userSession,
             IOptions<EmailConfiguration> config)
         {
             _logger = logger;

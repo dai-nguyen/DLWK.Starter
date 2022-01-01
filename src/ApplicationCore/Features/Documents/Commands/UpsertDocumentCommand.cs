@@ -29,15 +29,15 @@ namespace ApplicationCore.Features.Documents.Commands
     internal class UpsertDocumentCommandHandler : IRequestHandler<UpsertDocumentCommand, Result<string>>
     {
         readonly ILogger _logger;
-        readonly IUserSession _userSession;
-        readonly IStringLocalizer<UpsertDocumentCommandHandler> _localizer;
+        readonly IUserSessionService _userSession;
+        readonly IStringLocalizer _localizer;
         readonly IMapper _mapper;
         readonly AppDbContext _dbContext;
         readonly IFileService _fileService;
         
         public UpsertDocumentCommandHandler(
             ILogger<UpsertDocumentCommandHandler> logger,
-            IUserSession userSession,
+            IUserSessionService userSession,
             IStringLocalizer<UpsertDocumentCommandHandler> localizer,
             IMapper mapper,
             AppDbContext dbContext,

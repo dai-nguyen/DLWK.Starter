@@ -15,15 +15,15 @@ namespace ApplicationCore.Features.Documents.Commands
     internal class DeleteDocumentCommandHandler : IRequestHandler<DeleteDocumentCommand, Result<string>>
     {
         readonly ILogger _logger;
-        readonly IUserSession _userSession;
-        readonly IStringLocalizer<DeleteDocumentCommandHandler> _localizer;
+        readonly IUserSessionService _userSession;
+        readonly IStringLocalizer _localizer;
         readonly AppDbContext _dbContext;        
         readonly IFileService _fileService;
         
 
         public DeleteDocumentCommandHandler(
             ILogger<DeleteDocumentCommandHandler> logger,
-            IUserSession userSession,
+            IUserSessionService userSession,
             IStringLocalizer<DeleteDocumentCommandHandler> localizer,            
             AppDbContext dbContext,            
             IFileService fileService)

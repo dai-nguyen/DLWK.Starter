@@ -32,14 +32,14 @@ namespace ApplicationCore.Features.Users.Queries
         IRequestHandler<GetAllUsersQuery, PaginatedResult<GetAllUsersQueryResponse>>
     {
         readonly ILogger _logger;
-        readonly IUserSession _userSession;
-        readonly IStringLocalizer<GetAllUsersQueryHandler> _localizer;
+        readonly IUserSessionService _userSession;
+        readonly IStringLocalizer _localizer;
         readonly AppDbContext _dbContext;
         readonly IMapper _mapper;
 
         public GetAllUsersQueryHandler(
             ILogger<GetAllUsersQueryHandler> logger,
-            IUserSession userSession,
+            IUserSessionService userSession,
             AppDbContext dbContext,
             IStringLocalizer<GetAllUsersQueryHandler> localizer,
             IMapper mapper)
@@ -52,7 +52,7 @@ namespace ApplicationCore.Features.Users.Queries
         }
 
         public async Task<PaginatedResult<GetAllUsersQueryResponse>> Handle(
-            GetAllUsersQuery request, 
+            GetAllUsersQuery request,
             CancellationToken cancellationToken)
         {
             try
@@ -84,7 +84,7 @@ namespace ApplicationCore.Features.Users.Queries
                     .Skip(skip)
                     .ToArrayAsync();
 
-                var dtos = _mapper.Map<IEnumerable<GetAllUsersQueryResponse>>(data);                
+                var dtos = _mapper.Map<IEnumerable<GetAllUsersQueryResponse>>(data);
 
                 return new PaginatedResult<GetAllUsersQueryResponse>(
                     true,
@@ -112,7 +112,7 @@ namespace ApplicationCore.Features.Users.Queries
         public string UserName { get; set; }
         public string Email { get; set; }
         public string FirstName { get; set; }
-        public string LastName { get; set; }        
+        public string LastName { get; set; }
     }
 
     public class GetAllUsersQueryProfile : Profile

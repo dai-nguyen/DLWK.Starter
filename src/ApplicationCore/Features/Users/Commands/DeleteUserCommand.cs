@@ -16,15 +16,15 @@ namespace ApplicationCore.Features.Users.Commands
     internal class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand, Result<string>>
     {
         readonly ILogger _logger;
-        readonly IUserSession _userSession;
-        readonly IStringLocalizer<DeleteUserCommandHandler> _localizer;
+        readonly IUserSessionService _userSession;
+        readonly IStringLocalizer _localizer;
         readonly AppDbContext _dbContext;
         readonly UserManager<AppUser> _userManager;
         readonly IFileService _fileService;
 
         public DeleteUserCommandHandler(
             ILogger<DeleteUserCommandHandler> logger,
-            IUserSession userSession,
+            IUserSessionService userSession,
             IStringLocalizer<DeleteUserCommandHandler> localizer,            
             AppDbContext dbContext,
             UserManager<AppUser> userManager,

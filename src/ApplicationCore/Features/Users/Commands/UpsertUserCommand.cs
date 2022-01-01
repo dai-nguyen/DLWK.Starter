@@ -27,8 +27,8 @@ namespace ApplicationCore.Features.Users.Commands
     internal class UpsertUserCommandHandler : IRequestHandler<UpsertUserCommand, Result<string>>
     {
         readonly ILogger _logger;
-        readonly IUserSession _userSession;
-        readonly IStringLocalizer<UpsertUserCommandHandler> _localizer;
+        readonly IUserSessionService _userSession;
+        readonly IStringLocalizer _localizer;
         readonly AppDbContext _dbContext;
         readonly UserManager<AppUser> _userManager;
         readonly IFileService _fileService;
@@ -36,7 +36,7 @@ namespace ApplicationCore.Features.Users.Commands
 
         public UpsertUserCommandHandler(
             ILogger<UpsertUserCommandHandler> logger,
-            IUserSession userSession,
+            IUserSessionService userSession,
             IStringLocalizer<UpsertUserCommandHandler> localizer,
             AppDbContext dbContext,
             UserManager<AppUser> userManager,

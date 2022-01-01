@@ -6,11 +6,6 @@ using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ApplicationCore.Features.Users.Queries
 {
@@ -23,15 +18,15 @@ namespace ApplicationCore.Features.Users.Queries
         IRequestHandler<GetUserByIdQuery, Result<GetUserByIdQueryResponse>>
     {
         readonly ILogger _logger;
-        readonly IUserSession _userSession;
-        readonly IStringLocalizer<GetUserByIdQueryHandler> _localizer;
+        readonly IUserSessionService _userSession;
+        readonly IStringLocalizer _localizer;
         readonly UserManager<AppUser> _userManager;
         readonly AppDbContext _dbContext;
         readonly IMapper _mapper;
 
         public GetUserByIdQueryHandler(
             ILogger<GetUserByIdQueryHandler> logger,
-            IUserSession userSession,
+            IUserSessionService userSession,
             UserManager<AppUser> userManager,
             AppDbContext dbContext,
             IStringLocalizer<GetUserByIdQueryHandler> localizer,
