@@ -13,6 +13,18 @@
 }
 
 <MudTextField T="string" 
+              @bind-Value="FirstName"
+              Label="First Name" 
+              Variant="Variant.Outlined" 
+              Class="my-4"></MudTextField>
+
+<MudTextField T="string" 
+              @bind-Value="@LastName"
+              Label="Last Name" 
+              Variant="Variant.Outlined" 
+              Class="my-4"></MudTextField>
+
+<MudTextField T="string" 
               @bind-Value="@Username"
               Label="Username" 
               Variant="Variant.Outlined" 

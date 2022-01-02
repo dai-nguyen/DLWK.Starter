@@ -57,6 +57,11 @@ namespace ApplicationCore.Features.Users.Queries
         {
             try
             {
+                if (request.PageNumber <= 0)
+                    request.PageNumber = 1;
+                if (request.PageSize <= 0)
+                    request.PageSize = 15;
+
                 var sortDir = request.IsDescending ? "desc" : "asc";
 
                 if (string.IsNullOrEmpty(request.OrderBy))
@@ -79,7 +84,7 @@ namespace ApplicationCore.Features.Users.Queries
 
                 int skip = (request.PageNumber - 1) * request.PageSize;
 
-                var data = query
+                var data = await query
                     .Take(request.PageSize)
                     .Skip(skip)
                     .ToArrayAsync();

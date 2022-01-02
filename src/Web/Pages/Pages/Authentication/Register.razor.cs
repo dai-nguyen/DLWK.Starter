@@ -14,8 +14,10 @@ namespace Web.Pages.Pages.Authentication
         [Inject]
         NavigationManager _navigationManager { get; set; }
 
-        public string Username { get; set; }
-        public string Email { get; set; }
+        string FirstName { get; set; }
+        string LastName { get; set; }
+        string Username { get; set; }
+        string Email { get; set; }
         string Password { get; set; }
         public bool AgreeToTerms { get; set; }
 
@@ -64,6 +66,8 @@ namespace Web.Pages.Pages.Authentication
             var entity = new AppUser()
             {
                 Id = Guid.NewGuid().ToString(),
+                FirstName = FirstName,
+                LastName = LastName,
                 UserName = Username,
                 Email = Email,
             };
