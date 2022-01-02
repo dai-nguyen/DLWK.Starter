@@ -97,16 +97,15 @@ builder.WebHost.ConfigureServices((context, services) =>
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<AppUser>>();
-builder.Services.AddScoped<IHostEnvironmentAuthenticationStateProvider>(sp =>
-{
-    var provider = (ServerAuthenticationStateProvider)sp.GetRequiredService<AuthenticationStateProvider>();
-    return provider;
-});
+//builder.Services.AddScoped<IHostEnvironmentAuthenticationStateProvider>(sp =>
+//{
+//    var provider = (ServerAuthenticationStateProvider)sp.GetRequiredService<AuthenticationStateProvider>();
+//    return provider;
+//});
 builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddMudServices();
 
 builder.Services.UseApplicationCore(builder.Configuration);
-builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IUserSessionService, UserSessionService>();
 
 
@@ -144,7 +143,8 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseMiddleware<BlazorCookieLoginMiddleware>();
+app.UseMiddleware<LoginMiddleware>();
+app.UseMiddleware<LogoutMiddleware>();
 
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");

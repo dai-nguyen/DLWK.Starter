@@ -4,12 +4,22 @@
 <MudText Typo="Typo.h4" GutterBottom="true">Sign Up</MudText>
 <MudText>Already have an account? <MudLink Href="/pages/authentication/login">Sign In</MudLink></MudText>
 
+@if(Errors.Any())
+{
+    foreach (var error in Errors)
+    {
+        <MudAlert Severity="Severity.Error">@error</MudAlert>
+    }
+}
+
 <MudTextField T="string" 
+              @bind-Value="@Username"
               Label="Username" 
               Variant="Variant.Outlined" 
               Class="my-4"></MudTextField>
 
 <MudTextField T="string" 
+              @bind-Value="@Email"
               Label="E-mail" 
               Variant="Variant.Outlined"></MudTextField>
 

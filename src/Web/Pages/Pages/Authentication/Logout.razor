@@ -1,0 +1,22 @@
+﻿@page "/pages/authentication/logout"
+
+@using Web.Middleware
+@inject AuthenticationStateProvider _authenticationStateProvider;
+@inject NavigationManager _navigationManager;
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (!user.Identity.IsAuthenticated)
+        {
+            _navigationManager.NavigateTo("/pages/authentication/login");
+        }
+
+        Guid key = Guid.NewGuid();
+        LogoutMiddleware.Logouts[key] = user.Identity.Name;
+        _navigationManager.NavigateTo($"/logout?key={key}", true);
+    }
+}

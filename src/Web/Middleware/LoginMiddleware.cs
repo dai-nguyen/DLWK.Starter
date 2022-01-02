@@ -7,13 +7,12 @@ namespace Web.Middleware
     public class LoginInfo
     {
         public string Username { get; set; }
-
         public string Password { get; set; }
         public bool RememberMe { get; set; }
     }
 
     //https://github.com/dotnet/aspnetcore/issues/13601
-    public class BlazorCookieLoginMiddleware
+    public class LoginMiddleware
     {
         public static IDictionary<Guid, LoginInfo> Logins { get; private set; }
             = new ConcurrentDictionary<Guid, LoginInfo>();
@@ -21,7 +20,7 @@ namespace Web.Middleware
 
         private readonly RequestDelegate _next;
 
-        public BlazorCookieLoginMiddleware(RequestDelegate next)
+        public LoginMiddleware(RequestDelegate next)
         {
             _next = next;
         }

@@ -1,15 +1,13 @@
-﻿using ApplicationCore.Data;
+﻿using ApplicationCore.Configurations;
+using ApplicationCore.Data;
 using ApplicationCore.Interfaces;
-using ApplicationCore.Localization;
 using ApplicationCore.Services;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Localization;
 using System.Reflection;
-using Microsoft.AspNetCore.Identity;
-using ApplicationCore.Configurations;
 
 namespace ApplicationCore
 {

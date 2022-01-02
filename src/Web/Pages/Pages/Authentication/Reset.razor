@@ -1,35 +1,35 @@
-﻿@page "/pages/authentication/reset-password"
+﻿@page "/pages/authentication/reset-password/{param}"
 @layout LoginLayout
 
+<MudText Typo="Typo.h4" GutterBottom="true">Set new password</MudText>
 
-
-
-    <MudText Typo="Typo.h4" GutterBottom="true">Set new password</MudText>
-
-    <MudTextField @bind-Value="@Password" Label="New Password" Variant="Variant.Outlined" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="TogglePasswordVisibility" Class="my-4" />
-
-    <MudButton Variant="Variant.Filled" Color="Color.Primary" Link="/pages/authentication/login" Size="Size.Large" FullWidth="true" Class="mt-2">Set New Password</MudButton>
-
-@code {
-    string Password { get; set; }
-
-    bool PasswordVisibility;
-    InputType PasswordInput = InputType.Password;
-    string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
-
-    void TogglePasswordVisibility()
+@if(Errors.Any())
+{
+    foreach (var error in Errors)
     {
-        @if (PasswordVisibility)
-        {
-            PasswordVisibility = false;
-            PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
-            PasswordInput = InputType.Password;
-        }
-        else
-        {
-            PasswordVisibility = true;
-            PasswordInputIcon = Icons.Material.Filled.Visibility;
-            PasswordInput = InputType.Text;
-        }
+        <MudAlert Severity="Severity.Error">@error</MudAlert>
     }
 }
+
+<MudTextField T="string" 
+              Label="E-mail" 
+              @bind-Value="Email"
+              Variant="Variant.Outlined" 
+              Class="my-4"></MudTextField>
+
+<MudTextField @bind-Value="Password" 
+                Label="New Password" 
+                Variant="Variant.Outlined" 
+                InputType="@PasswordInput" 
+                Adornment="Adornment.End" 
+                AdornmentIcon="@PasswordInputIcon" 
+                OnAdornmentClick="TogglePasswordVisibility" 
+                Class="my-4" />
+
+<MudButton Variant="Variant.Filled" 
+            Color="Color.Primary" 
+            @onclick="SubmitReset"
+            Size="Size.Large" 
+            FullWidth="true" 
+            Class="mt-2">Set New Password</MudButton>
+

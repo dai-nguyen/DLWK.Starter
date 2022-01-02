@@ -14,12 +14,16 @@ namespace Web.Pages.Pages.Authentication
         [Inject]
         NavigationManager _navigationManager { get; set; }
 
+        public string Username { get; set; }
+        public string Email { get; set; }
         string Password { get; set; }
         public bool AgreeToTerms { get; set; }
 
         bool PasswordVisibility;
         InputType PasswordInput = InputType.Password;
         string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+
+        IList<string> Errors { get; set; } = new List<string>();
 
         void TogglePasswordVisibility()
         {
@@ -39,7 +43,42 @@ namespace Web.Pages.Pages.Authentication
 
         async Task SubmitRegister()
         {
+            // check username
+            var found = await _userManager.FindByNameAsync(Username);
 
+            if (found != null)
+            {
+                Errors.Add("Username is already used.");
+                return;
+            }
+
+            // check email
+            found = await _userManager.FindByEmailAsync(Email);
+
+            if (found != null)
+            {
+                Errors.Add("Email is already used.");
+                return;
+            }
+
+            var entity = new AppUser()
+            {
+                Id = Guid.NewGuid().ToString(),
+                UserName = Username,
+                Email = Email,
+            };
+
+            var result = await _userManager.CreateAsync(entity, Password);
+
+            if (!result.Succeeded)
+            {
+                Errors = result.Errors.Select(_ => _.Description).ToArray();
+            }
+            else
+            {
+                await _userManager.AddToRoleAsync(entity, "User");
+                _navigationManager.NavigateTo("/pages/authentication/login");
+            }
         }
     }
 }

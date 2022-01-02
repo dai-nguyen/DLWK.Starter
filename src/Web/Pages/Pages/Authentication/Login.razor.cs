@@ -19,7 +19,7 @@ namespace Web.Pages.Pages.Authentication
         [Inject]
         NavigationManager _navigationManager { get; set; }
         [Inject]
-        AuthenticationStateProvider authenticationStateProvider { get; set; }
+        AuthenticationStateProvider _authenticationStateProvider { get; set; }
 
         string Username { get; set; }
         string Password { get; set; }
@@ -33,7 +33,7 @@ namespace Web.Pages.Pages.Authentication
 
         protected override async Task OnInitializedAsync()
         {
-            var authState = await authenticationStateProvider.GetAuthenticationStateAsync();
+            var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
             var user = authState.User;
 
             if (user.Identity.IsAuthenticated)
@@ -89,7 +89,7 @@ namespace Web.Pages.Pages.Authentication
                     if (result == SignInResult.Success)
                     {
                         Guid key = Guid.NewGuid();
-                        BlazorCookieLoginMiddleware.Logins[key] = new LoginInfo 
+                        LoginMiddleware.Logins[key] = new LoginInfo 
                         { 
                             Username = Username, 
                             Password = Password,
