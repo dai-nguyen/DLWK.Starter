@@ -1,5 +1,6 @@
 ﻿@page "/pages/authentication/register"
 @layout LoginLayout
+@attribute [AllowAnonymous]
 
 <MudText Typo="Typo.h4" GutterBottom="true">Sign Up</MudText>
 <MudText>Already have an account? <MudLink Href="/pages/authentication/login">Sign In</MudLink></MudText>
@@ -12,43 +13,60 @@
     }
 }
 
-<MudTextField T="string" 
-              @bind-Value="FirstName"
-              Label="First Name" 
-              Variant="Variant.Outlined" 
-              Class="my-4"></MudTextField>
+<EditForm Model="@_command" OnValidSubmit="SubmitAsync">
+    <FluentValidationValidator/>
+    <MudTextField T="string" 
+                  @bind-Value="_command.UserName"
+                  Label="Username" 
+                  For="@(() => _command.UserName)"
+                  Variant="Variant.Outlined" 
+                  Class="my-4"></MudTextField>
 
-<MudTextField T="string" 
-              @bind-Value="@LastName"
-              Label="Last Name" 
-              Variant="Variant.Outlined" 
-              Class="my-4"></MudTextField>
+    <MudTextField T="string" 
+                  @bind-Value="_command.FirstName"
+                  Label="First Name" 
+                  For="@(() => _command.FirstName)"
+                  Variant="Variant.Outlined" 
+                  Class="my-4"></MudTextField>
 
-<MudTextField T="string" 
-              @bind-Value="@Username"
-              Label="Username" 
-              Variant="Variant.Outlined" 
-              Class="my-4"></MudTextField>
+    <MudTextField T="string" 
+                  @bind-Value="_command.LastName"
+                  Label="Last Name" 
+                  For="@(() => _command.LastName)"
+                  Variant="Variant.Outlined" 
+                  Class="my-4"></MudTextField>
 
-<MudTextField T="string" 
-              @bind-Value="@Email"
-              Label="E-mail" 
-              Variant="Variant.Outlined"></MudTextField>
+    <MudTextField T="string" 
+                  @bind-Value="_command.Email"
+                  Label="E-mail" 
+                  For="@(() => _command.Email)"
+                  Variant="Variant.Outlined"></MudTextField>
 
-<MudTextField @bind-Value="@Password" 
-              Label="Password" 
-              Variant="Variant.Outlined" 
-              InputType="@PasswordInput" 
-              Adornment="Adornment.End" 
-              AdornmentIcon="@PasswordInputIcon" 
-              OnAdornmentClick="TogglePasswordVisibility" Class="mt-4"/>
+    <MudTextField @bind-Value="_command.Password" 
+                  Label="Password" 
+                  For="@(() => _command.Password)"
+                  Variant="Variant.Outlined" 
+                  InputType="@PasswordInput" 
+                  Adornment="Adornment.End" 
+                  AdornmentIcon="@PasswordInputIcon" 
+                  OnAdornmentClick="TogglePasswordVisibility" Class="mt-4"/>
 
-<MudCheckBox @bind-Checked="@AgreeToTerms" Label="I agree to the terms and privacy" Color="Color.Primary" Class="ml-n1 my-3"></MudCheckBox>
+    <MudTextField @bind-Value="_command.ConfirmPassword" 
+                  Label="Confirm Password" 
+                  For="@(() => _command.ConfirmPassword)"
+                  Variant="Variant.Outlined" 
+                  InputType="InputType.Password" 
+                  Class="mt-4"/>
 
-<MudButton Variant="Variant.Filled" 
-           Color="Color.Primary" 
-           Disabled="@(!AgreeToTerms)"             
-           @onclick="SubmitRegister" 
-           Size="Size.Large" 
-           FullWidth="true">Register</MudButton>
+    <MudCheckBox @bind-Checked="_command.AgreeToTerms" Label="I agree to the terms and privacy" Color="Color.Primary" Class="ml-n1 my-3"></MudCheckBox>
+
+    <MudButton Variant="Variant.Filled" 
+               Color="Color.Primary" 
+               
+               ButtonType="ButtonType.Submit"
+               Size="Size.Large" 
+               FullWidth="true">Register</MudButton>
+</EditForm>
+
+
 

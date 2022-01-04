@@ -11,9 +11,7 @@ namespace Web.Pages.Pages.Authentication
     public partial class Reset
     {
         [Inject]
-        UserManager<AppUser> _userManager { get; set; }
-        [Inject]
-        NavigationManager _navigationManager { get; set; }
+        UserManager<AppUser> _userManager { get; set; }        
 
         [Parameter]
         public string Param { get; set; }        

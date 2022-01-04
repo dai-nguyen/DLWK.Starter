@@ -1,7 +1,10 @@
 ﻿using ApplicationCore.Configurations;
 using ApplicationCore.Data;
+using ApplicationCore.Features.Users.Commands;
 using ApplicationCore.Interfaces;
+using ApplicationCore.Requests.Identity;
 using ApplicationCore.Services;
+using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -24,8 +27,11 @@ namespace ApplicationCore
 
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
             services.AddMediatR(Assembly.GetExecutingAssembly());
+            services.AddValidations();
 
             services.AddTransient<IFileService, FileService>();
+
+            
 
             return services;
         }
@@ -90,6 +96,14 @@ namespace ApplicationCore
             });
 
             services.AddTransient<IEmailService, SmtpEmailService>();
+            return services;
+        }
+
+        internal static IServiceCollection AddValidations(this IServiceCollection services)
+        {
+            services.AddTransient<IValidator<RegisterUserCommand>, RegisterUserCommandValidator>();
+
+
             return services;
         }
     }

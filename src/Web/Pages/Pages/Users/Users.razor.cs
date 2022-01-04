@@ -13,8 +13,7 @@ namespace Web.Pages.Pages.Users
         IMediator _mediator { get; set; }
 
         int _total;
-        string _searchString;
-        IEnumerable<GetAllUsersQueryResponse> _pagedData;
+        string _searchString;        
         MudTable<GetAllUsersQueryResponse> _table;
 
         async Task<TableData<GetAllUsersQueryResponse>> ReloadData(TableState state)
@@ -29,6 +28,14 @@ namespace Web.Pages.Pages.Users
             };
 
             var result = await _mediator.Send(query);
+
+            if (!result.Succeeded && result.Messages != null && result.Messages.Any())
+            {
+                foreach (var message in result.Messages)
+                {
+                    _snackbar.Add(message, Severity.Error);
+                }
+            }
 
             _total = result.TotalCount;
 

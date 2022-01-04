@@ -6,3 +6,5 @@ Export-PfxCertificate -Cert $certpath -FilePath c:\Web.pfx -Password $pwd
 
 add-migration
 update-database
+
+https://docs.fluentvalidation.net/en/latest/built-in-validators.html

@@ -15,9 +15,7 @@ namespace Web.Pages.Pages.Authentication
         [Inject]
         ILogger<Forgot> _logger { get; set; }
         [Inject]
-        UserManager<AppUser> _userManager { get; set; }
-        [Inject]
-        NavigationManager _navigationManager { get; set; }
+        UserManager<AppUser> _userManager { get; set; }        
         [Inject]
         IEmailService _emailService { get; set; }
         [Inject]

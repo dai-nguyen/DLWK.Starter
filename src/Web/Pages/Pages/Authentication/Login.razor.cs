@@ -15,9 +15,7 @@ namespace Web.Pages.Pages.Authentication
         [Inject]
         UserManager<AppUser> _userManager { get; set; }
         [Inject]
-        SignInManager<AppUser> _signinManager { get; set; }
-        [Inject]
-        NavigationManager _navigationManager { get; set; }
+        SignInManager<AppUser> _signinManager { get; set; }        
         [Inject]
         AuthenticationStateProvider _authenticationStateProvider { get; set; }
 
