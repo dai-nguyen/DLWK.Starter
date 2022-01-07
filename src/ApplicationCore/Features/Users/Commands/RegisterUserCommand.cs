@@ -3,17 +3,14 @@ using ApplicationCore.Models;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Collections.Concurrent;
 
 namespace ApplicationCore.Features.Users.Commands
 {
-    public class RegisterUserCommand : IRequest<Result<IEnumerable<string>>>
+    public class RegisterUserCommand : IRequest<Result<string>>
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
@@ -27,11 +24,12 @@ namespace ApplicationCore.Features.Users.Commands
         public bool AgreeToTerms { get; set; } = false;
     }
 
-    internal class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, Result<IEnumerable<string>>>
+    internal class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, Result<string>>
     {
         readonly ILogger _logger;        
         readonly IStringLocalizer _localizer;        
-        readonly UserManager<AppUser> _userManager;        
+        readonly UserManager<AppUser> _userManager;  
+        
 
         public RegisterUserCommandHandler(
             ILogger<RegisterUserCommandHandler> logger,            
@@ -41,9 +39,10 @@ namespace ApplicationCore.Features.Users.Commands
             _logger = logger;            
             _localizer = localizer;            
             _userManager = userManager;            
+            
         }
 
-        public async Task<Result<IEnumerable<string>>> Handle(
+        public async Task<Result<string>> Handle(
             RegisterUserCommand command, 
             CancellationToken cancellationToken)
         {
@@ -64,13 +63,13 @@ namespace ApplicationCore.Features.Users.Commands
                 {
                     var errors = result.Errors.Select(_ => _.Description).ToArray();
 
-                    return Result<IEnumerable<string>>.Fail(errors);
+                    return Result<string>.Fail(errors);
                 }
                 else
                 {
                     await _userManager.AddToRoleAsync(entity, "User");
 
-                    return Result<IEnumerable<string>>.Success();
+                    return Result<string>.Success();
                 }
             }
             catch (Exception ex)
@@ -79,21 +78,23 @@ namespace ApplicationCore.Features.Users.Commands
                     command);
             }
 
-            return Result<IEnumerable<string>>.Fail(_localizer["Internal Error"]);
+            return Result<string>.Fail(_localizer["Internal Error"]);
         }
     }
 
     public class RegisterUserCommandValidator : AbstractValidator<RegisterUserCommand>
     {
-        readonly IStringLocalizer _localizer;
-        readonly UserManager<AppUser> _userManager;
+        readonly ILogger _logger;
+        readonly IStringLocalizer _localizer;        
+        readonly AppDbContext _appDbContext;
 
         public RegisterUserCommandValidator(
-            IStringLocalizer<RegisterUserCommandValidator> localizer,
-            UserManager<AppUser> userManager)
+            ILogger<RegisterUserCommandValidator> logger,
+            IStringLocalizer<RegisterUserCommandValidator> localizer,        
+            AppDbContext appDbContext)
         {
-            _localizer = localizer;
-            _userManager = userManager;
+            _localizer = localizer;            
+            _appDbContext = appDbContext;
 
             RuleSet("Names", () =>
             {
@@ -109,41 +110,54 @@ namespace ApplicationCore.Features.Users.Commands
             RuleFor(_ => _.Email)
                 .NotEmpty().WithMessage(_localizer["You must enter an email address"])
                 .EmailAddress().WithMessage(_localizer["You must provide a valid email address"])
-                .MustAsync(async (email, cancellationToken) => await IsUniqueEmailAsync(email))
+                .Must((email) => IsUniqueEmail(email))
                 .WithMessage(_localizer["Email address must be unique"])
                 .When(_ => !string.IsNullOrEmpty(_.Email));
 
             RuleFor(_ => _.UserName)
-                .NotEmpty().WithMessage(_localizer[""])
-                .MinimumLength(6).WithMessage(_localizer[""])
-                .MustAsync(async (username, cancellationToken) => await IsUniqueUsernameAsync(username))
-                .WithMessage(_localizer["Username is already used."])
-                .When(_ => !string.IsNullOrEmpty(_.UserName)); ;
+                .NotEmpty().WithMessage(_localizer["You must enter a username"])
+                .MinimumLength(6).WithMessage(_localizer["Username cannot be less than 6 characters"])
+                .Must((username) => IsUniqueUsername(username))                
+                .WithMessage(_localizer["Username must be unique"])
+                .When(_ => !string.IsNullOrEmpty(_.UserName));
 
             RuleFor(_ => _.Password)
-                .NotEmpty().WithMessage(_localizer[""])
-                .MinimumLength(6).WithMessage(_localizer[""])
-                .Equal(_ => _.ConfirmPassword).WithMessage(_localizer[""]);
+                .NotEmpty().WithMessage(_localizer["You must enter your password"])
+                .MinimumLength(6).WithMessage(_localizer["Password cannot be less than 6 charaters"]);
 
             RuleFor(_ => _.ConfirmPassword)
-                .Equal(_ => _.Password).WithMessage(_localizer[""]);
+                .Equal(_ => _.Password).WithMessage(_localizer["Your confirm password must matched your password"]);
 
             RuleFor(_ => _.AgreeToTerms)
-                .Equal(true);
-
-
+                .Equal(true).WithMessage("You must agree to terms and conditions");
         }
 
-        private async Task<bool> IsUniqueEmailAsync(string email)
+        private bool IsUniqueEmail(string email)
         {
-            var found = await _userManager.FindByEmailAsync(email);
-            return found == null;
+            try
+            {
+                var found = _appDbContext.Users.Any(_ => _.Email == email);
+                return found == false;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error checking for unique email");
+            }
+            return false;
         }
 
-        private async Task<bool> IsUniqueUsernameAsync(string username)
+        private bool IsUniqueUsername(string username)
         {
-            var found = await _userManager.FindByNameAsync(username);
-            return found == null;
+            try
+            {
+                var found = _appDbContext.Users.Any(_ => _.UserName == username);
+                return found == false;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error checking unique username");
+            }
+            return false;
         }
     }
 }
