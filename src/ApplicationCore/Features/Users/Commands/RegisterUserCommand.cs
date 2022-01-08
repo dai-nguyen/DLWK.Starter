@@ -1,6 +1,7 @@
 ﻿using ApplicationCore.Data;
 using ApplicationCore.Models;
 using FluentValidation;
+using LazyCache;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -87,14 +88,18 @@ namespace ApplicationCore.Features.Users.Commands
         readonly ILogger _logger;
         readonly IStringLocalizer _localizer;        
         readonly AppDbContext _appDbContext;
+        readonly IAppCache _cache;
 
         public RegisterUserCommandValidator(
             ILogger<RegisterUserCommandValidator> logger,
             IStringLocalizer<RegisterUserCommandValidator> localizer,        
-            AppDbContext appDbContext)
+            AppDbContext appDbContext,
+            IAppCache cache)            
         {
+            _logger = logger;
             _localizer = localizer;            
             _appDbContext = appDbContext;
+            _cache = cache;
 
             RuleSet("Names", () =>
             {
@@ -136,8 +141,11 @@ namespace ApplicationCore.Features.Users.Commands
         {
             try
             {
-                var found = _appDbContext.Users.Any(_ => _.Email == email);
-                return found == false;
+                Func<bool> isUniqueEmail = () => _appDbContext.Users.Any(_ => _.Email == email) == false;
+                return _cache.GetOrAdd("IsUniqueUserEmail", isUniqueEmail);
+                 
+                //var found = _appDbContext.Users.Any(_ => _.Email == email);
+                //return found == false;
             }
             catch (Exception ex)
             {
@@ -150,8 +158,11 @@ namespace ApplicationCore.Features.Users.Commands
         {
             try
             {
-                var found = _appDbContext.Users.Any(_ => _.UserName == username);
-                return found == false;
+                Func<bool> isUniqueUsername = () => _appDbContext.Users.Any(_ => _.UserName == username) == false;
+                return _cache.GetOrAdd("IsUniqueUsername", isUniqueUsername);
+
+                //var found = _appDbContext.Users.Any(_ => _.UserName == username);
+                //return found == false;
             }
             catch (Exception ex)
             {

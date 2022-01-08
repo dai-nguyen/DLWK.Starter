@@ -107,7 +107,7 @@ builder.Services.AddMudServices();
 
 builder.Services.UseApplicationCore(builder.Configuration);
 builder.Services.AddScoped<IUserSessionService, UserSessionService>();
-
+builder.Services.AddLazyCache();
 
 var app = builder.Build();
 

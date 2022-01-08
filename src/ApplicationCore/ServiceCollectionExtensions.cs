@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
+using LazyCache;
 
 namespace ApplicationCore
 {
@@ -25,7 +26,7 @@ namespace ApplicationCore
             services.AddEmailSender(configuration);
 
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
-            services.AddMediatR(Assembly.GetExecutingAssembly());
+            services.AddMediatR(Assembly.GetExecutingAssembly());            
             services.AddValidations();
 
             services.AddTransient<IFileService, FileService>();
