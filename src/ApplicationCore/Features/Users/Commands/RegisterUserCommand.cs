@@ -52,10 +52,10 @@ namespace ApplicationCore.Features.Users.Commands
                 var entity = new AppUser()
                 {
                     Id = Guid.NewGuid().ToString(),
-                    FirstName = command.FirstName,
-                    LastName = command.LastName,
-                    UserName = command.UserName,
-                    Email = command.Email,
+                    FirstName = command.FirstName.Trim(),
+                    LastName = command.LastName.Trim(),
+                    UserName = command.UserName.Trim(),
+                    Email = command.Email.Trim(),
                 };
 
                 var result = await _userManager.CreateAsync(entity, command.Password);
@@ -141,8 +141,13 @@ namespace ApplicationCore.Features.Users.Commands
         {
             try
             {
+                if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(email))
+                    return false;
+
+                email = email.Trim();
+
                 Func<bool> isUniqueEmail = () => _appDbContext.Users.Any(_ => _.Email == email) == false;
-                return _cache.GetOrAdd("IsUniqueUserEmail", isUniqueEmail);
+                return _cache.GetOrAdd($"IsUniqueUserEmail:{email.Trim().ToLower()}", isUniqueEmail);
                  
                 //var found = _appDbContext.Users.Any(_ => _.Email == email);
                 //return found == false;
@@ -158,8 +163,13 @@ namespace ApplicationCore.Features.Users.Commands
         {
             try
             {
+                if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(username))
+                    return false;
+
+                username = username.Trim();
+
                 Func<bool> isUniqueUsername = () => _appDbContext.Users.Any(_ => _.UserName == username) == false;
-                return _cache.GetOrAdd("IsUniqueUsername", isUniqueUsername);
+                return _cache.GetOrAdd($"IsUniqueUsername:{username.Trim().ToLower()}", isUniqueUsername);
 
                 //var found = _appDbContext.Users.Any(_ => _.UserName == username);
                 //return found == false;
