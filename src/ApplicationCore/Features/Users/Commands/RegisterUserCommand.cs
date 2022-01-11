@@ -4,10 +4,8 @@ using FluentValidation;
 using LazyCache;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using System.Collections.Concurrent;
 
 namespace ApplicationCore.Features.Users.Commands
 {
@@ -31,7 +29,6 @@ namespace ApplicationCore.Features.Users.Commands
         readonly IStringLocalizer _localizer;        
         readonly UserManager<AppUser> _userManager;  
         
-
         public RegisterUserCommandHandler(
             ILogger<RegisterUserCommandHandler> logger,            
             IStringLocalizer<RegisterUserCommandHandler> localizer,            
@@ -39,8 +36,7 @@ namespace ApplicationCore.Features.Users.Commands
         {
             _logger = logger;            
             _localizer = localizer;            
-            _userManager = userManager;            
-            
+            _userManager = userManager;                        
         }
 
         public async Task<Result<string>> Handle(
@@ -75,7 +71,7 @@ namespace ApplicationCore.Features.Users.Commands
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error registering user {0}",
+                _logger.LogError(ex, "Error registering user {@0}",
                     command);
             }
 
@@ -83,7 +79,8 @@ namespace ApplicationCore.Features.Users.Commands
         }
     }
 
-    public class RegisterUserCommandValidator : AbstractValidator<RegisterUserCommand>
+    public class RegisterUserCommandValidator 
+        : AbstractValidator<RegisterUserCommand>
     {
         readonly ILogger _logger;
         readonly IStringLocalizer _localizer;        
