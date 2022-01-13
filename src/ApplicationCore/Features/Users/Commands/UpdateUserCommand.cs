@@ -2,6 +2,8 @@
 using ApplicationCore.Interfaces;
 using ApplicationCore.Models;
 using AutoMapper;
+using FluentValidation;
+using LazyCache;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;
@@ -9,22 +11,22 @@ using Microsoft.Extensions.Logging;
 
 namespace ApplicationCore.Features.Users.Commands
 {
-    public partial class UpsertUserCommand : IRequest<Result<string>>
+    public partial class UpdateUserCommand : IRequest<Result<string>>
     {
         public string Id { get; set; }                
         public virtual string ExternalId { get; set; }
 
-        public string UserName { get; set; }
         public string Email { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Password { get; set; }
+        public string ConfirmPassword { get; set; }
 
         public IEnumerable<string> Roles { get; set; } = Enumerable.Empty<string>();
         public IEnumerable<CustomAttribute> CustomAttributes { get; set; } = Enumerable.Empty<CustomAttribute>();
     }
 
-    internal class UpsertUserCommandHandler : IRequestHandler<UpsertUserCommand, Result<string>>
+    internal class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, Result<string>>
     {
         readonly ILogger _logger;
         readonly IUserSessionService _userSession;
@@ -34,10 +36,10 @@ namespace ApplicationCore.Features.Users.Commands
         readonly IFileService _fileService;
         readonly IMapper _mapper;
 
-        public UpsertUserCommandHandler(
-            ILogger<UpsertUserCommandHandler> logger,
+        public UpdateUserCommandHandler(
+            ILogger<UpdateUserCommandHandler> logger,
             IUserSessionService userSession,
-            IStringLocalizer<UpsertUserCommandHandler> localizer,
+            IStringLocalizer<UpdateUserCommandHandler> localizer,
             AppDbContext dbContext,
             UserManager<AppUser> userManager,
             IFileService fileService,
@@ -53,69 +55,8 @@ namespace ApplicationCore.Features.Users.Commands
         }
 
         public async Task<Result<string>> Handle(
-            UpsertUserCommand command, 
+            UpdateUserCommand command, 
             CancellationToken cancellationToken)
-        {
-            if (string.IsNullOrEmpty(command.Id))
-            {
-                return await AddAsync(command);
-            }
-            else
-            {
-                return await UpdateAsync(command);
-            }
-        }
-
-        private async Task<Result<string>> AddAsync(UpsertUserCommand command)
-        {
-            try
-            {
-                var found = await _userManager.FindByNameAsync(command.UserName);
-
-                if (found != null)
-                {
-                    return Result<string>.Fail(string.Format(_localizer["UserName {0} is already used."], command.UserName));
-                }
-
-                found = await _userManager.FindByEmailAsync(command.Email);
-
-                if (found != null)
-                {
-                    return Result<string>.Fail(string.Format(_localizer["Email {0} is already used."], command.Email));
-                }
-
-                var entity = _mapper.Map<AppUser>(command);
-
-                if (entity == null)
-                {
-                    return Result<string>.Fail(_localizer["Unable to map to AppUser"]);
-                }
-
-                entity.Id = Guid.NewGuid().ToString();                
-
-                var created = await _userManager.CreateAsync(entity, command.Password);
-
-                if (!created.Succeeded)
-                {
-                    var errors = created.Errors.Select(_ => _.Description).ToArray();
-
-                    return Result<string>.Fail(errors);
-                }
-
-                await UpsertRolesAsync(entity, command);
-
-                return Result<string>.Success(entity.Id, _localizer["User Saved"]);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error adding User {@0) {UserId}",
-                    command, _userSession.UserId);
-            }
-
-            return Result<string>.Fail(_localizer["Internal Error"]);
-        }
-
-        private async Task<Result<string>> UpdateAsync(UpsertUserCommand command)
         {
             try
             {
@@ -127,28 +68,56 @@ namespace ApplicationCore.Features.Users.Commands
                 }
 
                 entity = _mapper.Map(command, entity);
+                
+                var currentEmail = await _userManager.GetEmailAsync(entity);
+                bool newEmail = command.Email != currentEmail;                
 
                 if (entity == null)
                 {
                     return Result<string>.Fail(_localizer["Unable to map to AppUser"]);
                 }
-                
+
                 var updated = await _userManager.UpdateAsync(entity);
 
                 if (!updated.Succeeded)
                 {
                     var errors = updated.Errors.Select(_ => _.Description).ToArray();
-
                     return Result<string>.Fail(errors);
                 }
+
+                await UpsertRolesAsync(entity, command);
 
                 if (!string.IsNullOrEmpty(command.Password))
                 {
                     var token = await _userManager.GeneratePasswordResetTokenAsync(entity);
-                    var passReset = await _userManager.ResetPasswordAsync(entity, token, command.Password);
+                    var res = await _userManager.ResetPasswordAsync(entity, token, command.Password);
+
+                    if (!res.Succeeded)
+                    {
+                        var errors = res.Errors.Select(_ => _.Description).ToArray();
+                        return Result<string>.Fail(errors);
+                    }
                 }
 
-                await UpsertRolesAsync(entity, command);
+                if (newEmail)
+                {
+                    //var token = await _userManager.GenerateChangeEmailTokenAsync(entity, command.Email);
+                    //var res = await _userManager.ChangeEmailAsync(entity, command.Email, token);
+
+                    //if (!res.Succeeded)
+                    //{
+                    //    var errors = res.Errors.Select(_ => _.Description).ToArray();
+                    //    return Result<string>.Fail(errors);
+                    //}
+
+                    var res = await _userManager.SetEmailAsync(entity, command.Email);
+
+                    if (!res.Succeeded)
+                    {
+                        var errors = res.Errors.Select(_ => _.Description).ToArray();
+                        return Result<string>.Fail(errors);
+                    }
+                }
 
                 return Result<string>.Success(entity.Id, _localizer["User Updated"]);
             }
@@ -163,7 +132,7 @@ namespace ApplicationCore.Features.Users.Commands
 
         private async Task UpsertRolesAsync(
             AppUser entity, 
-            UpsertUserCommand command)
+            UpdateUserCommand command)
         {
             if (command.Roles == null)
                 command.Roles = new List<string>();
@@ -189,6 +158,49 @@ namespace ApplicationCore.Features.Users.Commands
 
                 await _userManager.RemoveFromRoleAsync(entity, role);
             }
+        }
+    }
+
+    public class UpdateUserCommandValidator 
+        : AbstractValidator<UpdateUserCommand>
+    {
+        readonly ILogger _logger;
+        readonly IStringLocalizer _localizer;
+        readonly AppDbContext _appDbContext;
+        readonly IAppCache _cache;
+
+        public UpdateUserCommandValidator(
+            ILogger<UpdateUserCommandValidator> logger,
+            IStringLocalizer<UpdateUserCommandValidator> localizer,
+            AppDbContext appDbContext,
+            IAppCache cache)
+        {
+            _logger = logger;
+            _localizer = localizer;
+            _appDbContext = appDbContext;
+            _cache = cache;
+
+            RuleSet("Names", () =>
+            {
+                RuleFor(_ => _.FirstName)
+                    .NotEmpty().WithMessage(_localizer["You must enter first name"])
+                    .MaximumLength(50).WithMessage("First name cannot be longer than 50 characters");
+
+                RuleFor(_ => _.LastName)
+                    .NotEmpty().WithMessage(_localizer["You must enter last name"])
+                    .MaximumLength(50).WithMessage(_localizer["Last name cannot be longer than 50 characters"]);
+            });
+
+            RuleFor(_ => _.Email)
+                .NotEmpty().WithMessage(_localizer["You must enter an email address"])
+                .EmailAddress().WithMessage(_localizer["You must provide a valid email address"]);
+
+            RuleFor(_ => _.Password)
+                .NotEmpty().WithMessage(_localizer["You must enter your password"])
+                .MinimumLength(6).WithMessage(_localizer["Password cannot be less than 6 charaters"]);
+
+            RuleFor(_ => _.ConfirmPassword)
+                .Equal(_ => _.Password).WithMessage(_localizer["Your confirm password must matched your password"]);
         }
     }
 }

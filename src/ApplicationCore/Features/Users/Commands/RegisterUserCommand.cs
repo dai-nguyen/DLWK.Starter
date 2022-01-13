@@ -144,10 +144,7 @@ namespace ApplicationCore.Features.Users.Commands
                 email = email.Trim();
 
                 Func<bool> isUniqueEmail = () => _appDbContext.Users.Any(_ => _.Email == email) == false;
-                return _cache.GetOrAdd($"IsUniqueUserEmail:{email.Trim().ToLower()}", isUniqueEmail);
-                 
-                //var found = _appDbContext.Users.Any(_ => _.Email == email);
-                //return found == false;
+                return _cache.GetOrAdd($"IsUniqueUserEmail:{email.Trim().ToLower()}", isUniqueEmail);                 
             }
             catch (Exception ex)
             {
@@ -167,13 +164,10 @@ namespace ApplicationCore.Features.Users.Commands
 
                 Func<bool> isUniqueUsername = () => _appDbContext.Users.Any(_ => _.UserName == username) == false;
                 return _cache.GetOrAdd($"IsUniqueUsername:{username.Trim().ToLower()}", isUniqueUsername);
-
-                //var found = _appDbContext.Users.Any(_ => _.UserName == username);
-                //return found == false;
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error checking unique username");
+                _logger.LogError(ex, "Error checking unique username");
             }
             return false;
         }

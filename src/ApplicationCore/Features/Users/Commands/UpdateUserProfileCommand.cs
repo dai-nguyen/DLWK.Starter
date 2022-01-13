@@ -6,20 +6,18 @@ using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ApplicationCore.Features.Users.Commands
 {
     public class UpdateUserProfileCommand : IRequest<Result<string>>
     {
+        public string Id { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public string Phone { get; set; }
+        //public string Phone { get; set; }
         public string Email { get; set; }
+        public string Password { get; set; }
+        public string ConfirmPassword { get; set; }
     }
 
     internal class UpdateUserProfileCommandHandler 
@@ -57,11 +55,41 @@ namespace ApplicationCore.Features.Users.Commands
 
                 entity.FirstName = command.FirstName;
                 entity.LastName = command.LastName;
-                var oldPhone = await _userManager.GetPhoneNumberAsync(entity);
+                //var oldPhone = await _userManager.GetPhoneNumberAsync(entity);
+                var oldEmail = await _userManager.GetEmailAsync(entity);
 
-                if (command.Phone != oldPhone)
+                //if (command.Phone != oldPhone)
+                //{
+                //    var res = await _userManager.SetPhoneNumberAsync(entity, command.Phone);
+
+                //    if (!res.Succeeded)
+                //    {
+                //        var errors = res.Errors.Select(_ => _.Description).ToArray();
+                //        return Result<string>.Fail(errors);
+                //    }
+                //}
+
+                if (!string.IsNullOrEmpty(command.Password))
                 {
-                    await _userManager.SetPhoneNumberAsync(entity, command.Phone);
+                    var token = await _userManager.GeneratePasswordResetTokenAsync(entity);
+                    var res = await _userManager.ResetPasswordAsync(entity, token, command.Password);
+
+                    if (!res.Succeeded)
+                    {
+                        var errors = res.Errors.Select(_ => _.Description).ToArray();
+                        return Result<string>.Fail(errors);
+                    }
+                }
+
+                if (command.Email != oldEmail)
+                {
+                    var res = await _userManager.SetEmailAsync(entity, command.Email);
+
+                    if (!res.Succeeded)
+                    {
+                        var errors = res.Errors.Select(_ => _.Description).ToArray();
+                        return Result<string>.Fail(errors);
+                    }
                 }
 
                 await _userManager.UpdateAsync(entity);
@@ -71,6 +99,7 @@ namespace ApplicationCore.Features.Users.Commands
                 _logger.LogError(ex, "Error updating user profile user {@0} {UserId}",
                     command, _userSession.UserId);
             }
+            return Result<string>.Fail();
         }
     }
 
@@ -97,6 +126,17 @@ namespace ApplicationCore.Features.Users.Commands
                     .NotEmpty().WithMessage(_localizer["You must enter your last name"])
                     .MaximumLength(50).WithMessage(_localizer["Last name cannot be longer than 50 characters"]);
             });
+
+            RuleFor(_ => _.Email)
+                .NotEmpty().WithMessage(_localizer["You must enter an email address"])
+                .EmailAddress().WithMessage(_localizer["You must provide a valid email address"]);
+
+            RuleFor(_ => _.Password)
+                .NotEmpty().WithMessage(_localizer["You must enter your password"])
+                .MinimumLength(6).WithMessage(_localizer["Password cannot be less than 6 charaters"]);
+
+            RuleFor(_ => _.ConfirmPassword)
+                .Equal(_ => _.Password).WithMessage(_localizer["Your confirm password must matched your password"]);
         }
     }
 }
