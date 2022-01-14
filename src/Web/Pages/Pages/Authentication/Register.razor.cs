@@ -24,7 +24,7 @@ namespace Web.Pages.Pages.Authentication
 
         void TogglePasswordVisibility()
         {
-            if(PasswordVisibility)
+            if (PasswordVisibility)
             {
                 PasswordVisibility = false;
                 PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
