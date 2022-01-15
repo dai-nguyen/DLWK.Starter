@@ -9,7 +9,12 @@ namespace ApplicationCore.Data.Configurations
         {
             builder.Property(_ => _.Description).HasMaxLength(100);
 
-            builder.HasIndex(_ => _.Name).IsTsVectorExpressionIndex("english");
+            builder.HasGeneratedTsVectorColumn(_ =>
+                _.SearchVector,
+                "english",
+                _ => new { _.Name, _.Description })
+                .HasIndex(_ => _.SearchVector)
+                .HasMethod("GIN");
         }
     }
 }

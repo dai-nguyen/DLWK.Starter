@@ -171,8 +171,8 @@ namespace ApplicationCore.Features.Users.Commands
                 .NotEmpty().WithMessage(_localizer["You must enter a username"])
                 .MinimumLength(6).WithMessage(_localizer["Username cannot be less than 6 characters"])
                 .Must((username) => IsUniqueUsername(username))
-                .WithMessage(_localizer["Username must be unique"])
-                .When(_ => !string.IsNullOrEmpty(_.UserName));
+                    .WithMessage(_localizer["Username must be unique"])
+                    .When(_ => !string.IsNullOrEmpty(_.UserName));
 
             RuleFor(_ => _.Password)
                 .NotEmpty().WithMessage(_localizer["You must enter your password"])

@@ -4,7 +4,7 @@ $pwd = ConvertTo-SecureString -String "Secret" -Force -AsPlainText
 $certpath = "Cert:\localmachine\my\$($cert.Thumbprint)"
 Export-PfxCertificate -Cert $certpath -FilePath c:\Web.pfx -Password $pwd
 
-add-migration
-update-database
+add-migration -Context AppDbContext
+update-database -Context AppDbContext
 
 https://docs.fluentvalidation.net/en/latest/built-in-validators.html

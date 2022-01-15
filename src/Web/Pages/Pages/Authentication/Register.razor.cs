@@ -13,9 +13,7 @@ namespace Web.Pages.Pages.Authentication
         IMediator _mediator { get; set; }
 
         RegisterUserCommand _command = new();
-        
-        
-
+                
         bool PasswordVisibility;
         InputType PasswordInput = InputType.Password;
         string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;

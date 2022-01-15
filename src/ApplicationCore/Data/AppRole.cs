@@ -1,5 +1,6 @@
 ﻿using ApplicationCore.Interfaces;
 using Microsoft.AspNetCore.Identity;
+using NpgsqlTypes;
 
 namespace ApplicationCore.Data
 {
@@ -12,6 +13,8 @@ namespace ApplicationCore.Data
         public virtual string ExternalId { get; set; } = "";
 
         public string Description { get; set; } = "";
+
+        public NpgsqlTsVector SearchVector { get; set; }
 
         public virtual IEnumerable<AppRoleClaim> RoleClaims { get; set; } = Enumerable.Empty<AppRoleClaim>();
     }
