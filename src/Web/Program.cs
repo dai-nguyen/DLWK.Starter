@@ -1,21 +1,20 @@
+using ApplicationCore;
+using ApplicationCore.Data;
+using ApplicationCore.Helpers;
+using ApplicationCore.Interfaces;
+using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using MudBlazor.Services;
 using NpgsqlTypes;
 using Serilog;
 using Serilog.Sinks.PostgreSQL;
 using Serilog.Sinks.PostgreSQL.ColumnWriters;
 using System.Security.Cryptography.X509Certificates;
-using Web.Data;
-using ApplicationCore;
-using ApplicationCore.Interfaces;
-using Web.Services;
-using ApplicationCore.Data;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;
-using ApplicationCore.Helpers;
-using Microsoft.AspNetCore.Components.Authorization;
 using Web;
-using Microsoft.AspNetCore.Components.Server;
+using Web.Data;
 using Web.Middleware;
+using Web.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -97,17 +96,12 @@ builder.WebHost.ConfigureServices((context, services) =>
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<AppUser>>();
-//builder.Services.AddScoped<IHostEnvironmentAuthenticationStateProvider>(sp =>
-//{
-//    var provider = (ServerAuthenticationStateProvider)sp.GetRequiredService<AuthenticationStateProvider>();
-//    return provider;
-//});
 builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddMudServices();
 
 builder.Services.UseApplicationCore(builder.Configuration);
 builder.Services.AddScoped<IUserSessionService, UserSessionService>();
-builder.Services.AddLazyCache();
+builder.Services.AddMemoryCache();
 
 var app = builder.Build();
 

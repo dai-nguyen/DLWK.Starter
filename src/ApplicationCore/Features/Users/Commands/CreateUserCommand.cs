@@ -3,9 +3,9 @@ using ApplicationCore.Interfaces;
 using ApplicationCore.Models;
 using AutoMapper;
 using FluentValidation;
-using LazyCache;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
@@ -135,14 +135,14 @@ namespace ApplicationCore.Features.Users.Commands
     {
         readonly ILogger _logger;
         readonly IStringLocalizer _localizer;
-        readonly AppDbContext _appDbContext;
-        readonly IAppCache _cache;
+        readonly AppDbContext _appDbContext;        
+        readonly IMemoryCache _cache;
 
         public CreateUserCommandValidator(
             ILogger<CreateUserCommandValidator> logger,
             IStringLocalizer<CreateUserCommandValidator> localizer,
             AppDbContext appDbContext,
-            IAppCache cache)
+            IMemoryCache cache)            
         {
             _logger = logger;
             _localizer = localizer;
@@ -191,8 +191,14 @@ namespace ApplicationCore.Features.Users.Commands
 
                 email = email.Trim();
 
-                Func<bool> isUniqueEmail = () => _appDbContext.Users.Any(_ => _.Email == email) == false;
-                return _cache.GetOrAdd($"IsUniqueUserEmail:{email.Trim().ToLower()}", isUniqueEmail);
+                return _cache.GetOrCreate(
+                    $"IsUniqueUserEmail:{email.Trim().ToLower()}",
+                    entry =>
+                    {
+                        entry.SlidingExpiration = TimeSpan.FromSeconds(5);
+                        return _appDbContext.Users.Any(_ => _.Email == email) == false;
+                    });
+
             }
             catch (Exception ex)
             {
@@ -210,8 +216,13 @@ namespace ApplicationCore.Features.Users.Commands
 
                 username = username.Trim();
 
-                Func<bool> isUniqueUsername = () => _appDbContext.Users.Any(_ => _.UserName == username) == false;
-                return _cache.GetOrAdd($"IsUniqueUsername:{username.Trim().ToLower()}", isUniqueUsername);
+                return _cache.GetOrCreate(
+                    $"IsUniqueUsername:{username.Trim().ToLower()}",
+                    entry =>
+                    {
+                        entry.SlidingExpiration = TimeSpan.FromSeconds(5);
+                        return _appDbContext.Users.Any(_ => _.UserName == username) == false;
+                    });
             }
             catch (Exception ex)
             {

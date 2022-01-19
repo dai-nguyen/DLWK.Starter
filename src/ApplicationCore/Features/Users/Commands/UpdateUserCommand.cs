@@ -166,19 +166,16 @@ namespace ApplicationCore.Features.Users.Commands
     {
         readonly ILogger _logger;
         readonly IStringLocalizer _localizer;
-        readonly AppDbContext _appDbContext;
-        readonly IAppCache _cache;
+        readonly AppDbContext _appDbContext;        
 
         public UpdateUserCommandValidator(
             ILogger<UpdateUserCommandValidator> logger,
             IStringLocalizer<UpdateUserCommandValidator> localizer,
-            AppDbContext appDbContext,
-            IAppCache cache)
+            AppDbContext appDbContext)
         {
             _logger = logger;
             _localizer = localizer;
-            _appDbContext = appDbContext;
-            _cache = cache;
+            _appDbContext = appDbContext;            
 
             RuleSet("Names", () =>
             {
