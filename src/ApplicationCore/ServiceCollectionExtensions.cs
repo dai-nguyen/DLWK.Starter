@@ -102,7 +102,9 @@ namespace ApplicationCore
         internal static IServiceCollection AddValidations(this IServiceCollection services)
         {
             services.AddTransient<IValidator<RegisterUserCommand>, RegisterUserCommandValidator>();
-
+            services.AddTransient<IValidator<CreateUserCommand>, CreateUserCommandValidator>();
+            services.AddTransient<IValidator<UpdateUserCommand>, UpdateUserCommandValidator>();
+            services.AddTransient<IValidator<UpdateUserProfileCommand>, UpdateUserProfileCommandValidator>();
 
             return services;
         }
