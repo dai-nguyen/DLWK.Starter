@@ -7,8 +7,8 @@ namespace Web.Middleware
     //https://github.com/dotnet/aspnetcore/issues/13601
     public class LogoutMiddleware
     {
-        public static IDictionary<Guid, string> Logouts { get; private set; }
-            = new ConcurrentDictionary<Guid, string>();
+        //public static IDictionary<Guid, string> Logouts { get; private set; }
+        //    = new ConcurrentDictionary<Guid, string>();
 
 
         private readonly RequestDelegate _next;
@@ -22,17 +22,17 @@ namespace Web.Middleware
             HttpContext context, 
             SignInManager<AppUser> signInMgr)
         {
-            if (context.Request.Path == "/logout" 
-                && context.Request.Query.ContainsKey("key"))
+            if (context.Request.Path == "/logout")
+                //&& context.Request.Query.ContainsKey("key"))
             {
-                var key = Guid.Parse(context.Request.Query["key"]);
+                //var key = Guid.Parse(context.Request.Query["key"]);
 
-                if (!Logouts.ContainsKey(key))
-                {
-                    context.Response.Redirect("/pages/authentication/login");
-                }
+                //if (!Logouts.ContainsKey(key))
+                //{
+                //    context.Response.Redirect("/pages/authentication/login");
+                //}
 
-                Logouts.Remove(key);
+                //Logouts.Remove(key);
                 await signInMgr.SignOutAsync();
                 context.Response.Redirect("/pages/authentication/login");
             }

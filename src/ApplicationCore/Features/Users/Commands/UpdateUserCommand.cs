@@ -3,7 +3,6 @@ using ApplicationCore.Interfaces;
 using ApplicationCore.Models;
 using AutoMapper;
 using FluentValidation;
-using LazyCache;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;

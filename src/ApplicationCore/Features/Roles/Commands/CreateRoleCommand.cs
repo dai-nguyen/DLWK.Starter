@@ -68,7 +68,6 @@ namespace ApplicationCore.Features.Roles.Commands
                 if (!created.Succeeded)
                 {
                     var errors = created.Errors.Select(_ => _.Description).ToArray();
-
                     return Result<string>.Fail(errors);
                 }
 

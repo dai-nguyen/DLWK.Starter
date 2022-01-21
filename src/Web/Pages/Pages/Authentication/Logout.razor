@@ -16,7 +16,8 @@
         }
 
         Guid key = Guid.NewGuid();
-        LogoutMiddleware.Logouts[key] = user.Identity.Name;
-        _navigationManager.NavigateTo($"/logout?key={key}", true);
+        //LogoutMiddleware.Logouts[key] = user.Identity.Name;
+        //_navigationManager.NavigateTo($"/logout?key={key}", true);
+        _navigationManager.NavigateTo($"/logout", true);
     }
 }

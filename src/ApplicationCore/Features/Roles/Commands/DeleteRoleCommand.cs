@@ -57,10 +57,13 @@ namespace ApplicationCore.Features.Roles.Commands
                 // delete role
                 var result = await _roleManager.DeleteAsync(role);
 
-                if (result.Succeeded)
-                    return Result<string>.Success(_localizer["Role Deleted"]);
-                else
-                    _logger.LogError("Error deleting role {@0} {UserId}", result, _userSession.UserId);
+                if (!result.Succeeded)
+                {
+                    var errors = result.Errors.Select(_ => _.Description).ToArray();
+                    return Result<string>.Fail(errors);
+                }
+
+                return Result<string>.Success(_localizer["Role Deleted"]);                
             }
             catch (Exception ex)
             {

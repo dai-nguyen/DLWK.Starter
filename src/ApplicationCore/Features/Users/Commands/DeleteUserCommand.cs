@@ -60,10 +60,13 @@ namespace ApplicationCore.Features.Users.Commands
                 // delete user
                 var result = await _userManager.DeleteAsync(user);
 
-                if (result.Succeeded)
-                    return Result<string>.Success(_localizer["User Deleted"]);
-                else
-                    _logger.LogError("Error deleting user {@0} {UserId}", result, _userSession.UserId);
+                if (!result.Succeeded)
+                {
+                    var errors = result.Errors.Select(_ => _.Description).ToArray();
+                    return Result<string>.Fail(errors);
+                }
+                
+                return Result<string>.Success(_localizer["User Deleted"]);                
             }
             catch (Exception ex)
             {

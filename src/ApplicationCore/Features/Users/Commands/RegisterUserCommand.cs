@@ -1,7 +1,6 @@
 ﻿using ApplicationCore.Data;
 using ApplicationCore.Models;
 using FluentValidation;
-using LazyCache;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Caching.Memory;
@@ -60,22 +59,17 @@ namespace ApplicationCore.Features.Users.Commands
                 if (!result.Succeeded)
                 {
                     var errors = result.Errors.Select(_ => _.Description).ToArray();
-
                     return Result<string>.Fail(errors);
                 }
-                else
-                {
-                    await _userManager.AddToRoleAsync(entity, "User");
 
-                    return Result<string>.Success();
-                }
+                await _userManager.AddToRoleAsync(entity, "User");
+                return Result<string>.Success();
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error registering user {@0}",
                     command);
             }
-
             return Result<string>.Fail(_localizer["Internal Error"]);
         }
     }
