@@ -11,7 +11,7 @@ namespace ApplicationCore.Features.Users.Queries
 {
     public class GetUserProfileByUserNameQuery : IRequest<Result<GetUserProfileByUserNameQueryResponse>>
     {
-        public string UserName { get; set; }
+        public string UserName { get; set; } = string.Empty;
     }
 
     internal class GetUserProfileByUserNameQueryHandler :
@@ -73,16 +73,16 @@ namespace ApplicationCore.Features.Users.Queries
 
     public class GetUserProfileByUserNameQueryResponse
     {
-        public string Id { get; set; }
-        public string ExternalId { get; set; }
+        public string Id { get; set; } = string.Empty;        
 
-        public string UserName { get; set; }
-        public string Email { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
+        public string UserName { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string FirstName { get; set; } = string.Empty;
+        public string LastName { get; set; } = string.Empty;
         public string ProfilePictureUrl { get; set; } = "";
 
-        public IEnumerable<string> Roles { get; set; }
+        public string ExternalId { get; set; } = string.Empty;
+        public IEnumerable<string> Roles { get; set; } = Enumerable.Empty<string>();
     }
 
     public class GetUserByUserNameQueryProfile : Profile

@@ -20,5 +20,6 @@ namespace ApplicationCore.Data
         public NpgsqlTsVector SearchVector { get; set; }
 
         public IEnumerable<CustomAttribute> CustomAttributes { get; set; } = Enumerable.Empty<CustomAttribute>();
+        
     }
 }

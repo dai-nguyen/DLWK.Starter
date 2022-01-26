@@ -12,11 +12,14 @@ using Microsoft.Extensions.Logging;
 namespace ApplicationCore.Features.Roles.Commands
 {
     public partial class CreateRoleCommand : IRequest<Result<string>>
-    {
+    {        
+        public string Name { get; set; } = "";
+        public string Description { get; set; } = "";
+
         public virtual string ExternalId { get; set; } = "";
 
-        public string Name { get; set; }
-        public string Description { get; set; } = "";
+        public IEnumerable<AppClaim> Claims { get; set; } 
+            = Enumerable.Empty<AppClaim>();
     }
 
     internal class CreateRoleCommandHandler : IRequestHandler<CreateRoleCommand, Result<string>>
@@ -71,6 +74,28 @@ namespace ApplicationCore.Features.Roles.Commands
                     return Result<string>.Fail(errors);
                 }
 
+                if (request.Claims != null && request.Claims.Any())
+                {                    
+                    foreach (var c in request.Claims)
+                    {
+                        if (string.IsNullOrEmpty(c.Type) || string.IsNullOrEmpty(c.Value))
+                        {
+                            _logger.LogError("Claim Type and Value are required. {@0} {UserId}",
+                                c, _userSession.UserId);
+                            continue;
+                        }
+
+                        var rResult = await _roleManager.AddClaimAsync(entity, 
+                            new System.Security.Claims.Claim(c.Type, c.Value));
+
+                        if (!rResult.Succeeded)
+                        {
+                            _logger.LogError("Error adding claim {0} {UserId}", 
+                                rResult, _userSession.UserId);
+                        }
+                    }
+                }
+
                 return Result<string>.Success(entity.Id, _localizer["Role Saved"]);
             }
             catch (Exception ex)
@@ -80,59 +105,59 @@ namespace ApplicationCore.Features.Roles.Commands
             }
             return Result<string>.Fail(_localizer["Internal Error"]);
         }
+    }
 
-        public class CreateRoleCommandValidator : AbstractValidator<CreateRoleCommand>
+    public class CreateRoleCommandValidator : AbstractValidator<CreateRoleCommand>
+    {
+        readonly ILogger _logger;
+        readonly IStringLocalizer _localizer;
+        readonly AppDbContext _appDbContext;
+        readonly IMemoryCache _cache;
+
+        public CreateRoleCommandValidator(
+            ILogger<CreateRoleCommandValidator> logger,
+            IStringLocalizer<CreateRoleCommandValidator> localizer,
+            AppDbContext appDbContext,
+            IMemoryCache cache)
         {
-            readonly ILogger _logger;
-            readonly IStringLocalizer _localizer;
-            readonly AppDbContext _appDbContext;
-            readonly IMemoryCache _cache;
+            _logger = logger;
+            _localizer = localizer;
+            _appDbContext = appDbContext;
+            _cache = cache;
 
-            public CreateRoleCommandValidator(
-                ILogger<CreateRoleCommandValidator> logger,
-                IStringLocalizer<CreateRoleCommandValidator> localizer,
-                AppDbContext appDbContext,
-                IMemoryCache cache)
+            RuleFor(_ => _.Name)
+                .NotEmpty().WithMessage(_localizer["You must enter a role name"])
+                .Must((name) => IsUniqueRoleName(name))
+                .WithMessage(_localizer["Role name must be unique"])
+                .When(_ => !string.IsNullOrEmpty(_.Name));
+
+            RuleFor(_ => _.Description)
+                .NotEmpty().WithMessage(_localizer["You must enter a description"])
+                .MaximumLength(50).WithMessage(_localizer["Description cannot be longer than 50 characters"]);
+        }
+
+        private bool IsUniqueRoleName(string roleName)
+        {
+            try
             {
-                _logger = logger;
-                _localizer = localizer;
-                _appDbContext = appDbContext;
-                _cache = cache;
-                
-                RuleFor(_ => _.Name)
-                    .NotEmpty().WithMessage(_localizer["You must enter a role name"])                    
-                    .Must((name) => IsUniqueRoleName(name))
-                    .WithMessage(_localizer["Role name must be unique"])
-                    .When(_ => !string.IsNullOrEmpty(_.Name));
+                if (string.IsNullOrWhiteSpace(roleName) || string.IsNullOrWhiteSpace(roleName))
+                    return false;
 
-                RuleFor(_ => _.Description)
-                    .NotEmpty().WithMessage(_localizer["You must enter a description"])
-                    .MaximumLength(50).WithMessage(_localizer["Description cannot be longer than 50 characters"]);
+                roleName = roleName.Trim();
+
+                return _cache.GetOrCreate(
+                    $"IsUniqueRoleName:{roleName.ToLower()}",
+                    entry =>
+                    {
+                        entry.SlidingExpiration = TimeSpan.FromSeconds(5);
+                        return _appDbContext.Roles.Any(_ => _.Name == roleName) == false;
+                    });
             }
-
-            private bool IsUniqueRoleName(string roleName)
+            catch (Exception ex)
             {
-                try
-                {
-                    if (string.IsNullOrWhiteSpace(roleName) || string.IsNullOrWhiteSpace(roleName))
-                        return false;
-
-                    roleName = roleName.Trim();
-
-                    return _cache.GetOrCreate(
-                        $"IsUniqueRoleName:{roleName.ToLower()}",
-                        entry =>
-                        {
-                            entry.SlidingExpiration = TimeSpan.FromSeconds(5);
-                            return _appDbContext.Roles.Any(_ => _.Name == roleName) == false;
-                        });
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Error checking unique username");
-                }
-                return false;
+                _logger.LogError(ex, "Error checking unique username");
             }
+            return false;
         }
     }
 }

@@ -12,7 +12,7 @@ namespace ApplicationCore.Features.Roles.Queries
 {
     public class GetAllRolesQuery : IRequest<Result<IEnumerable<GetAllRolesQueryResponse>>>
     {
-        public string SearchString { get; set; }
+        public string SearchString { get; set; } = string.Empty;
     }
 
     internal class GetAllRolesQueryHandler :
@@ -79,9 +79,9 @@ namespace ApplicationCore.Features.Roles.Queries
 
     public class GetAllRolesQueryResponse
     {
-        public string Id { get; set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
+        public string Id { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
     }
 
     public class GetAllRolesQueryProfile : Profile

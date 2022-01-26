@@ -11,7 +11,7 @@ namespace ApplicationCore.Features.Users.Queries
 {
     public class GetUserByIdQuery : IRequest<Result<GetUserByIdQueryResponse>>
     {
-        public string Id { get; set; }
+        public string Id { get; set; } = "";
     }
 
     internal class GetUserByIdQueryHandler :
@@ -54,10 +54,17 @@ namespace ApplicationCore.Features.Users.Queries
                 }
 
                 var roles = await _userManager.GetRolesAsync(entity);
+                var claims = await _userManager.GetClaimsAsync(entity);
 
                 var dto = _mapper.Map<GetUserByIdQueryResponse>(entity);
 
                 dto.Roles = roles;
+
+                if (claims != null)
+                {
+                    dto.Claims = claims.Select(_ => new AppClaim(_.Type, _.Value))
+                        .ToArray();
+                }
 
                 return Result<GetUserByIdQueryResponse>.Success(dto);
             }
@@ -73,16 +80,19 @@ namespace ApplicationCore.Features.Users.Queries
 
     public class GetUserByIdQueryResponse
     {
-        public string Id { get; set; }        
-        public string ExternalId { get; set; }
-
-        public string UserName { get; set; }
-        public string Email { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
+        public string Id { get; set; } = "";
+        
+        public string UserName { get; set; } = "";
+        public string Email { get; set; } = "";
+        public string FirstName { get; set; } = "";
+        public string LastName { get; set; } = "";
         public string ProfilePictureUrl { get; set; } = "";
 
-        public IEnumerable<string> Roles { get; set; }
+        public string ExternalId { get; set; } = "";
+
+        public IEnumerable<string> Roles { get; set; } = Enumerable.Empty<string>();
+        public IEnumerable<AppClaim> Claims { get; set; }
+            = Enumerable.Empty<AppClaim>();
     }
 
     public class GetUserByIdQueryProfile : Profile

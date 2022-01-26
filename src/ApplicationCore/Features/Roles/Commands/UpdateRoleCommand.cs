@@ -1,7 +1,7 @@
 ﻿using ApplicationCore.Data;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Models;
-using AutoMapper;
+using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;
@@ -11,11 +11,13 @@ namespace ApplicationCore.Features.Roles.Commands
 {
     public class UpdateRoleCommand : IRequest<Result<string>>
     {
+        public string Id { get; set; } = "";
+        public string Description { get; set; } = "";
+
         public virtual string ExternalId { get; set; } = "";
 
-        public string Id { get; set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
+        public IEnumerable<AppClaim> Claims { get; set; } 
+            = Enumerable.Empty<AppClaim>();
     }
 
     internal class UpdateRoleCommandHandler : IRequestHandler<UpdateRoleCommand, Result<string>>
@@ -23,21 +25,18 @@ namespace ApplicationCore.Features.Roles.Commands
         readonly ILogger _logger;
         readonly IUserSessionService _userSession;
         readonly IStringLocalizer _localizer;
-        readonly RoleManager<AppRole> _roleManager;
-        readonly IMapper _mapper;
+        readonly RoleManager<AppRole> _roleManager;        
 
         public UpdateRoleCommandHandler(
             ILogger<UpdateRoleCommandHandler> logger,
             IUserSessionService userSession,
             IStringLocalizer<UpdateRoleCommandHandler> localizer,
-            RoleManager<AppRole> roleManager,
-            IMapper mapper)
+            RoleManager<AppRole> roleManager)
         {
             _logger = logger;
             _userSession = userSession;
             _localizer = localizer;
-            _roleManager = roleManager;
-            _mapper = mapper;
+            _roleManager = roleManager;            
         }
 
         public async Task<Result<string>> Handle(
@@ -52,9 +51,9 @@ namespace ApplicationCore.Features.Roles.Commands
                 {
                     return Result<string>.Fail(_localizer["Role Not Found"]);
                 }
-
-                entity.Name = request.Name;
+                
                 entity.Description = request.Description;
+                entity.ExternalId = request.ExternalId;
                 
                 var updated = await _roleManager.UpdateAsync(entity);
 
@@ -64,6 +63,8 @@ namespace ApplicationCore.Features.Roles.Commands
                     return Result<string>.Fail(errors);
                 }
 
+                await UpsertClaimsAsync(entity, request);
+
                 return Result<string>.Success(entity.Id, _localizer["Role Updated"]);
             }
             catch (Exception ex)
@@ -72,6 +73,71 @@ namespace ApplicationCore.Features.Roles.Commands
                     request, _userSession.UserId);
             }
             return Result<string>.Fail(_localizer["Internal Error"]);
+        }
+
+        private async Task UpsertClaimsAsync(
+            AppRole entity,
+            UpdateRoleCommand command)
+        {
+            try
+            {
+                if (command.Claims == null)
+                    command.Claims = Enumerable.Empty<AppClaim>();
+
+                command.Claims = command.Claims
+                    .Where(_ => !string.IsNullOrWhiteSpace(_.Type) && !string.IsNullOrWhiteSpace(_.Value))
+                    .ToArray();
+
+                var claims = await _roleManager.GetClaimsAsync(entity);
+
+                // add or update
+                foreach (var claim in command.Claims)
+                {
+                    var found = claims.FirstOrDefault(_ => _.Type == claim.Type);
+
+                    // update
+                    if ((found != null && found.Value != claim.Value) || found == null)
+                    {
+                        if (found != null && found.Value != claim.Value)
+                            await _roleManager.RemoveClaimAsync(entity, found);
+
+                        await _roleManager.AddClaimAsync(entity, new System.Security.Claims.Claim(claim.Type, claim.Value));
+                    }
+                }
+
+                // remove
+                foreach (var claim in claims)
+                {
+                    var found = command.Claims.Any(_ => _.Type == claim.Type);
+
+                    if (found) continue;
+
+                    await _roleManager.RemoveClaimAsync(entity, claim);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error upsert role claims {@0} {UserId}",
+                    command, _userSession.UserId);
+            }
+        }
+    }
+
+    public class UpdateRoleCommandValidator : AbstractValidator<UpdateRoleCommand>
+    {
+        readonly ILogger _logger;
+        readonly IStringLocalizer _localizer;        
+        
+        public UpdateRoleCommandValidator(
+            ILogger<UpdateRoleCommandValidator> logger,
+            IStringLocalizer<UpdateRoleCommandValidator> localizer)
+        {
+            _logger = logger;
+            _localizer = localizer;            
+            
+            RuleFor(_ => _.Description)
+                .NotEmpty().WithMessage(_localizer["You must enter a description"])
+                .MaximumLength(50).WithMessage(_localizer["Description cannot be longer than 50 characters"]);
         }
     }
 }

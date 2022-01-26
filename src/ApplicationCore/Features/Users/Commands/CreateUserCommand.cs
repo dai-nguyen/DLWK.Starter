@@ -12,18 +12,19 @@ using Microsoft.Extensions.Logging;
 namespace ApplicationCore.Features.Users.Commands
 {
     public partial class CreateUserCommand : IRequest<Result<string>>
-    {        
-        public virtual string ExternalId { get; set; }
+    {                
+        public string UserName { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string FirstName { get; set; } = string.Empty;
+        public string LastName { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
+        public string ConfirmPassword { get; set; } = string.Empty;
 
-        public string UserName { get; set; }
-        public string Email { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string Password { get; set; }
-        public string ConfirmPassword { get; set; }
+        public virtual string ExternalId { get; set; } = string.Empty;
 
         public IEnumerable<string> Roles { get; set; } = Enumerable.Empty<string>();
-        public IEnumerable<CustomAttribute> CustomAttributes { get; set; } = Enumerable.Empty<CustomAttribute>();
+        public IEnumerable<AppClaim> Claims { get; set; } = Enumerable.Empty<AppClaim>();
+        //public IEnumerable<CustomAttribute> CustomAttributes { get; set; } = Enumerable.Empty<CustomAttribute>();
     }
 
     internal class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Result<string>>
@@ -85,7 +86,8 @@ namespace ApplicationCore.Features.Users.Commands
                     return Result<string>.Fail(errors);
                 }
 
-                await UpsertRolesAsync(entity, command);
+                await AddRolesAsync(entity, command);
+                await AddClaimsAsync(entity, command);
 
                 return Result<string>.Success(entity.Id, _localizer["User Saved"]);
             }
@@ -98,33 +100,46 @@ namespace ApplicationCore.Features.Users.Commands
             return Result<string>.Fail(_localizer["Internal Error"]);
         }
 
-        private async Task UpsertRolesAsync(
+        private async Task AddRolesAsync(
             AppUser entity, 
             CreateUserCommand command)
         {
-            if (command.Roles == null)
-                command.Roles = new List<string>();
+            if (entity == null || command == null || command.Roles == null)
+                return;
 
-            var roles = await _userManager.GetRolesAsync(entity);
-
-            // add
-            foreach (var role in command.Roles)
+            try
             {
-                var found = roles.FirstOrDefault(_ => _ == role);
-
-                if (found != null) continue;
-
-                await _userManager.AddToRoleAsync(entity, role);
+                foreach (var role in command.Roles)
+                {
+                    await _userManager.AddToRoleAsync(entity, role);
+                }
             }
-
-            // remove
-            foreach (var role in roles)
+            catch (Exception ex)
             {
-                var found = command.Roles.Any(_ => _ == role);
+                _logger.LogError(ex, "Error adding roles {@0} {UserId}",
+                    command, _userSession.UserId);
+            }
+        }
 
-                if (found) continue;
+        private async Task AddClaimsAsync(
+            AppUser entity,
+            CreateUserCommand command)
+        {
+            if (entity == null || command == null || command.Claims == null)
+                return;
 
-                await _userManager.RemoveFromRoleAsync(entity, role);
+            try
+            {
+                foreach (var c in command.Claims)
+                {
+                    await _userManager.AddClaimAsync(entity,
+                        new System.Security.Claims.Claim(c.Type, c.Value));
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error adding user claims {@0} {UserId}",
+                    command, _userSession.UserId);
             }
         }
     }

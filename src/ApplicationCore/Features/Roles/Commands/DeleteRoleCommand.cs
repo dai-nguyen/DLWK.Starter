@@ -18,7 +18,7 @@ namespace ApplicationCore.Features.Roles.Commands
         readonly ILogger _logger;
         readonly IUserSessionService _userSession;
         readonly IStringLocalizer _localizer;        
-        readonly RoleManager<AppRole> _roleManager;
+        readonly RoleManager<AppRole> _roleManager;        
 
         public DeleteRoleCommandHandler(
             ILogger<DeleteRoleCommandHandler> logger,
@@ -29,7 +29,7 @@ namespace ApplicationCore.Features.Roles.Commands
             _logger = logger;
             _userSession = userSession;
             _localizer = localizer;            
-            _roleManager = roleManager;            
+            _roleManager = roleManager;                 
         }
 
         public async Task<Result<string>> Handle(
@@ -52,7 +52,7 @@ namespace ApplicationCore.Features.Roles.Commands
                     {
                         await _roleManager.RemoveClaimAsync(role, claim);
                     }
-                }
+                }                
 
                 // delete role
                 var result = await _roleManager.DeleteAsync(role);

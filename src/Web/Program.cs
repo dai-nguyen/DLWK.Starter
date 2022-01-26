@@ -147,7 +147,7 @@ app.Run();
 
 public static class HostConfig
 {
-    public static string CertPath { get; set; }
-    public static string CertPassword { get; set; }
-    public static string CertData { get; set; }
+    public static string CertPath { get; set; } = string.Empty;
+    public static string CertPassword { get; set; } = string.Empty;
+    public static string CertData { get; set; } = string.Empty;
 }

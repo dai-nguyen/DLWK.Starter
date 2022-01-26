@@ -12,17 +12,20 @@ namespace ApplicationCore.Features.Users.Commands
 {
     public partial class UpdateUserCommand : IRequest<Result<string>>
     {
-        public string Id { get; set; }                
-        public virtual string ExternalId { get; set; }
+        public string Id { get; set; } = string.Empty;        
+        public string Email { get; set; } = string.Empty;
+        public string FirstName { get; set; } = string.Empty;
+        public string LastName { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
+        public string ConfirmPassword { get; set; } = string.Empty;
 
-        public string Email { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string Password { get; set; }
-        public string ConfirmPassword { get; set; }
+        public virtual string ExternalId { get; set; } = string.Empty;
 
         public IEnumerable<string> Roles { get; set; } = Enumerable.Empty<string>();
-        public IEnumerable<CustomAttribute> CustomAttributes { get; set; } = Enumerable.Empty<CustomAttribute>();
+
+        public IEnumerable<AppClaim> Claims { get; set; } = Enumerable.Empty<AppClaim>();
+
+        //public IEnumerable<CustomAttribute> CustomAttributes { get; set; } = Enumerable.Empty<CustomAttribute>();
     }
 
     internal class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, Result<string>>
@@ -85,6 +88,7 @@ namespace ApplicationCore.Features.Users.Commands
                 }
 
                 await UpsertRolesAsync(entity, command);
+                await UpsertClaimsAsync(entity, command);
 
                 if (!string.IsNullOrEmpty(command.Password))
                 {
@@ -130,32 +134,87 @@ namespace ApplicationCore.Features.Users.Commands
         }
 
         private async Task UpsertRolesAsync(
-            AppUser entity, 
+            AppUser entity,
             UpdateUserCommand command)
         {
-            if (command.Roles == null)
-                command.Roles = new List<string>();
-
-            var roles = await _userManager.GetRolesAsync(entity);
-
-            // add
-            foreach (var role in command.Roles)
+            try
             {
-                var found = roles.FirstOrDefault(_ => _ == role);
+                if (command.Roles == null)
+                    command.Roles = Enumerable.Empty<string>();
 
-                if (found != null) continue;
+                var roles = await _userManager.GetRolesAsync(entity);
 
-                await _userManager.AddToRoleAsync(entity, role);
+                // add
+                foreach (var role in command.Roles)
+                {
+                    var found = roles.FirstOrDefault(_ => _ == role);
+
+                    if (found != null) continue;
+
+                    await _userManager.AddToRoleAsync(entity, role);
+                }
+
+                // remove
+                foreach (var role in roles)
+                {
+                    var found = command.Roles.Any(_ => _ == role);
+
+                    if (found) continue;
+
+                    await _userManager.RemoveFromRoleAsync(entity, role);
+                }
             }
-
-            // remove
-            foreach (var role in roles)
+            catch (Exception ex)
             {
-                var found = command.Roles.Any(_ => _ == role);
+                _logger.LogError(ex, "Error upsert user role {@0} {UserId}",
+                    command, _userSession.UserId);
+            }
+        }
 
-                if (found) continue;
+        private async Task UpsertClaimsAsync(
+            AppUser entity,
+            UpdateUserCommand command)
+        {
+            try
+            {
+                if (command.Claims == null)
+                    command.Claims = Enumerable.Empty<AppClaim>();
 
-                await _userManager.RemoveFromRoleAsync(entity, role);
+                command.Claims = command.Claims
+                    .Where(_ => !string.IsNullOrWhiteSpace(_.Type) && !string.IsNullOrWhiteSpace(_.Value))
+                    .ToArray();
+
+                var claims = await _userManager.GetClaimsAsync(entity);
+
+                // add or update
+                foreach (var claim in command.Claims)
+                {
+                    var found = claims.FirstOrDefault(_ => _.Type == claim.Type);
+
+                    // update
+                    if ((found != null && found.Value != claim.Value) || found == null)
+                    {
+                        if (found != null && found.Value != claim.Value)
+                            await _userManager.RemoveClaimAsync(entity, found);
+
+                        await _userManager.AddClaimAsync(entity, new System.Security.Claims.Claim(claim.Type, claim.Value));
+                    }
+                }
+
+                // remove
+                foreach (var claim in claims)
+                {
+                    var found = command.Claims.Any(_ => _.Type == claim.Type);
+
+                    if (found) continue;
+
+                    await _userManager.RemoveClaimAsync(entity, claim);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error upsert user claims {@0} {UserId}",
+                    command, _userSession.UserId);
             }
         }
     }

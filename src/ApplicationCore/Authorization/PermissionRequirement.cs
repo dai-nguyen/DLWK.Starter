@@ -30,7 +30,7 @@ namespace ApplicationCore.Authorization
             AuthorizationHandlerContext context,
             PermissionRequirement requirement)
         {
-            if (context.User == null)
+            if (context == null || context.User == null || context.User.Identity == null)
                 return;
 
             AppUser? user = await _context

@@ -13,7 +13,7 @@ namespace Web.Pages.Pages.Users
         IMediator _mediator { get; set; }
 
         int _total;
-        string _searchString;        
+        string _searchString = string.Empty;        
         MudTable<GetAllUsersQueryResponse> _table;
 
         async Task<TableData<GetAllUsersQueryResponse>> ReloadData(TableState state)

@@ -1,5 +1,6 @@
 ﻿using ApplicationCore.Helpers;
 using ApplicationCore.Interfaces;
+using ApplicationCore.Models;
 using Microsoft.AspNetCore.Components.Authorization;
 using System.Security.Claims;
 
@@ -21,7 +22,7 @@ namespace Web.Services
                 var authState = AsyncHelper.RunSync(async () => await _authenticationStateProvider.GetAuthenticationStateAsync());
                 var user = authState.User;
 
-                if (!user.Identity.IsAuthenticated)
+                if (user == null || user.Identity == null || !user.Identity.IsAuthenticated)
                 {
                     return "?";
                 }
@@ -30,19 +31,19 @@ namespace Web.Services
             }
         }
 
-        public IEnumerable<KeyValuePair<string, string>> Claims 
+        public IEnumerable<AppClaim> Claims 
         { 
             get
             {
                 var authState = AsyncHelper.RunSync(async () => await _authenticationStateProvider.GetAuthenticationStateAsync());
                 var user = authState.User;
 
-                if (!user.Identity.IsAuthenticated)
+                if (user == null || user.Identity == null || !user.Identity.IsAuthenticated)
                 {
-                    return Enumerable.Empty<KeyValuePair<string,string>>();
+                    return Enumerable.Empty<AppClaim>();
                 }
 
-                return user.Claims.AsEnumerable().Select(item => new KeyValuePair<string, string>(item.Type, item.Value)).ToArray();
+                return user.Claims.AsEnumerable().Select(item => new AppClaim(item.Type, item.Value)).ToArray();
             }
         }
     }

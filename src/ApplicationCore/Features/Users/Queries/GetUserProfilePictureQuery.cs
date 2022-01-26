@@ -10,7 +10,7 @@ namespace ApplicationCore.Features.Users.Queries
 {
     public class GetUserProfilePictureQuery : IRequest<Result<string>>
     {
-        public string UserId { get; set; }
+        public string UserId { get; set; } = string.Empty;
     }
 
     internal class GetUserProfilePictureQueryHandler : 
