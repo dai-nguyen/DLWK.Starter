@@ -11,3 +11,34 @@
     }
 }
 
+<table>
+    <thead>
+        <tr>
+            <th></th>
+            <th>Read</th>
+            <th>Edit</th>
+            <th>Create</th>
+            <th>Delete</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var permission in Permissions)
+        {
+            <tr>
+                <td>@permission.name</td>
+                <td>
+                    <MudCheckBox @bind-Checked="permission.can_read"></MudCheckBox>
+                </td>
+                <td>
+                    <MudCheckBox @bind-Checked="permission.can_edit"></MudCheckBox>
+                </td>
+                <td>
+                    <MudCheckBox @bind-Checked="permission.can_create"></MudCheckBox>
+                </td>
+                <td>
+                    <MudCheckBox @bind-Checked="permission.can_delete"></MudCheckBox>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

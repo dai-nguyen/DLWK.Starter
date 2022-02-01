@@ -86,7 +86,7 @@ namespace ApplicationCore.Helpers
             return Encoding.UTF8.GetString(plainBytes);
         }
 
-        public IEnumerable<Claim> ToClaim(this RolePermission permission)
+        public static IEnumerable<Claim> ToClaim(this RolePermission permission)
         {
             var claims = new List<Claim>();
 
