@@ -1,4 +1,6 @@
-﻿using System.Reflection;
+﻿using ApplicationCore.Models;
+using System.Reflection;
+using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -54,7 +56,10 @@ namespace ApplicationCore.Helpers
             return byteArray;
         }
 
-        public static string Encrypt(string text, string IV, string key)
+        public static string Encrypt(
+            string text, 
+            string IV, 
+            string key)
         {
             Aes cipher = CreateCipher(key);
             cipher.IV = Convert.FromBase64String(IV);
@@ -66,7 +71,10 @@ namespace ApplicationCore.Helpers
             return Convert.ToBase64String(cipherText);
         }
 
-        public static string Decrypt(string encryptedText, string IV, string key)
+        public static string Decrypt(
+            string encryptedText, 
+            string IV, 
+            string key)
         {
             Aes cipher = CreateCipher(key);
             cipher.IV = Convert.FromBase64String(IV);
@@ -76,6 +84,37 @@ namespace ApplicationCore.Helpers
             byte[] plainBytes = cryptTransform.TransformFinalBlock(encryptedBytes, 0, encryptedBytes.Length);
 
             return Encoding.UTF8.GetString(plainBytes);
+        }
+
+        public IEnumerable<Claim> ToClaim(this RolePermission permission)
+        {
+            var claims = new List<Claim>();
+
+            switch (permission.name)
+            {
+                case Constants.ClaimNames.role:
+                    if (permission.can_read)
+                        claims.Add(new Claim(Constants.Claims.can_read_role, "true"));
+                    if (permission.can_edit)
+                        claims.Add(new Claim(Constants.Claims.can_edit_role, "true"));
+                    if (permission.can_create)
+                        claims.Add(new Claim(Constants.Claims.can_create_role, "true"));
+                    if (permission.can_delete)
+                        claims.Add(new Claim(Constants.Claims.can_delete_role, "true"));
+                    break;
+                case Constants.ClaimNames.user:
+                    if (permission.can_read)
+                        claims.Add(new Claim(Constants.Claims.can_read_user, "true"));
+                    if (permission.can_edit)
+                        claims.Add(new Claim(Constants.Claims.can_edit_user, "true"));
+                    if (permission.can_create)
+                        claims.Add(new Claim(Constants.Claims.can_create_user, "true"));
+                    if (permission.can_delete)
+                        claims.Add(new Claim(Constants.Claims.can_delete_user, "true"));
+                    break;
+            }
+
+            return claims;
         }
     }
 }

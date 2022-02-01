@@ -18,8 +18,8 @@ namespace ApplicationCore.Features.Roles.Commands
 
         public virtual string ExternalId { get; set; } = "";
 
-        public IEnumerable<AppClaim> Claims { get; set; } 
-            = Enumerable.Empty<AppClaim>();
+        public IEnumerable<RolePermission> Permissions { get; set; } 
+            = Enumerable.Empty<RolePermission>();
     }
 
     internal class CreateRoleCommandHandler : IRequestHandler<CreateRoleCommand, Result<string>>
@@ -74,19 +74,21 @@ namespace ApplicationCore.Features.Roles.Commands
                     return Result<string>.Fail(errors);
                 }
 
-                if (request.Claims != null && request.Claims.Any())
+                if (request.Permissions != null && request.Permissions.Any())
                 {                    
-                    foreach (var c in request.Claims)
+                    foreach (var p in request.Permissions)
                     {
-                        if (string.IsNullOrEmpty(c.Type) || string.IsNullOrEmpty(c.Value))
+                        if (string.IsNullOrEmpty(p.name))
                         {
-                            _logger.LogError("Claim Type and Value are required. {@0} {UserId}",
-                                c, _userSession.UserId);
+                            _logger.LogError("Permission Name is required. {@0} {UserId}",
+                                p, _userSession.UserId);
                             continue;
                         }
 
+
+
                         var rResult = await _roleManager.AddClaimAsync(entity, 
-                            new System.Security.Claims.Claim(c.Type, c.Value));
+                            new System.Security.Claims.Claim(p.name, "true"));
 
                         if (!rResult.Succeeded)
                         {

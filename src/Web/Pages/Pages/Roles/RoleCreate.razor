@@ -1,0 +1,13 @@
+﻿@page "/pages/roles/create"
+@using ApplicationCore.Features.Roles.Commands
+
+<MudText Typo="Typo.h5" Color="Color.Primary" Class="mb-4">Create Role</MudText>
+
+@if(Errors.Any())
+{
+    foreach (var error in Errors)
+    {
+        <MudAlert Severity="Severity.Error">@error</MudAlert>
+    }
+}
+

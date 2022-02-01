@@ -25,8 +25,7 @@ namespace Web.Pages.Pages.Users
         List<GetAllRolesQueryResponse> Roles { get; set;} = new List<GetAllRolesQueryResponse>();
 
         protected override async Task OnInitializedAsync()
-        {
-            // todo: get all roles
+        {            
             var rolesRes = await _mediator.Send(new GetAllRolesQuery());
 
             if (rolesRes.Succeeded && rolesRes.Data.Any())
