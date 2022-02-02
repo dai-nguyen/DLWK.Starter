@@ -27,8 +27,8 @@ namespace ApplicationCore
 
         public static IEnumerable<RolePermission> PermissionCheckList => new RolePermission[]
         {
-            new RolePermission(ClaimNames.role),
-            new RolePermission(ClaimNames.user),
+            new RolePermission(ClaimNames.role, "Roles"),
+            new RolePermission(ClaimNames.user, "Users"),
         };
 
     }

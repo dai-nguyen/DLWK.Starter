@@ -3,42 +3,76 @@
 
 <MudText Typo="Typo.h5" Color="Color.Primary" Class="mb-4">Create Role</MudText>
 
-@if(Errors.Any())
-{
-    foreach (var error in Errors)
-    {
-        <MudAlert Severity="Severity.Error">@error</MudAlert>
-    }
-}
+<EditForm Model="@_command" OnValidSubmit="SubmitAsync">
+    
+    <MudGrid>
+        <MudItem xs="12" md="12">
+            <FluentValidationValidator/>
+        </MudItem>
 
-<table>
-    <thead>
-        <tr>
-            <th></th>
-            <th>Read</th>
-            <th>Edit</th>
-            <th>Create</th>
-            <th>Delete</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var permission in Permissions)
-        {
-            <tr>
-                <td>@permission.name</td>
-                <td>
-                    <MudCheckBox @bind-Checked="permission.can_read"></MudCheckBox>
-                </td>
-                <td>
-                    <MudCheckBox @bind-Checked="permission.can_edit"></MudCheckBox>
-                </td>
-                <td>
-                    <MudCheckBox @bind-Checked="permission.can_create"></MudCheckBox>
-                </td>
-                <td>
-                    <MudCheckBox @bind-Checked="permission.can_delete"></MudCheckBox>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+        <MudItem xs="12" md="6">
+            <MudTextField T="string" 
+                          @bind-Value="_command.Name"
+                          Label="Name" 
+                          For="@(() => _command.Name)"
+                          Variant="Variant.Outlined" />
+        </MudItem>
+            
+        <MudItem xs="12" md="6">
+            <MudTextField T="string" 
+                          @bind-Value="_command.Description"
+                          Label="Description" 
+                          For="@(() => _command.Description)"
+                          Variant="Variant.Outlined" />
+        </MudItem>
+
+        <MudItem xs="12" md="12">
+            <table>
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Read</th>
+                        <th>Edit</th>
+                        <th>Create</th>
+                        <th>Delete</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var permission in Permissions)
+                    {
+                        <tr>
+                            <td>@permission.display</td>
+                            <td>
+                                <MudCheckBox @bind-Checked="permission.can_read"></MudCheckBox>
+                            </td>
+                            <td>
+                                <MudCheckBox @bind-Checked="permission.can_edit"></MudCheckBox>
+                            </td>
+                            <td>
+                                <MudCheckBox @bind-Checked="permission.can_create"></MudCheckBox>
+                            </td>
+                            <td>
+                                <MudCheckBox @bind-Checked="permission.can_delete"></MudCheckBox>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </MudItem>
+
+        <MudItem xs="4" md="2">
+            <MudButton Variant="Variant.Filled" 
+                       Color="Color.Primary"                
+                       ButtonType="ButtonType.Submit"
+                       Size="Size.Large" 
+                       FullWidth="true">Create</MudButton>
+        </MudItem>
+
+    </MudGrid>
+    
+    
+
+    
+
+</EditForm>
+

@@ -1,35 +1,36 @@
 ﻿using ApplicationCore;
 using ApplicationCore.Features.Roles.Commands;
 using ApplicationCore.Models;
-using MediatR;
-using Microsoft.AspNetCore.Components;
-using MudBlazor;
 
 namespace Web.Pages.Pages.Roles
 {
     public partial class RoleCreate
-    {
-        [Inject]
-        ISnackbar _snackbar { get; set; }
-        [Inject]
-        IMediator _mediator { get; set; }
-
+    {    
         CreateRoleCommand _command = new();
 
-        List<string> Errors { get; set; } = new List<string>();
-
-        IEnumerable<RolePermission> Permissions { get; set; } = Constants.PermissionCheckList;
+        IEnumerable<RolePermission> Permissions { get; set; } 
+            = Constants.PermissionCheckList;
 
         async Task SubmitAsync()
         {
+            _command.Permissions = Permissions
+                .Where(_ => _.can_read || _.can_edit || _.can_create || _.can_delete)
+                .ToArray();
+            
             var result = await _mediator.Send(_command);
 
             if (!result.Succeeded)
-            {
-                Errors.AddRange(result.Messages);
+            {                                
+                foreach (var msg in result.Messages)
+                {
+                    _snackBar.Add(msg, MudBlazor.Severity.Error);
+                }
             }
             else
             {
+                if (result.Messages.Any())
+                    _snackBar.Add(result.Messages.First(), MudBlazor.Severity.Success);
+
                 _navigationManager.NavigateTo("/pages/roles");
             }
         }

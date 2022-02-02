@@ -5,6 +5,7 @@ namespace ApplicationCore.Models
     public class RolePermission
     {
         public string name { get; set; } = string.Empty;
+        public string display { get; set; } = string.Empty;
         public bool can_read { get; set; }
         public bool can_edit { get; set; }
         public bool can_create { get; set; }
@@ -15,9 +16,10 @@ namespace ApplicationCore.Models
 
         }
 
-        public RolePermission(string name)
+        public RolePermission(string name, string display)
         {
             this.name = name;
+            this.display = display;
         }
     }
 

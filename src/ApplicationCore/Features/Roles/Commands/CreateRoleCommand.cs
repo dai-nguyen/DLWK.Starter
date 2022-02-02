@@ -34,14 +34,12 @@ namespace ApplicationCore.Features.Roles.Commands
             ILogger<CreateRoleCommandHandler> logger,
             IUserSessionService userSession,
             IStringLocalizer<CreateRoleCommandHandler> localizer,
-            RoleManager<AppRole> roleManager,
-            IMapper mapper)
+            RoleManager<AppRole> roleManager)
         {
             _logger = logger;
             _userSession = userSession;
             _localizer = localizer;
-            _roleManager = roleManager;
-            _mapper = mapper;
+            _roleManager = roleManager;            
         }
 
         public async Task<Result<string>> Handle(
@@ -57,15 +55,13 @@ namespace ApplicationCore.Features.Roles.Commands
                     return Result<string>.Fail(string.Format(_localizer["Role name {0} is already used."], request.Name));
                 }
 
-                var entity = _mapper.Map<AppRole>(request);
-
-                if (entity == null)
+                var entity = new AppRole()
                 {
-                    return Result<string>.Fail(_localizer["Unable to map to AppRole"]);
-                }
-
-                entity.Id = Guid.NewGuid().ToString();
-
+                    Id = Guid.NewGuid().ToString(),
+                    Name = request.Name,
+                    Description = request.Description,
+                };
+                
                 var created = await _roleManager.CreateAsync(entity);
 
                 if (!created.Succeeded)
@@ -84,8 +80,6 @@ namespace ApplicationCore.Features.Roles.Commands
                                 p, _userSession.UserId);
                             continue;
                         }
-
-
 
                         var rResult = await _roleManager.AddClaimAsync(entity, 
                             new System.Security.Claims.Claim(p.name, "true"));
