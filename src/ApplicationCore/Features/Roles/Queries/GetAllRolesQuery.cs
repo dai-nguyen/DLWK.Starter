@@ -7,12 +7,21 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using System.Text.Json;
 
 namespace ApplicationCore.Features.Roles.Queries
 {
     public class GetAllRolesQuery : IRequest<Result<IEnumerable<GetAllRolesQueryResponse>>>
     {
         public string SearchString { get; set; } = string.Empty;
+
+        public GetAllRolesQuery()
+        { }
+
+        public GetAllRolesQuery(string searchString)
+        {
+            SearchString = searchString;
+        }
     }
 
     internal class GetAllRolesQueryHandler :
@@ -48,7 +57,7 @@ namespace ApplicationCore.Features.Roles.Queries
             try
             {
                 return await _cache.GetOrCreateAsync(
-                    $"GetAllRolesQuery:{request.SearchString ?? ""}",
+                    $"GetAllRolesQuery:{JsonSerializer.Serialize(request)}",
                     async entry => 
                     {
                         entry.SlidingExpiration = TimeSpan.FromSeconds(5);

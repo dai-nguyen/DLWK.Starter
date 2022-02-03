@@ -1,10 +1,9 @@
 ﻿@page "/pages/users"
 @using ApplicationCore.Features.Users.Queries
 
-
 <MudText Typo="Typo.h5" Color="Color.Primary" Class="mb-4">Users</MudText>
 
-<MudTable ServerData="@(new Func<TableState, Task<TableData<GetAllUsersQueryResponse>>>(ReloadData))"
+<MudTable ServerData="@(new Func<TableState, Task<TableData<GetPaginatedUsersQueryResponse>>>(ReloadData))"
           Dense="true" Hover="true" @ref="_table">
     <ToolBarContent>
         <MudText Typo="Typo.h6">Users</MudText>
@@ -13,10 +12,10 @@
                       AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
     </ToolBarContent>
     <HeaderContent>
-        <MudTh><MudTableSortLabel SortLabel="FirstName" T="GetAllUsersQueryResponse">First Name</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortLabel="LastName" T="GetAllUsersQueryResponse">Last Name</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortLabel="Email" T="GetAllUsersQueryResponse">Email</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortLabel="UserName" T="GetAllUsersQueryResponse">User Name</MudTableSortLabel></MudTh>        
+        <MudTh><MudTableSortLabel SortLabel="FirstName" T="GetPaginatedUsersQueryResponse">First Name</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortLabel="LastName" T="GetPaginatedUsersQueryResponse">Last Name</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortLabel="Email" T="GetPaginatedUsersQueryResponse">Email</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortLabel="UserName" T="GetPaginatedUsersQueryResponse">User Name</MudTableSortLabel></MudTh>        
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="First Name">@context.FirstName</MudTd>

@@ -1,17 +1,10 @@
 ﻿using ApplicationCore.Features.Users.Commands;
-using MediatR;
-using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
 namespace Web.Pages.Pages.Authentication
 {
     public partial class Register
-    {
-        [Inject]
-        ILogger<Login> _logger { get; set; }
-        [Inject]
-        IMediator _mediator { get; set; }
-
+    {        
         RegisterUserCommand _command = new();
                 
         bool PasswordVisibility;

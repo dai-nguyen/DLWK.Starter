@@ -1,23 +1,23 @@
-﻿using ApplicationCore.Features.Users.Queries;
+﻿using ApplicationCore.Features.Roles.Queries;
 using MudBlazor;
 
-namespace Web.Pages.Pages.Users
+namespace Web.Pages.Pages.Roles
 {
-    public partial class Users
+    public partial class Roles
     {
         int _total;
-        string _searchString = string.Empty;        
-        MudTable<GetPaginatedUsersQueryResponse> _table;
+        string _searchString = string.Empty;
+        MudTable<GetPaginatedRolesQueryResponse> _table;
 
-        async Task<TableData<GetPaginatedUsersQueryResponse>> ReloadData(TableState state)
+        async Task<TableData<GetPaginatedRolesQueryResponse>> ReloadData(TableState state)
         {
-            var query = new GetPaginatedUsersQuery(
+            var query = new GetPaginatedRolesQuery(
                 state.Page,
                 state.PageSize,
                 state.SortLabel,
                 _searchString)
             {
-                IsDescending = state.SortDirection == SortDirection.Descending
+                IsDescending = state.SortDirection == SortDirection.Descending,
             };
 
             var result = await _mediator.Send(query);
@@ -30,9 +30,9 @@ namespace Web.Pages.Pages.Users
                 }
             }
 
-            _total = result.TotalCount;
+            _total = result.Data.Count();
 
-            return new TableData<GetPaginatedUsersQueryResponse>()
+            return new TableData<GetPaginatedRolesQueryResponse>()
             {
                 TotalItems = _total,
                 Items = result.Data

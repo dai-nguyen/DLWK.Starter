@@ -11,11 +11,11 @@ using System.Linq.Dynamic.Core;
 
 namespace ApplicationCore.Features.Users.Queries
 {
-    public class GetAllUsersQuery : PaginateRequest, IRequest<PaginatedResult<GetAllUsersQueryResponse>>
+    public class GetPaginatedUsersQuery : PaginateRequest, IRequest<PaginatedResult<GetPaginatedUsersQueryResponse>>
     {
         public string SearchString { get; set; }
 
-        public GetAllUsersQuery(
+        public GetPaginatedUsersQuery(
             int pageNumber,
             int pageSize,
             string orderBy,
@@ -29,7 +29,7 @@ namespace ApplicationCore.Features.Users.Queries
     }
 
     internal class GetAllUsersQueryHandler :
-        IRequestHandler<GetAllUsersQuery, PaginatedResult<GetAllUsersQueryResponse>>
+        IRequestHandler<GetPaginatedUsersQuery, PaginatedResult<GetPaginatedUsersQueryResponse>>
     {
         readonly ILogger _logger;
         readonly IUserSessionService _userSession;
@@ -51,8 +51,8 @@ namespace ApplicationCore.Features.Users.Queries
             _mapper = mapper;
         }
 
-        public async Task<PaginatedResult<GetAllUsersQueryResponse>> Handle(
-            GetAllUsersQuery request,
+        public async Task<PaginatedResult<GetPaginatedUsersQueryResponse>> Handle(
+            GetPaginatedUsersQuery request,
             CancellationToken cancellationToken)
         {
             try
@@ -89,9 +89,9 @@ namespace ApplicationCore.Features.Users.Queries
                     .Skip(skip)
                     .ToArrayAsync();
 
-                var dtos = _mapper.Map<IEnumerable<GetAllUsersQueryResponse>>(data);
+                var dtos = _mapper.Map<IEnumerable<GetPaginatedUsersQueryResponse>>(data);
 
-                return new PaginatedResult<GetAllUsersQueryResponse>(
+                return new PaginatedResult<GetPaginatedUsersQueryResponse>(
                     true,
                     dtos,
                     Enumerable.Empty<string>(),
@@ -105,26 +105,26 @@ namespace ApplicationCore.Features.Users.Queries
                     request, _userSession.UserId);
             }
 
-            return PaginatedResult<GetAllUsersQueryResponse>.Failure(_localizer["Internal Error"]);
+            return PaginatedResult<GetPaginatedUsersQueryResponse>.Failure(_localizer["Internal Error"]);
         }
     }
 
-    public class GetAllUsersQueryResponse
+    public class GetPaginatedUsersQueryResponse
     {
-        public string Id { get; set; }
-        public virtual string ExternalId { get; set; }
+        public string Id { get; set; } = string.Empty;
+        public virtual string ExternalId { get; set; } = string.Empty;
 
-        public string UserName { get; set; }
-        public string Email { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
+        public string UserName { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string FirstName { get; set; } = string.Empty;
+        public string LastName { get; set; } = string.Empty;
     }
 
     public class GetAllUsersQueryProfile : Profile
     {
         public GetAllUsersQueryProfile()
         {
-            CreateMap<AppUser, GetAllUsersQueryResponse>();
+            CreateMap<AppUser, GetPaginatedUsersQueryResponse>();
         }
     }
 }
