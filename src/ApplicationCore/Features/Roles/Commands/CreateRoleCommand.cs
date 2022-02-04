@@ -145,7 +145,9 @@ namespace ApplicationCore.Features.Roles.Commands
                     $"IsUniqueRoleName:{roleName.ToLower()}",
                     entry =>
                     {
-                        entry.SlidingExpiration = TimeSpan.FromSeconds(5);
+                        entry.SlidingExpiration = TimeSpan.FromSeconds(3);
+                        entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(20);
+
                         return _appDbContext.Roles.Any(_ => _.Name == roleName) == false;
                     });
             }

@@ -50,8 +50,8 @@
                 <MudIconButton Icon="@Icons.Material.Outlined.Menu" Color="Color.Inherit" OnClick="@((e) => DrawerToggle())" Class="ml-3" />
                 <MudBreadcrumbs Items="_items"></MudBreadcrumbs>
                 <MudSpacer />
-                <MudButton Variant="Variant.Text" Link="https://mudblazor.com/" Style="color:#594AE2;">MudBlazor</MudButton>
-                <MudButton Variant="Variant.Text" Link="https://github.com/Garderoben/Webs" Style="color:#424242;" Class="mr-3">Source Code</MudButton>
+                @*<MudButton Variant="Variant.Text" Link="https://mudblazor.com/" Style="color:#594AE2;">MudBlazor</MudButton>
+                <MudButton Variant="Variant.Text" Link="https://github.com/Garderoben/Webs" Style="color:#424242;" Class="mr-3">Source Code</MudButton>*@
             </MudToolBar>
         </MudHidden>
         <MudContainer MaxWidth="MaxWidth.False" Class="mt-4">
@@ -78,7 +78,7 @@
 
     private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
     {
-        new BreadcrumbItem("Personal", href: "#"),
-        new BreadcrumbItem("Dashboard", href: "#"),
+        //new BreadcrumbItem("Personal", href: "#"),
+        //new BreadcrumbItem("Dashboard", href: "#"),
     };
 }

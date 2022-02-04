@@ -60,7 +60,8 @@ namespace ApplicationCore.Features.Roles.Queries
                     $"GetAllRolesQuery:{JsonSerializer.Serialize(request)}",
                     async entry => 
                     {
-                        entry.SlidingExpiration = TimeSpan.FromSeconds(5);
+                        entry.SlidingExpiration = TimeSpan.FromSeconds(3);
+                        entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(20);
 
                         var query = _dbContext.Roles
                             .AsNoTracking()

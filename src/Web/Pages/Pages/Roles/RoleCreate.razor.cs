@@ -7,7 +7,7 @@ namespace Web.Pages.Pages.Roles
     public partial class RoleCreate
     {    
         CreateRoleCommand _command = new();
-
+        
         IEnumerable<RolePermission> Permissions { get; set; } 
             = Constants.PermissionCheckList;
 

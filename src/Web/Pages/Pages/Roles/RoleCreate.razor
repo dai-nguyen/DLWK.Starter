@@ -27,37 +27,24 @@
         </MudItem>
 
         <MudItem xs="12" md="12">
-            <table>
-                <thead>
-                    <tr>
-                        <th></th>
-                        <th>Read</th>
-                        <th>Edit</th>
-                        <th>Create</th>
-                        <th>Delete</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var permission in Permissions)
-                    {
-                        <tr>
-                            <td>@permission.display</td>
-                            <td>
-                                <MudCheckBox @bind-Checked="permission.can_read"></MudCheckBox>
-                            </td>
-                            <td>
-                                <MudCheckBox @bind-Checked="permission.can_edit"></MudCheckBox>
-                            </td>
-                            <td>
-                                <MudCheckBox @bind-Checked="permission.can_create"></MudCheckBox>
-                            </td>
-                            <td>
-                                <MudCheckBox @bind-Checked="permission.can_delete"></MudCheckBox>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+            
+            <MudTable Items="@Permissions" Hover="true" Breakpoint="Breakpoint.Sm">
+                <HeaderContent>
+                    <MudTh></MudTh>
+                    <MudTh>Read</MudTh>
+                    <MudTh>Edit</MudTh>
+                    <MudTh>Create</MudTh>
+                    <MudTh>Delete</MudTh>
+                </HeaderContent>
+                <RowTemplate Context="permission">
+                    <MudTd DataLabel="">@permission.display</MudTd>
+                    <MudTd DataLabel="Read"><MudCheckBox @bind-Checked="permission.can_read"></MudCheckBox></MudTd>
+                    <MudTd DataLabel="Edit"><MudCheckBox @bind-Checked="permission.can_edit"></MudCheckBox></MudTd>                    
+                    <MudTd DataLabel="Create"><MudCheckBox @bind-Checked="permission.can_create"></MudCheckBox></MudTd>
+                    <MudTd DataLabel="Delete"><MudCheckBox @bind-Checked="permission.can_delete"></MudCheckBox></MudTd>
+                </RowTemplate>
+            </MudTable>
+            
         </MudItem>
 
         <MudItem xs="4" md="2">

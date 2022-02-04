@@ -66,7 +66,8 @@ namespace ApplicationCore.Features.Roles.Queries
                     $"GetPaginatedRolesQuery:{JsonSerializer.Serialize(request)}",
                     async entry =>
                     {
-                        entry.SlidingExpiration = TimeSpan.FromSeconds(5);
+                        entry.SlidingExpiration = TimeSpan.FromSeconds(3);
+                        entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(20);
 
                         if (request.PageNumber <= 0)
                             request.PageNumber = 1;

@@ -3,6 +3,7 @@ using ApplicationCore.Interfaces;
 using ApplicationCore.Models;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
@@ -18,18 +19,21 @@ namespace ApplicationCore.Features.Roles.Queries
         readonly ILogger _logger;
         readonly IUserSessionService _userSession;
         readonly IStringLocalizer _localizer;
-        readonly RoleManager<AppRole> _roleManager;        
+        readonly RoleManager<AppRole> _roleManager;
+        readonly IMemoryCache _cache;
 
         public GetRoleByIdQueryHandler(
             ILogger<GetRoleByIdQueryHandler> logger,
             IUserSessionService userSession,
             IStringLocalizer<GetRoleByIdQueryHandler> localizer,
-            RoleManager<AppRole> roleManager)
+            RoleManager<AppRole> roleManager,
+            IMemoryCache cache)
         {
             _logger = logger;
             _userSession = userSession;
             _localizer = localizer;
             _roleManager = roleManager;        
+            _cache = cache;
         }
 
         public async Task<Result<GetRoleByIdQueryResponse>> Handle(
@@ -38,30 +42,38 @@ namespace ApplicationCore.Features.Roles.Queries
         {
             try
             {
-                var entity = await _roleManager.FindByIdAsync(request.Id);
+                return await _cache.GetOrCreateAsync(
+                    $"GetRoleByIdQuery:{request.Id}",
+                    async entry =>
+                    {
+                        entry.SlidingExpiration = TimeSpan.FromSeconds(3);
+                        entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(20);
 
-                if (entity == null)
-                {
-                    return Result<GetRoleByIdQueryResponse>.Fail(_localizer["Role Not Found"]);
-                }
+                        var entity = await _roleManager.FindByIdAsync(request.Id);
 
-                var claims = await _roleManager.GetClaimsAsync(entity);
+                        if (entity == null)
+                        {
+                            return Result<GetRoleByIdQueryResponse>.Fail(_localizer["Role Not Found"]);
+                        }
 
-                var dto = new GetRoleByIdQueryResponse()
-                {
-                    Id = entity.Id,
-                    Name = entity.Name,
-                    Description = entity.Description,
-                    ExternalId = entity.ExternalId,
-                };
+                        var claims = await _roleManager.GetClaimsAsync(entity);
 
-                if (claims != null)
-                {
-                    dto.Claims = claims.Select(_ => new AppClaim(_.Type, _.Value))
-                        .ToArray();
-                }
+                        var dto = new GetRoleByIdQueryResponse()
+                        {
+                            Id = entity.Id,
+                            Name = entity.Name,
+                            Description = entity.Description,
+                            ExternalId = entity.ExternalId,
+                        };
 
-                return Result<GetRoleByIdQueryResponse>.Success(dto);
+                        if (claims != null)
+                        {
+                            dto.Claims = claims.Select(_ => new AppClaim(_.Type, _.Value))
+                                .ToArray();
+                        }
+
+                        return Result<GetRoleByIdQueryResponse>.Success(dto);
+                    });
             }
             catch (Exception ex)
             {
