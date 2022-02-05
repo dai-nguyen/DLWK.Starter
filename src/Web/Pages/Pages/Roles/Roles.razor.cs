@@ -44,5 +44,15 @@ namespace Web.Pages.Pages.Roles
             _searchString = text;
             await _table.ReloadServerData();
         }
+
+        void NagivateToCreatePage()
+        {
+            _navigationManager.NavigateTo("/pages/roles/create");
+        }
+
+        void NavigateToEditPage(string id)
+        {
+            _navigationManager.NavigateTo($"/pages/roles/create/{id}");
+        }
     }
 }

@@ -1,7 +1,7 @@
 ﻿@page "/pages/roles/create"
 @using ApplicationCore.Features.Roles.Commands
 
-<MudText Typo="Typo.h5" Color="Color.Primary" Class="mb-4">Create Role</MudText>
+<MudPaper Class="pa-4">
 
 <EditForm Model="@_command" OnValidSubmit="SubmitAsync">
     
@@ -13,7 +13,7 @@
         <MudItem xs="12" md="6">
             <MudTextField T="string" 
                           @bind-Value="_command.Name"
-                          Label="Name" 
+                          Label="Role Name" 
                           For="@(() => _command.Name)"
                           Variant="Variant.Outlined" />
         </MudItem>
@@ -52,7 +52,7 @@
                        Color="Color.Primary"                
                        ButtonType="ButtonType.Submit"
                        Size="Size.Large" 
-                       FullWidth="true">Create</MudButton>
+                       FullWidth="true">Create Role</MudButton>
         </MudItem>
 
     </MudGrid>
@@ -63,3 +63,4 @@
 
 </EditForm>
 
+</MudPaper>
