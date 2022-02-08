@@ -71,7 +71,7 @@ namespace ApplicationCore.Data
 
             builder.ApplyConfiguration(new UserConfiguration());
             builder.ApplyConfiguration(new RoleConfiguration());
-            builder.ApplyConfiguration(new RoleClaimConfiguration());
+            //builder.ApplyConfiguration(new RoleClaimConfiguration());
             builder.ApplyConfiguration(new LogMsgConfiguration());
             builder.ApplyConfiguration(new DocumentConfiguration());
             builder.ApplyConfiguration(new DocumentTypeConfiguration());

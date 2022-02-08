@@ -86,35 +86,71 @@ namespace ApplicationCore.Helpers
             return Encoding.UTF8.GetString(plainBytes);
         }
 
-        public static IEnumerable<Claim> ToClaim(this RolePermission permission)
+        public static IEnumerable<Claim> ToClaims(
+            this IEnumerable<RolePermission> permissions)
         {
             var claims = new List<Claim>();
+
+            foreach (var p in permissions)
+            {
+                var c = p.ToClaim();
+
+                if (c != null)
+                    claims.Add(c);
+            }
+
+            return claims;
+        }
+
+        public static Claim? ToClaim(
+            this RolePermission permission)
+        {            
+            var values = new List<string>();
+
+            if (permission.can_read)
+                values.Add(Constants.Permissions.read);
+            if (permission.can_edit)
+                values.Add(Constants.Permissions.edit);
+            if (permission.can_create)
+                values.Add(Constants.Permissions.create);
+            if (permission.can_delete)
+                values.Add(Constants.Permissions.delete);
 
             switch (permission.name)
             {
                 case Constants.ClaimNames.role:
-                    if (permission.can_read)
-                        claims.Add(new Claim(Constants.Claims.can_read_role, "true"));
-                    if (permission.can_edit)
-                        claims.Add(new Claim(Constants.Claims.can_edit_role, "true"));
-                    if (permission.can_create)
-                        claims.Add(new Claim(Constants.Claims.can_create_role, "true"));
-                    if (permission.can_delete)
-                        claims.Add(new Claim(Constants.Claims.can_delete_role, "true"));
-                    break;
+                    return new Claim(Constants.ClaimNames.user, string.Join(" ", values));                    
                 case Constants.ClaimNames.user:
-                    if (permission.can_read)
-                        claims.Add(new Claim(Constants.Claims.can_read_user, "true"));
-                    if (permission.can_edit)
-                        claims.Add(new Claim(Constants.Claims.can_edit_user, "true"));
-                    if (permission.can_create)
-                        claims.Add(new Claim(Constants.Claims.can_create_user, "true"));
-                    if (permission.can_delete)
-                        claims.Add(new Claim(Constants.Claims.can_delete_user, "true"));
-                    break;
+                    return new Claim(Constants.ClaimNames.role, string.Join(" ", values));                    
             }
 
-            return claims;
+            return null;
+        }
+
+        public static IEnumerable<RolePermission> ToRolePermissions(
+            this IEnumerable<Claim> claims)
+        {
+            var permissions = Constants.PermissionCheckList;
+
+            foreach (var claim in claims)
+            {
+                var found = permissions.FirstOrDefault(_ => _.name == claim.Type);
+
+                if (found == null) continue;
+
+                var values = claim.Value.Split(" ");
+
+                if (values.Contains(Constants.Permissions.read))
+                    found.can_read = true;
+                if (values.Contains(Constants.Permissions.edit))
+                    found.can_edit = true;
+                if (values.Contains(Constants.Permissions.create))
+                    found.can_create = true;
+                if (values.Contains(Constants.Permissions.delete))
+                    found.can_delete = true;
+            }
+
+            return permissions;
         }
     }
 }

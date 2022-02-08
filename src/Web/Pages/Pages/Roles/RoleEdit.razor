@@ -1,4 +1,4 @@
-﻿@page "/pages/roles/create"
+﻿@page "/pages/roles/edit/{id}"
 @using ApplicationCore.Features.Roles.Commands
 
 <MudPaper Class="pa-4">
@@ -14,7 +14,8 @@
                               @bind-Value="_command.Name"
                               Label="Role Name" 
                               For="@(() => _command.Name)"
-                              Variant="Variant.Outlined" />
+                              Variant="Variant.Outlined"
+                              ReadOnly="true"/>
             </MudItem>
             
             <MudItem xs="12" md="6">
@@ -27,7 +28,7 @@
 
             <MudItem xs="12" md="6">
             
-                <MudTable Items="@Permissions" Hover="true" Breakpoint="Breakpoint.Sm">
+                <MudTable Items="@_command.Permissions" Hover="true" Breakpoint="Breakpoint.Sm">
                     <HeaderContent>
                         <MudTh></MudTh>
                         <MudTh>Read</MudTh>
@@ -59,7 +60,14 @@
                            Color="Color.Primary"                
                            ButtonType="ButtonType.Submit"
                            Size="Size.Large" 
-                           FullWidth="true">Create Role</MudButton>
+                           FullWidth="true">Update Role</MudButton>
+            </MudItem>
+            <MudItem xs="4" md="2">
+                <MudButton Variant="Variant.Filled" 
+                           Color="Color.Default"                
+                           ButtonType="ButtonType.Submit"
+                           Size="Size.Large" 
+                           FullWidth="true">Back</MudButton>
             </MudItem>
 
         </MudGrid>

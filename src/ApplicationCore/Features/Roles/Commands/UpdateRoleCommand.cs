@@ -1,4 +1,5 @@
 ﻿using ApplicationCore.Data;
+using ApplicationCore.Helpers;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Models;
 using FluentValidation;
@@ -12,12 +13,13 @@ namespace ApplicationCore.Features.Roles.Commands
     public class UpdateRoleCommand : IRequest<Result<string>>
     {
         public string Id { get; set; } = "";
+        public string Name { get; set; } = "";
         public string Description { get; set; } = "";
 
         public virtual string ExternalId { get; set; } = "";
 
-        public IEnumerable<AppClaim> Claims { get; set; } 
-            = Enumerable.Empty<AppClaim>();
+        public IEnumerable<RolePermission> Permissions { get; set; }
+            = Enumerable.Empty<RolePermission>();
     }
 
     internal class UpdateRoleCommandHandler : IRequestHandler<UpdateRoleCommand, Result<string>>
@@ -63,9 +65,12 @@ namespace ApplicationCore.Features.Roles.Commands
                     return Result<string>.Fail(errors);
                 }
 
-                await UpsertClaimsAsync(entity, request);
+                var res = await UpsertClaimsAsync(entity, request);
 
-                return Result<string>.Success(entity.Id, _localizer["Role Updated"]);
+                if (res.Succeeded)
+                    return Result<string>.Success(entity.Id, _localizer["Role Updated"]);
+
+                return Result<string>.Fail(res.Messages);
             }
             catch (Exception ex)
             {
@@ -75,64 +80,76 @@ namespace ApplicationCore.Features.Roles.Commands
             return Result<string>.Fail(_localizer["Internal Error"]);
         }
 
-        private async Task UpsertClaimsAsync(
+        private async Task<Result<bool>> UpsertClaimsAsync(
             AppRole entity,
             UpdateRoleCommand command)
         {
             try
             {
-                if (command.Claims == null)
-                    command.Claims = Enumerable.Empty<AppClaim>();
+                if (command.Permissions == null)
+                    command.Permissions = Enumerable.Empty<RolePermission>();
 
-                command.Claims = command.Claims
-                    .Where(_ => !string.IsNullOrWhiteSpace(_.Type) && !string.IsNullOrWhiteSpace(_.Value))
-                    .ToArray();
+                var oldClaims = await _roleManager.GetClaimsAsync(entity);
+                var newClaims = command.Permissions.ToClaims();
 
-                var claims = await _roleManager.GetClaimsAsync(entity);
+                var errors = new List<string>();
 
                 // add or update
-                foreach (var claim in command.Claims)
+                foreach (var nClaim in newClaims)
                 {
-                    var found = claims.FirstOrDefault(_ => _.Type == claim.Type);
+                    var oFound = oldClaims.FirstOrDefault(_ => _.Type == nClaim.Type);
 
                     // update
-                    if ((found != null && found.Value != claim.Value) || found == null)
+                    if ((oFound != null && oFound.Value != nClaim.Value) || oFound == null)
                     {
-                        if (found != null && found.Value != claim.Value)
-                            await _roleManager.RemoveClaimAsync(entity, found);
+                        if (oFound != null && oFound.Value != nClaim.Value)
+                            await _roleManager.RemoveClaimAsync(entity, oFound);
 
-                        await _roleManager.AddClaimAsync(entity, new System.Security.Claims.Claim(claim.Type, claim.Value));
+                        var res = await _roleManager.AddClaimAsync(entity, nClaim);
+
+                        if (!res.Succeeded)
+                        {
+                            errors.AddRange(res.Errors.Select(_ => _.Description));
+                        }
                     }
                 }
 
                 // remove
-                foreach (var claim in claims)
+                foreach (var claim in oldClaims)
                 {
-                    var found = command.Claims.Any(_ => _.Type == claim.Type);
+                    var found = newClaims.Any(_ => _.Type == claim.Type);
 
                     if (found) continue;
 
-                    await _roleManager.RemoveClaimAsync(entity, claim);
+                    var res = await _roleManager.RemoveClaimAsync(entity, claim);
+
+                    if (!res.Succeeded)
+                    {
+                        errors.AddRange(res.Errors.Select(_ => _.Description));
+                    }
                 }
+
+                if (errors.Any())
+                    return Result<bool>.Fail(errors);
+
+                return Result<bool>.Success(true);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error upsert role claims {@0} {UserId}",
                     command, _userSession.UserId);
             }
+            return Result<bool>.Fail(_localizer["Internal Error"]);
         }
     }
 
     public class UpdateRoleCommandValidator : AbstractValidator<UpdateRoleCommand>
-    {
-        readonly ILogger _logger;
+    {        
         readonly IStringLocalizer _localizer;        
         
-        public UpdateRoleCommandValidator(
-            ILogger<UpdateRoleCommandValidator> logger,
+        public UpdateRoleCommandValidator(            
             IStringLocalizer<UpdateRoleCommandValidator> localizer)
-        {
-            _logger = logger;
+        {            
             _localizer = localizer;            
             
             RuleFor(_ => _.Description)

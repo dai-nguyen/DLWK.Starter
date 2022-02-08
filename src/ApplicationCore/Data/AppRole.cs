@@ -16,6 +16,6 @@ namespace ApplicationCore.Data
 
         public NpgsqlTsVector SearchVector { get; set; }
 
-        public virtual IEnumerable<AppRoleClaim> RoleClaims { get; set; } = Enumerable.Empty<AppRoleClaim>();
+        //public virtual IEnumerable<AppRoleClaim> RoleClaims { get; set; } = Enumerable.Empty<AppRoleClaim>();
     }
 }

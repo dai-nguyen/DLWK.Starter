@@ -52,7 +52,7 @@ namespace Web.Pages.Pages.Roles
 
         void NavigateToEditPage(string id)
         {
-            _navigationManager.NavigateTo($"/pages/roles/create/{id}");
+            _navigationManager.NavigateTo($"/pages/roles/edit/{id}");
         }
     }
 }

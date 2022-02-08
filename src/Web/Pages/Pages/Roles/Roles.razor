@@ -18,7 +18,7 @@
         <MudTd DataLabel="Name">@context.Name</MudTd>
         <MudTd DataLabel="Description">@context.Description</MudTd>     
         <MudTd>
-            <MudButton Variant="Variant.Text" Size="Size.Small">Edit</MudButton>
+            <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="(() => NavigateToEditPage(context.Id))">Edit</MudButton>
         </MudTd>
     </RowTemplate>
     <NoRecordsContent>

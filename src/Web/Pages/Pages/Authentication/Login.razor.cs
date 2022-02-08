@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using MudBlazor;
-using System.Security.Claims;
 using Web.Middleware;
 
 namespace Web.Pages.Pages.Authentication

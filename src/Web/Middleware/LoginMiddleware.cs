@@ -63,8 +63,8 @@ namespace Web.Middleware
                 }
             }
             else
-            {
-                await _next.Invoke(context);
+            {                
+                await _next.Invoke(context);                
             }
         }
     }

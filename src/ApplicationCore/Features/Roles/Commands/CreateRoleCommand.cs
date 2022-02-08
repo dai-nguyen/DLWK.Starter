@@ -1,7 +1,7 @@
 ﻿using ApplicationCore.Data;
+using ApplicationCore.Helpers;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Models;
-using AutoMapper;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
@@ -27,8 +27,7 @@ namespace ApplicationCore.Features.Roles.Commands
         readonly ILogger _logger;
         readonly IUserSessionService _userSession;
         readonly IStringLocalizer _localizer;
-        readonly RoleManager<AppRole> _roleManager;
-        readonly IMapper _mapper;
+        readonly RoleManager<AppRole> _roleManager;        
 
         public CreateRoleCommandHandler(
             ILogger<CreateRoleCommandHandler> logger,
@@ -71,22 +70,18 @@ namespace ApplicationCore.Features.Roles.Commands
                 }
 
                 if (request.Permissions != null && request.Permissions.Any())
-                {                    
-                    foreach (var p in request.Permissions)
-                    {
-                        if (string.IsNullOrEmpty(p.name))
-                        {
-                            _logger.LogError("Permission Name is required. {@0} {UserId}",
-                                p, _userSession.UserId);
-                            continue;
-                        }
+                {                 
+                    var claims = request.Permissions.ToClaims();
 
-                        var rResult = await _roleManager.AddClaimAsync(entity, 
-                            new System.Security.Claims.Claim(p.name, "true"));
+                    foreach (var c in claims)
+                    {
+                        var rResult = await _roleManager.AddClaimAsync(
+                            entity,
+                            c);
 
                         if (!rResult.Succeeded)
                         {
-                            _logger.LogError("Error adding claim {0} {UserId}", 
+                            _logger.LogError("Error adding claim {0} {UserId}",
                                 rResult, _userSession.UserId);
                         }
                     }

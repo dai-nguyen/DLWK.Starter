@@ -14,7 +14,7 @@ namespace ApplicationCore.Data
         IdentityUserClaim<string>, 
         IdentityUserRole<string>,
         IdentityUserLogin<string>,
-        AppRoleClaim,
+        IdentityRoleClaim<string>, //AppRoleClaim,
         IdentityUserToken<string>>
     {
         

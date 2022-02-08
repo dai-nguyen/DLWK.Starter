@@ -1,4 +1,5 @@
 ﻿using ApplicationCore.Data;
+using ApplicationCore.Helpers;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Models;
 using MediatR;
@@ -68,8 +69,7 @@ namespace ApplicationCore.Features.Roles.Queries
 
                         if (claims != null)
                         {
-                            dto.Claims = claims.Select(_ => new AppClaim(_.Type, _.Value))
-                                .ToArray();
+                            dto.Permissions = claims.ToRolePermissions();
                         }
 
                         return Result<GetRoleByIdQueryResponse>.Success(dto);
@@ -92,7 +92,7 @@ namespace ApplicationCore.Features.Roles.Queries
 
         public virtual string ExternalId { get; set; } = "";
 
-        public IEnumerable<AppClaim> Claims { get; set; }
-            = Enumerable.Empty<AppClaim>();
+        public IEnumerable<RolePermission> Permissions { get; set; }
+            = Enumerable.Empty<RolePermission>();
     }
 }
