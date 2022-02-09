@@ -60,13 +60,13 @@ namespace ApplicationCore.Data
             {
                 new AppRole()
                 {
-                    Id = "Admin",
+                    Id = Guid.NewGuid().ToString(),
                     Name = "Admin",
                     NormalizedName = "ADMIN",                    
                 },
                 new AppRole()
                 {
-                    Id = "User",
+                    Id = Guid.NewGuid().ToString(),
                     Name = "User",
                     NormalizedName = "USER"
                 }

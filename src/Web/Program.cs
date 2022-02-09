@@ -76,8 +76,10 @@ builder.WebHost.ConfigureServices((context, services) =>
                     
                     listOpt.UseHttps(cert);
                 }
-                catch (Exception)
-                { }
+                catch (Exception e)
+                {
+                    Log.Error("Error at UseHttps using X509Certificate2");
+                }
             }
             else if (!string.IsNullOrEmpty(HostConfig.CertPath)
                 && !string.IsNullOrEmpty(HostConfig.CertPassword))
@@ -86,8 +88,10 @@ builder.WebHost.ConfigureServices((context, services) =>
                 {
                     listOpt.UseHttps(HostConfig.CertPath, HostConfig.CertPassword);
                 }
-                catch (Exception)
-                { }
+                catch (Exception e)
+                {
+                    Log.Error("Error at UseHttps using filename and password", e);
+                }
             }
         });
     }

@@ -1,6 +1,8 @@
 ﻿using ApplicationCore.Features.Roles.Commands;
 using ApplicationCore.Features.Roles.Queries;
 using Microsoft.AspNetCore.Components;
+using MudBlazor;
+using Web.Shared;
 
 namespace Web.Pages.Pages.Roles
 {
@@ -9,8 +11,10 @@ namespace Web.Pages.Pages.Roles
         [Parameter] 
         public string id { get; set; }
 
-        UpdateRoleCommand _command = new();
 
+
+        UpdateRoleCommand _command = new();
+        
         protected override async Task OnInitializedAsync()
         {
             if (!string.IsNullOrEmpty(id))
@@ -56,5 +60,53 @@ namespace Web.Pages.Pages.Roles
                 _navigationManager.NavigateTo("/pages/roles");
             }
         }
+
+        void GoBack()
+        {
+            _navigationManager.NavigateTo("/pages/roles");
+        }
+
+        async Task Delete()
+        {
+            var p = new DialogParameters();
+            p.Add("ContentText", $"Do you really want to delete role '{_command.Name}'?");
+            p.Add("ButtonText", "Delete");
+            p.Add("Color", Color.Error);
+
+            var options = new DialogOptions()
+            {
+                CloseButton = true,
+                MaxWidth = MaxWidth.ExtraSmall
+            };
+
+            var dialog = _dialogService.Show<Dialog>("Delete", p, options);
+            var result = await dialog.Result;
+
+            if (!result.Cancelled)
+            {
+                var request = new DeleteRoleCommand()
+                {
+                    Id = _command.Id
+                };
+
+                var res = await _mediator.Send(request);
+
+                if (!res.Succeeded)
+                {
+                    foreach (var msg in res.Messages)
+                    {
+                        _snackBar.Add(msg, MudBlazor.Severity.Error);
+                    }
+                }
+                else
+                {
+                    if (res.Messages.Any())
+                        _snackBar.Add(res.Messages.First(), MudBlazor.Severity.Success);
+
+                    _navigationManager.NavigateTo("/pages/roles");
+                }
+            }
+        }
+
     }
 }
