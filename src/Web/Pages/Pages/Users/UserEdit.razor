@@ -1,4 +1,4 @@
-﻿@page "/pages/users/create"
+﻿@page "/pages/users/edit/{id}"
 @using ApplicationCore.Features.Users.Commands
 
 <MudPaper>
@@ -13,7 +13,8 @@
                           @bind-Value="_command.UserName"
                           Label="Username" 
                           For="@(() => _command.UserName)"
-                          Variant="Variant.Outlined" />
+                          Variant="Variant.Outlined" 
+                          ReadOnly="true"/>
         </MudItem>
             
         <MudItem xs="12" md="6">

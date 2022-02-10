@@ -12,9 +12,7 @@ namespace Web.Pages.Pages.Users
         bool PasswordVisibility;
         InputType PasswordInput = InputType.Password;
         string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
-
-        List<string> Errors { get; set; } = new List<string>();
-
+        
         List<GetAllRolesQueryResponse> Roles { get; set;} = new List<GetAllRolesQueryResponse>();
 
         protected override async Task OnInitializedAsync()
@@ -49,12 +47,25 @@ namespace Web.Pages.Pages.Users
 
             if (!result.Succeeded)
             {
-                Errors.AddRange(result.Messages);
+                foreach (var msg in result.Messages)
+                {
+                    _snackBar.Add(msg, MudBlazor.Severity.Error);
+                }
             }
             else
             {
+                foreach (var msg in result.Messages)
+                {
+                    _snackBar.Add(msg, MudBlazor.Severity.Success);
+                }
+
                 _navigationManager.NavigateTo("/pages/users");
             }
+        }
+
+        void GoBack()
+        {
+            _navigationManager.NavigateTo("/pages/users");
         }
     }
 }

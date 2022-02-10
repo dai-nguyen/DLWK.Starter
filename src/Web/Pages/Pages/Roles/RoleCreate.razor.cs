@@ -28,11 +28,18 @@ namespace Web.Pages.Pages.Roles
             }
             else
             {
-                if (result.Messages.Any())
-                    _snackBar.Add(result.Messages.First(), MudBlazor.Severity.Success);
-
+                foreach (var msg in result.Messages)
+                {
+                    _snackBar.Add(msg, MudBlazor.Severity.Success);
+                }
+                
                 _navigationManager.NavigateTo("/pages/roles");
             }
+        }
+
+        void GoBack()
+        {
+            _navigationManager.NavigateTo("/pages/roles");
         }
     }
 }

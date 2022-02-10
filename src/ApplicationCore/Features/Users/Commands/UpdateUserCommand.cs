@@ -12,7 +12,8 @@ namespace ApplicationCore.Features.Users.Commands
 {
     public partial class UpdateUserCommand : IRequest<Result<string>>
     {
-        public string Id { get; set; } = string.Empty;        
+        public string Id { get; set; } = string.Empty;
+        public string UserName { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
@@ -23,7 +24,7 @@ namespace ApplicationCore.Features.Users.Commands
 
         public IEnumerable<string> Roles { get; set; } = Enumerable.Empty<string>();
 
-        public IEnumerable<AppClaim> Claims { get; set; } = Enumerable.Empty<AppClaim>();
+        //public IEnumerable<AppClaim> Claims { get; set; } = Enumerable.Empty<AppClaim>();
 
         //public IEnumerable<CustomAttribute> CustomAttributes { get; set; } = Enumerable.Empty<CustomAttribute>();
     }
@@ -35,8 +36,7 @@ namespace ApplicationCore.Features.Users.Commands
         readonly IStringLocalizer _localizer;
         readonly AppDbContext _dbContext;
         readonly UserManager<AppUser> _userManager;
-        readonly IFileService _fileService;
-        readonly IMapper _mapper;
+        readonly IFileService _fileService;        
 
         public UpdateUserCommandHandler(
             ILogger<UpdateUserCommandHandler> logger,
@@ -44,16 +44,14 @@ namespace ApplicationCore.Features.Users.Commands
             IStringLocalizer<UpdateUserCommandHandler> localizer,
             AppDbContext dbContext,
             UserManager<AppUser> userManager,
-            IFileService fileService,
-            IMapper mapper)
+            IFileService fileService)
         {
             _logger = logger;
             _userSession = userSession;
             _localizer = localizer;
             _dbContext = dbContext;
             _userManager = userManager;
-            _fileService = fileService;
-            _mapper = mapper;
+            _fileService = fileService;            
         }
 
         public async Task<Result<string>> Handle(
@@ -69,15 +67,14 @@ namespace ApplicationCore.Features.Users.Commands
                     return Result<string>.Fail(_localizer["User Not Found"]);
                 }
 
-                entity = _mapper.Map(command, entity);
+                
                 
                 var currentEmail = await _userManager.GetEmailAsync(entity);
-                bool newEmail = command.Email != currentEmail;                
+                bool newEmail = command.Email != currentEmail;
 
-                if (entity == null)
-                {
-                    return Result<string>.Fail(_localizer["Unable to map to AppUser"]);
-                }
+                entity.FirstName = command.FirstName;
+                entity.LastName = command.LastName;
+                entity.ExternalId = command.ExternalId;
 
                 var updated = await _userManager.UpdateAsync(entity);
 
@@ -88,13 +85,13 @@ namespace ApplicationCore.Features.Users.Commands
                 }
 
                 await UpsertRolesAsync(entity, command);
-                await UpsertClaimsAsync(entity, command);
+                //await UpsertClaimsAsync(entity, command);
 
                 if (!string.IsNullOrEmpty(command.Password))
                 {
                     var token = await _userManager.GeneratePasswordResetTokenAsync(entity);
                     var res = await _userManager.ResetPasswordAsync(entity, token, command.Password);
-
+                    
                     if (!res.Succeeded)
                     {
                         var errors = res.Errors.Select(_ => _.Description).ToArray();
@@ -171,52 +168,52 @@ namespace ApplicationCore.Features.Users.Commands
             }
         }
 
-        private async Task UpsertClaimsAsync(
-            AppUser entity,
-            UpdateUserCommand command)
-        {
-            try
-            {
-                if (command.Claims == null)
-                    command.Claims = Enumerable.Empty<AppClaim>();
+        //private async Task UpsertClaimsAsync(
+        //    AppUser entity,
+        //    UpdateUserCommand command)
+        //{
+        //    try
+        //    {
+        //        if (command.Claims == null)
+        //            command.Claims = Enumerable.Empty<AppClaim>();
 
-                command.Claims = command.Claims
-                    .Where(_ => !string.IsNullOrWhiteSpace(_.Type) && !string.IsNullOrWhiteSpace(_.Value))
-                    .ToArray();
+        //        command.Claims = command.Claims
+        //            .Where(_ => !string.IsNullOrWhiteSpace(_.Type) && !string.IsNullOrWhiteSpace(_.Value))
+        //            .ToArray();
 
-                var claims = await _userManager.GetClaimsAsync(entity);
+        //        var claims = await _userManager.GetClaimsAsync(entity);
 
-                // add or update
-                foreach (var claim in command.Claims)
-                {
-                    var found = claims.FirstOrDefault(_ => _.Type == claim.Type);
+        //        // add or update
+        //        foreach (var claim in command.Claims)
+        //        {
+        //            var found = claims.FirstOrDefault(_ => _.Type == claim.Type);
 
-                    // update
-                    if ((found != null && found.Value != claim.Value) || found == null)
-                    {
-                        if (found != null && found.Value != claim.Value)
-                            await _userManager.RemoveClaimAsync(entity, found);
+        //            // update
+        //            if ((found != null && found.Value != claim.Value) || found == null)
+        //            {
+        //                if (found != null && found.Value != claim.Value)
+        //                    await _userManager.RemoveClaimAsync(entity, found);
 
-                        await _userManager.AddClaimAsync(entity, new System.Security.Claims.Claim(claim.Type, claim.Value));
-                    }
-                }
+        //                await _userManager.AddClaimAsync(entity, new System.Security.Claims.Claim(claim.Type, claim.Value));
+        //            }
+        //        }
 
-                // remove
-                foreach (var claim in claims)
-                {
-                    var found = command.Claims.Any(_ => _.Type == claim.Type);
+        //        // remove
+        //        foreach (var claim in claims)
+        //        {
+        //            var found = command.Claims.Any(_ => _.Type == claim.Type);
 
-                    if (found) continue;
+        //            if (found) continue;
 
-                    await _userManager.RemoveClaimAsync(entity, claim);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error upsert user claims {@0} {UserId}",
-                    command, _userSession.UserId);
-            }
-        }
+        //            await _userManager.RemoveClaimAsync(entity, claim);
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError(ex, "Error upsert user claims {@0} {UserId}",
+        //            command, _userSession.UserId);
+        //    }
+        //}
     }
 
     public class UpdateUserCommandValidator 

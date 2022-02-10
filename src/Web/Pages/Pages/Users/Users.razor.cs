@@ -44,5 +44,15 @@ namespace Web.Pages.Pages.Users
             _searchString = text;
             await _table.ReloadServerData();
         }
+
+        void NagivateToCreatePage()
+        {
+            _navigationManager.NavigateTo("/pages/users/create");
+        }
+
+        void NavigateToEditPage(string id)
+        {
+            _navigationManager.NavigateTo($"/pages/users/edit/{id}");
+        }
     }
 }

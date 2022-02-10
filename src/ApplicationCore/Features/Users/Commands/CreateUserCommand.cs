@@ -1,7 +1,6 @@
 ﻿using ApplicationCore.Data;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Models;
-using AutoMapper;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
@@ -23,7 +22,7 @@ namespace ApplicationCore.Features.Users.Commands
         public virtual string ExternalId { get; set; } = string.Empty;
 
         public IEnumerable<string> Roles { get; set; } = Enumerable.Empty<string>();
-        public IEnumerable<AppClaim> Claims { get; set; } = Enumerable.Empty<AppClaim>();
+        //public IEnumerable<AppClaim> Claims { get; set; } = Enumerable.Empty<AppClaim>();
         //public IEnumerable<CustomAttribute> CustomAttributes { get; set; } = Enumerable.Empty<CustomAttribute>();
     }
 
@@ -32,21 +31,18 @@ namespace ApplicationCore.Features.Users.Commands
         readonly ILogger _logger;
         readonly IUserSessionService _userSession;
         readonly IStringLocalizer _localizer;        
-        readonly UserManager<AppUser> _userManager;        
-        readonly IMapper _mapper;
+        readonly UserManager<AppUser> _userManager;                
 
         public CreateUserCommandHandler(
             ILogger<CreateUserCommandHandler> logger,
             IUserSessionService userSession,
             IStringLocalizer<CreateUserCommandHandler> localizer,            
-            UserManager<AppUser> userManager,            
-            IMapper mapper)
+            UserManager<AppUser> userManager)
         {
             _logger = logger;
             _userSession = userSession;
             _localizer = localizer;            
-            _userManager = userManager;            
-            _mapper = mapper;
+            _userManager = userManager;                        
         }
 
         public async Task<Result<string>> Handle(
@@ -69,14 +65,13 @@ namespace ApplicationCore.Features.Users.Commands
                     return Result<string>.Fail(string.Format(_localizer["Email {0} is already used."], command.Email));
                 }
 
-                var entity = _mapper.Map<AppUser>(command);
-
-                if (entity == null)
-                {
-                    return Result<string>.Fail(_localizer["Unable to map to AppUser"]);
-                }
-
+                var entity = new AppUser();                
                 entity.Id = Guid.NewGuid().ToString();
+                entity.UserName = command.UserName;
+                entity.Email = command.Email;
+                entity.FirstName = command.FirstName;
+                entity.LastName = command.LastName;
+                entity.ExternalId = command.ExternalId;
 
                 var created = await _userManager.CreateAsync(entity, command.Password);
 
@@ -87,7 +82,7 @@ namespace ApplicationCore.Features.Users.Commands
                 }
 
                 await AddRolesAsync(entity, command);
-                await AddClaimsAsync(entity, command);
+                //await AddClaimsAsync(entity, command);
 
                 return Result<string>.Success(entity.Id, _localizer["User Saved"]);
             }
@@ -121,27 +116,27 @@ namespace ApplicationCore.Features.Users.Commands
             }
         }
 
-        private async Task AddClaimsAsync(
-            AppUser entity,
-            CreateUserCommand command)
-        {
-            if (entity == null || command == null || command.Claims == null)
-                return;
+        //private async Task AddClaimsAsync(
+        //    AppUser entity,
+        //    CreateUserCommand command)
+        //{
+        //    if (entity == null || command == null || command.Claims == null)
+        //        return;
 
-            try
-            {
-                foreach (var c in command.Claims)
-                {
-                    await _userManager.AddClaimAsync(entity,
-                        new System.Security.Claims.Claim(c.Type, c.Value));
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error adding user claims {@0} {UserId}",
-                    command, _userSession.UserId);
-            }
-        }
+        //    try
+        //    {
+        //        foreach (var c in command.Claims)
+        //        {
+        //            await _userManager.AddClaimAsync(entity,
+        //                new System.Security.Claims.Claim(c.Type, c.Value));
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError(ex, "Error adding user claims {@0} {UserId}",
+        //            command, _userSession.UserId);
+        //    }
+        //}
     }
 
     public class CreateUserCommandValidator 

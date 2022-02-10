@@ -11,8 +11,6 @@ namespace Web.Pages.Pages.Roles
         [Parameter] 
         public string id { get; set; }
 
-
-
         UpdateRoleCommand _command = new();
         
         protected override async Task OnInitializedAsync()
