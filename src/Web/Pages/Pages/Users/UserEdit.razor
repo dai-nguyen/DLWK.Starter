@@ -1,7 +1,7 @@
 ﻿@page "/pages/users/edit/{id}"
 @using ApplicationCore.Features.Users.Commands
 
-<MudPaper>
+<MudPaper Class="pa-4">
     <EditForm Model="@_command" OnValidSubmit="SubmitAsync">
     <MudGrid>
         <MudItem xs="12" md="12">
@@ -86,16 +86,22 @@
                        Color="Color.Primary"                
                        ButtonType="ButtonType.Submit"
                        Size="Size.Large" 
-                       FullWidth="true">Add User</MudButton>
+                       FullWidth="true">Update User</MudButton>
         </MudItem>
         <MudItem xs="4" md="2">
-                <MudButton Variant="Variant.Filled" 
-                           Color="Color.Default"                                           
-                           Size="Size.Large" 
-                           OnClick="GoBack"
-                           FullWidth="true">Back</MudButton>
-            </MudItem>
-
+            <MudButton Variant="Variant.Filled" 
+                        Color="Color.Default"                                           
+                        Size="Size.Large" 
+                        OnClick="GoBack"
+                        FullWidth="true">Back</MudButton>
+        </MudItem>
+        <MudItem xs="4" md="2">
+            <MudButton Variant="Variant.Filled" 
+                        Color="Color.Error"                                           
+                        Size="Size.Large" 
+                        OnClick="Delete"
+                        FullWidth="true">Delete</MudButton>
+        </MudItem>
     </MudGrid>        
 </EditForm>
 

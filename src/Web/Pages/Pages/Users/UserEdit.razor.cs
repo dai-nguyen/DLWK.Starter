@@ -47,8 +47,6 @@ namespace Web.Pages.Pages.Users
             {
                 Roles.AddRange(rolesRes.Data);
             }
-
-
         }
 
         void TogglePasswordVisibility()

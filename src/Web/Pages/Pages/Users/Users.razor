@@ -1,8 +1,6 @@
 ﻿@page "/pages/users"
 @using ApplicationCore.Features.Users.Queries
 
-<MudText Typo="Typo.h5" Color="Color.Primary" Class="mb-4">Users</MudText>
-
 <MudTable ServerData="@(new Func<TableState, Task<TableData<GetPaginatedUsersQueryResponse>>>(ReloadData))"
           Dense="true" Hover="true" @ref="_table">
     <ToolBarContent>

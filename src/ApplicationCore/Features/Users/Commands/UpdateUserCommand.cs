@@ -247,9 +247,9 @@ namespace ApplicationCore.Features.Users.Commands
                 .NotEmpty().WithMessage(_localizer["You must enter an email address"])
                 .EmailAddress().WithMessage(_localizer["You must provide a valid email address"]);
 
-            RuleFor(_ => _.Password)
-                .NotEmpty().WithMessage(_localizer["You must enter your password"])
-                .MinimumLength(6).WithMessage(_localizer["Password cannot be less than 6 charaters"]);
+            //RuleFor(_ => _.Password)
+            //    .NotEmpty().WithMessage(_localizer["You must enter your password"])
+            //    .MinimumLength(6).WithMessage(_localizer["Password cannot be less than 6 charaters"]);
 
             RuleFor(_ => _.ConfirmPassword)
                 .Equal(_ => _.Password).WithMessage(_localizer["Your confirm password must matched your password"]);
