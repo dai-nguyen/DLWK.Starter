@@ -6,8 +6,8 @@ namespace ApplicationCore
     {
         public static class ClaimNames
         {
-            public const string user = "user";
-            public const string role = "roles";
+            public const string users = "users";
+            public const string roles = "roles";
         }
 
         public static class Permissions
@@ -20,8 +20,8 @@ namespace ApplicationCore
 
         public static IEnumerable<RolePermission> PermissionCheckList => new RolePermission[]
         {
-            new RolePermission(ClaimNames.role, "Roles"),
-            new RolePermission(ClaimNames.user, "Users"),
+            new RolePermission(ClaimNames.roles, "Roles"),
+            new RolePermission(ClaimNames.users, "Users"),
         };
 
     }

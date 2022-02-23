@@ -2,6 +2,8 @@ using ApplicationCore;
 using ApplicationCore.Data;
 using ApplicationCore.Helpers;
 using ApplicationCore.Interfaces;
+using ApplicationCore.Policies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -107,6 +109,17 @@ builder.Services.AddMudServices();
 builder.Services.UseApplicationCore(builder.Configuration);
 builder.Services.AddScoped<IUserSessionService, UserSessionService>();
 builder.Services.AddMemoryCache();
+
+builder.Services.AddSingleton<IAuthorizationHandler, ClaimRequirementHandler>();
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy(Constants.ClaimNames.roles,
+        policy => policy.RequireClaim(Constants.ClaimNames.roles));
+
+    options.AddPolicy(Constants.ClaimNames.users,
+        policy => policy.RequireClaim(Constants.ClaimNames.users));
+});
 
 var app = builder.Build();
 

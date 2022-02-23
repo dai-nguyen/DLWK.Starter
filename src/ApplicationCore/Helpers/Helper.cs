@@ -118,10 +118,10 @@ namespace ApplicationCore.Helpers
 
             switch (permission.name)
             {
-                case Constants.ClaimNames.role:
-                    return new Claim(Constants.ClaimNames.user, string.Join(" ", values));                    
-                case Constants.ClaimNames.user:
-                    return new Claim(Constants.ClaimNames.role, string.Join(" ", values));                    
+                case Constants.ClaimNames.roles:
+                    return new Claim(Constants.ClaimNames.users, string.Join(" ", values));                    
+                case Constants.ClaimNames.users:
+                    return new Claim(Constants.ClaimNames.roles, string.Join(" ", values));                    
             }
 
             return null;

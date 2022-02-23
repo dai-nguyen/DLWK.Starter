@@ -1,83 +1,88 @@
 ﻿@page "/pages/roles/edit/{id}"
 @using ApplicationCore.Features.Roles.Commands
+@using ApplicationCore;
 
 <MudPaper Class="pa-4">
-    <EditForm Model="@_command" OnValidSubmit="SubmitAsync">
-    
-        <MudGrid>
-            <MudItem xs="12" md="12">
-                <FluentValidationValidator/>
-            </MudItem>
+    <AuthorizeView Policy="@Constants.ClaimNames.roles">
+        <Authorized>
+            <EditForm Model="@_command" OnValidSubmit="SubmitAsync" Context="eContext">    
+                <MudGrid>
+                    <MudItem xs="12" md="12">
+                        <FluentValidationValidator/>
+                    </MudItem>
 
-            <MudItem xs="12" md="6">
-                <MudTextField T="string" 
-                              @bind-Value="_command.Name"
-                              Label="Role Name" 
-                              For="@(() => _command.Name)"
-                              Variant="Variant.Outlined"
-                              ReadOnly="true"/>
-            </MudItem>
+                    <MudItem xs="12" md="6">
+                        <MudTextField T="string" 
+                                      @bind-Value="_command.Name"
+                                      Label="Role Name" 
+                                      For="@(() => _command.Name)"
+                                      Variant="Variant.Outlined"
+                                      ReadOnly="true"/>
+                    </MudItem>
             
-            <MudItem xs="12" md="6">
-                <MudTextField T="string" 
-                              @bind-Value="_command.Description"
-                              Label="Description" 
-                              For="@(() => _command.Description)"
-                              Variant="Variant.Outlined" />
-            </MudItem>
+                    <MudItem xs="12" md="6">
+                        <MudTextField T="string" 
+                                      @bind-Value="_command.Description"
+                                      Label="Description" 
+                                      For="@(() => _command.Description)"
+                                      Variant="Variant.Outlined" />
+                    </MudItem>
 
-            <MudItem xs="12" md="6">
+                    <MudItem xs="12" md="6">
             
-                <MudTable Items="@_command.Permissions" Hover="true" Breakpoint="Breakpoint.Sm">
-                    <HeaderContent>
-                        <MudTh></MudTh>
-                        <MudTh>Read</MudTh>
-                        <MudTh>Edit</MudTh>
-                        <MudTh>Create</MudTh>
-                        <MudTh>Delete</MudTh>
-                    </HeaderContent>
-                    <RowTemplate Context="permission">
-                        <MudTd DataLabel="">@permission.display</MudTd>
-                        <MudTd DataLabel="Read"><MudCheckBox @bind-Checked="permission.can_read"></MudCheckBox></MudTd>
-                        <MudTd DataLabel="Edit"><MudCheckBox @bind-Checked="permission.can_edit"></MudCheckBox></MudTd>                    
-                        <MudTd DataLabel="Create"><MudCheckBox @bind-Checked="permission.can_create"></MudCheckBox></MudTd>
-                        <MudTd DataLabel="Delete"><MudCheckBox @bind-Checked="permission.can_delete"></MudCheckBox></MudTd>
-                    </RowTemplate>
-                </MudTable>
+                        <MudTable Items="@_command.Permissions" Hover="true" Breakpoint="Breakpoint.Sm">
+                            <HeaderContent>
+                                <MudTh></MudTh>
+                                <MudTh>Read</MudTh>
+                                <MudTh>Edit</MudTh>
+                                <MudTh>Create</MudTh>
+                                <MudTh>Delete</MudTh>
+                            </HeaderContent>
+                            <RowTemplate Context="permission">
+                                <MudTd DataLabel="">@permission.display</MudTd>
+                                <MudTd DataLabel="Read"><MudCheckBox @bind-Checked="permission.can_read"></MudCheckBox></MudTd>
+                                <MudTd DataLabel="Edit"><MudCheckBox @bind-Checked="permission.can_edit"></MudCheckBox></MudTd>                    
+                                <MudTd DataLabel="Create"><MudCheckBox @bind-Checked="permission.can_create"></MudCheckBox></MudTd>
+                                <MudTd DataLabel="Delete"><MudCheckBox @bind-Checked="permission.can_delete"></MudCheckBox></MudTd>
+                            </RowTemplate>
+                        </MudTable>
             
-            </MudItem>
+                    </MudItem>
 
-            <MudItem xs="12" md="6">
-                <MudTextField T="string" 
-                              @bind-Value="_command.ExternalId"
-                              Label="External ID" 
-                              For="@(() => _command.ExternalId)"
-                              Variant="Variant.Outlined" />                  
-            </MudItem>
+                    <MudItem xs="12" md="6">
+                        <MudTextField T="string" 
+                                      @bind-Value="_command.ExternalId"
+                                      Label="External ID" 
+                                      For="@(() => _command.ExternalId)"
+                                      Variant="Variant.Outlined" />                  
+                    </MudItem>
 
-            <MudItem xs="4" md="2">
-                <MudButton Variant="Variant.Filled" 
-                           Color="Color.Primary"                
-                           ButtonType="ButtonType.Submit"
-                           Size="Size.Large" 
-                           FullWidth="true">Update Role</MudButton>
-            </MudItem>
-            <MudItem xs="4" md="2">
-                <MudButton Variant="Variant.Filled" 
-                           Color="Color.Default"                                           
-                           Size="Size.Large" 
-                           OnClick="GoBack"
-                           FullWidth="true">Back</MudButton>
-            </MudItem>
-            <MudItem xs="4" md="2">
-                <MudButton Variant="Variant.Filled" 
-                           Color="Color.Error"                                           
-                           Size="Size.Large" 
-                           OnClick="Delete"
-                           FullWidth="true">Delete</MudButton>
-            </MudItem>
-
-        </MudGrid>
-
-    </EditForm>
+                    <MudItem xs="4" md="2">
+                        <MudButton Variant="Variant.Filled" 
+                                   Color="Color.Primary"                
+                                   ButtonType="ButtonType.Submit"
+                                   Size="Size.Large" 
+                                   FullWidth="true">Update Role</MudButton>
+                    </MudItem>
+                    <MudItem xs="4" md="2">
+                        <MudButton Variant="Variant.Filled" 
+                                   Color="Color.Default"                                           
+                                   Size="Size.Large" 
+                                   OnClick="GoBack"
+                                   FullWidth="true">Back</MudButton>
+                    </MudItem>
+                    <MudItem xs="4" md="2">
+                        <MudButton Variant="Variant.Filled" 
+                                   Color="Color.Error"                                           
+                                   Size="Size.Large" 
+                                   OnClick="Delete"
+                                   FullWidth="true">Delete</MudButton>
+                    </MudItem>
+                </MudGrid>
+            </EditForm>
+        </Authorized>
+        <NotAuthorized>
+            <p>You are not authorized to see this page.</p>
+        </NotAuthorized>
+    </AuthorizeView>
 </MudPaper>

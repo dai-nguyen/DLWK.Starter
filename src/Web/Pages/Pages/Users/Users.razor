@@ -1,37 +1,46 @@
 ﻿@page "/pages/users"
 @using ApplicationCore.Features.Users.Queries
+@using ApplicationCore;
 
-<MudTable ServerData="@(new Func<TableState, Task<TableData<GetPaginatedUsersQueryResponse>>>(ReloadData))"
-          Dense="true" Hover="true" @ref="_table">
-    <ToolBarContent>
-        <MudButton Variant="Variant.Filled" OnClick="NagivateToCreatePage">Add User</MudButton>
-        <MudSpacer />
-        <MudTextField T="string" ValueChanged="@(s=>OnSearch(s))" Placeholder="Search" Adornment="Adornment.Start"
-                      AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
-    </ToolBarContent>
-    <HeaderContent>
-        <MudTh><MudTableSortLabel SortLabel="FirstName" T="GetPaginatedUsersQueryResponse">First Name</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortLabel="LastName" T="GetPaginatedUsersQueryResponse">Last Name</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortLabel="Email" T="GetPaginatedUsersQueryResponse">Email</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortLabel="UserName" T="GetPaginatedUsersQueryResponse">User Name</MudTableSortLabel></MudTh>   
-        <MudTh></MudTh>
-    </HeaderContent>
-    <RowTemplate>
-        <MudTd DataLabel="First Name">@context.FirstName</MudTd>
-        <MudTd DataLabel="Last Name">@context.LastName</MudTd>
-        <MudTd DataLabel="Email">@context.Email</MudTd>
-        <MudTd DataLabel="User Name">@context.UserName</MudTd>        
-        <MudTd>
-            <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="(() => NavigateToEditPage(context.Id))">Edit</MudButton>
-        </MudTd>
-    </RowTemplate>
-    <NoRecordsContent>
-        <MudText>No matching records found</MudText>
-    </NoRecordsContent>
-    <LoadingContent>
-        <MudText>Loading...</MudText>
-    </LoadingContent>
-    <PagerContent>
-        <MudTablePager />
-    </PagerContent>
-</MudTable>
+<AuthorizeView Policy="@Constants.ClaimNames.users">
+    <Authorized>
+        <MudTable ServerData="@(new Func<TableState, Task<TableData<GetPaginatedUsersQueryResponse>>>(ReloadData))"
+                  Dense="true" Hover="true" @ref="_table" Context="uContext">
+            <ToolBarContent>
+                <MudButton Variant="Variant.Filled" OnClick="NagivateToCreatePage">Add User</MudButton>
+                <MudSpacer />
+                <MudTextField T="string" ValueChanged="@(s=>OnSearch(s))" Placeholder="Search" Adornment="Adornment.Start"
+                              AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+            </ToolBarContent>
+            <HeaderContent>
+                <MudTh><MudTableSortLabel SortLabel="FirstName" T="GetPaginatedUsersQueryResponse">First Name</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortLabel="LastName" T="GetPaginatedUsersQueryResponse">Last Name</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortLabel="Email" T="GetPaginatedUsersQueryResponse">Email</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortLabel="UserName" T="GetPaginatedUsersQueryResponse">User Name</MudTableSortLabel></MudTh>   
+                <MudTh></MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="First Name">@uContext.FirstName</MudTd>
+                <MudTd DataLabel="Last Name">@uContext.LastName</MudTd>
+                <MudTd DataLabel="Email">@uContext.Email</MudTd>
+                <MudTd DataLabel="User Name">@uContext.UserName</MudTd>        
+                <MudTd>
+                    <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="(() => NavigateToEditPage(uContext.Id))">Edit</MudButton>
+                </MudTd>
+            </RowTemplate>
+            <NoRecordsContent>
+                <MudText>No matching records found</MudText>
+            </NoRecordsContent>
+            <LoadingContent>
+                <MudText>Loading...</MudText>
+            </LoadingContent>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </Authorized>
+    <NotAuthorized>
+        <p>You are not authorized to see this page.</p>
+    </NotAuthorized>
+</AuthorizeView>
+

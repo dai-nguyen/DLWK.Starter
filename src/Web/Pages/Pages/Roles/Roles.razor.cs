@@ -1,4 +1,6 @@
 ﻿using ApplicationCore.Features.Roles.Queries;
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor;
 
 namespace Web.Pages.Pages.Roles
@@ -9,8 +11,15 @@ namespace Web.Pages.Pages.Roles
         string _searchString = string.Empty;
         MudTable<GetPaginatedRolesQueryResponse> _table;
 
+        [CascadingParameter]
+        private Task<AuthenticationState> authenticationStateTask { get; set; }
+
         async Task<TableData<GetPaginatedRolesQueryResponse>> ReloadData(TableState state)
         {
+            var authState = await authenticationStateTask;
+            var user = authState.User;
+            var clams = user.Claims;
+
             var query = new GetPaginatedRolesQuery(
                 state.Page,
                 state.PageSize,
