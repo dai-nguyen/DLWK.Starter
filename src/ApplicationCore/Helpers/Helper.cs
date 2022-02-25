@@ -152,5 +152,13 @@ namespace ApplicationCore.Helpers
 
             return permissions;
         }
+
+        public static RolePermission GetPermission(
+            this IEnumerable<Claim> claims, string name)
+        {
+            var permissions = claims.ToRolePermissions();
+
+            return permissions.FirstOrDefault(_ => _.name == name);
+        }
     }
 }

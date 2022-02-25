@@ -1,6 +1,8 @@
 ﻿using ApplicationCore;
 using ApplicationCore.Features.Roles.Commands;
 using ApplicationCore.Models;
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 
 namespace Web.Pages.Pages.Roles
 {
@@ -10,6 +12,9 @@ namespace Web.Pages.Pages.Roles
         
         IEnumerable<RolePermission> Permissions { get; set; } 
             = Constants.PermissionCheckList;
+
+        [CascadingParameter]
+        private Task<AuthenticationState> authenticationStateTask { get; set; }
 
         async Task SubmitAsync()
         {
