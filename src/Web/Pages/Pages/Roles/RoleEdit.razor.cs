@@ -1,6 +1,7 @@
 ﻿using ApplicationCore.Features.Roles.Commands;
 using ApplicationCore.Features.Roles.Queries;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor;
 using Web.Shared;
 
@@ -12,9 +13,28 @@ namespace Web.Pages.Pages.Roles
         public string id { get; set; }
 
         UpdateRoleCommand _command = new();
-        
+
+        [CascadingParameter]
+        private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+        bool _canEdit = false;
+        bool _canDelete = false;
+
         protected override async Task OnInitializedAsync()
         {
+            var state = await authenticationStateTask;
+
+            if (state.User.Identity.IsAuthenticated)
+            {
+                var permission = state.User.Claims.GetPermission(Constants.ClaimNames.roles);
+
+                if (permission != null)
+                {                    
+                    _canEdit = permission.can_edit;
+                    _canDelete = permission.can_delete;
+                }
+            }
+
             if (!string.IsNullOrEmpty(id))
             {
                 var request = new GetRoleByIdQuery() { Id = id };
