@@ -13,6 +13,7 @@ namespace ApplicationCore.Features.Users.Commands
     {
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
+        public string Title { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
         public string UserName { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
@@ -51,6 +52,7 @@ namespace ApplicationCore.Features.Users.Commands
                     FirstName = command.FirstName.Trim(),
                     LastName = command.LastName.Trim(),
                     UserName = command.UserName.Trim(),
+                    Title = command.Title.Trim(),
                     Email = command.Email.Trim(),
                 };
 
@@ -102,6 +104,10 @@ namespace ApplicationCore.Features.Users.Commands
                 RuleFor(_ => _.LastName)
                     .NotEmpty().WithMessage(_localizer["You must enter your last name"])
                     .MaximumLength(50).WithMessage(_localizer["Last name cannot be longer than 50 characters"]);
+
+                RuleFor(_ => _.Title)
+                    .NotEmpty().WithMessage(_localizer["You must enter title"])
+                    .MaximumLength(50).WithMessage(_localizer["Title cannot not be longer than 50 characters"]);
             });
 
             RuleFor(_ => _.Email)

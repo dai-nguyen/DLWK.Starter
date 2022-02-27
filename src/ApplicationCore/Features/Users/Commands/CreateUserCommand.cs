@@ -16,6 +16,7 @@ namespace ApplicationCore.Features.Users.Commands
         public string Email { get; set; } = string.Empty;
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
+        public string Title { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
         public string ConfirmPassword { get; set; } = string.Empty;
 
@@ -71,6 +72,7 @@ namespace ApplicationCore.Features.Users.Commands
                 entity.Email = command.Email;
                 entity.FirstName = command.FirstName;
                 entity.LastName = command.LastName;
+                entity.Title = command.Title;
                 entity.ExternalId = command.ExternalId;
 
                 var created = await _userManager.CreateAsync(entity, command.Password);
@@ -167,6 +169,10 @@ namespace ApplicationCore.Features.Users.Commands
                 RuleFor(_ => _.LastName)
                     .NotEmpty().WithMessage(_localizer["You must enter last name"])
                     .MaximumLength(50).WithMessage(_localizer["Last name cannot be longer than 50 characters"]);
+
+                RuleFor(_ => _.Title)
+                    .NotEmpty().WithMessage(_localizer["You must enter title"])
+                    .MaximumLength(50).WithMessage(_localizer["Title cannot not be longer than 50 characters"]);
             });
 
             RuleFor(_ => _.Email)

@@ -1,4 +1,8 @@
-﻿using ApplicationCore.Features.Users.Queries;
+﻿using ApplicationCore;
+using ApplicationCore.Features.Users.Queries;
+using ApplicationCore.Helpers;
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor;
 
 namespace Web.Pages.Pages.Users
@@ -8,6 +12,28 @@ namespace Web.Pages.Pages.Users
         int _total;
         string _searchString = string.Empty;        
         MudTable<GetPaginatedUsersQueryResponse> _table;
+
+        [CascadingParameter]
+        private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+        bool _canCreate = false;        
+
+        protected override async Task OnInitializedAsync()
+        {
+            var state = await authenticationStateTask;
+
+            if (state.User.Identity.IsAuthenticated)
+            {
+                var permission = state.User.Claims.GetPermission(Constants.ClaimNames.users);
+
+                if (permission != null)
+                {
+                    _canCreate = permission.can_create;                    
+                }
+            }
+
+            await base.OnInitializedAsync();
+        }
 
         async Task<TableData<GetPaginatedUsersQueryResponse>> ReloadData(TableState state)
         {

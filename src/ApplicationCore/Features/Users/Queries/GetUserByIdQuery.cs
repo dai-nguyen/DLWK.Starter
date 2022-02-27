@@ -11,7 +11,7 @@ namespace ApplicationCore.Features.Users.Queries
 {
     public class GetUserByIdQuery : IRequest<Result<GetUserByIdQueryResponse>>
     {
-        public string Id { get; set; } = "";
+        public string Id { get; set; } = "";        
     }
 
     internal class GetUserByIdQueryHandler :
@@ -46,7 +46,12 @@ namespace ApplicationCore.Features.Users.Queries
         {
             try
             {
-                var entity = await _userManager.FindByIdAsync(request.Id);
+                AppUser entity = null;
+                
+                if (!string.IsNullOrEmpty(request.Id))
+                    entity = await _userManager.FindByIdAsync(request.Id);
+                else if (!string.IsNullOrEmpty(request.Name))
+                    entity = await _userManager.FindByNameAsync(request.Name);
 
                 if (entity == null)
                 {
@@ -86,6 +91,7 @@ namespace ApplicationCore.Features.Users.Queries
         public string Email { get; set; } = "";
         public string FirstName { get; set; } = "";
         public string LastName { get; set; } = "";
+        public string Title { get; set; } = "";
         public string ProfilePictureUrl { get; set; } = "";
 
         public string ExternalId { get; set; } = "";

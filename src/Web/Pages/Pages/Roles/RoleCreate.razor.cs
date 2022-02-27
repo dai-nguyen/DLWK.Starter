@@ -1,5 +1,6 @@
 ﻿using ApplicationCore;
 using ApplicationCore.Features.Roles.Commands;
+using ApplicationCore.Helpers;
 using ApplicationCore.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -15,6 +16,25 @@ namespace Web.Pages.Pages.Roles
 
         [CascadingParameter]
         private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+        bool _canCreate = false;
+
+        protected override async Task OnInitializedAsync()
+        {
+            var state = await authenticationStateTask;
+
+            if (state.User.Identity.IsAuthenticated)
+            {
+                var permission = state.User.Claims.GetPermission(Constants.ClaimNames.roles);
+
+                if (permission != null)
+                {
+                    _canCreate = permission.can_create;                    
+                }
+            }
+
+            await base.OnInitializedAsync();
+        }
 
         async Task SubmitAsync()
         {

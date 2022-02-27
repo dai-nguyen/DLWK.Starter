@@ -1,5 +1,9 @@
-﻿using ApplicationCore.Features.Roles.Queries;
+﻿using ApplicationCore;
+using ApplicationCore.Features.Roles.Queries;
 using ApplicationCore.Features.Users.Commands;
+using ApplicationCore.Helpers;
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor;
 
 namespace Web.Pages.Pages.Users
@@ -15,8 +19,25 @@ namespace Web.Pages.Pages.Users
         
         List<GetAllRolesQueryResponse> Roles { get; set;} = new List<GetAllRolesQueryResponse>();
 
+        [CascadingParameter]
+        private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+        bool _canCreate = false;
+
         protected override async Task OnInitializedAsync()
-        {            
+        {
+            var state = await authenticationStateTask;
+
+            if (state.User.Identity.IsAuthenticated)
+            {
+                var permission = state.User.Claims.GetPermission(Constants.ClaimNames.users);
+
+                if (permission != null)
+                {
+                    _canCreate = permission.can_create;
+                }
+            }
+
             var rolesRes = await _mediator.Send(new GetAllRolesQuery());
 
             if (rolesRes.Succeeded && rolesRes.Data.Any())

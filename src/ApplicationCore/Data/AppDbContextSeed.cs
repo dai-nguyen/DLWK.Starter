@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
+using System.Security.Claims;
 
 namespace ApplicationCore.Data
 {
@@ -21,6 +22,12 @@ namespace ApplicationCore.Data
                     foreach (var role in GetPreconfiguredRoles())
                     {
                         await roleManager.CreateAsync(role);
+                        await roleManager.AddClaimAsync(
+                            role, 
+                            new Claim(Constants.ClaimNames.roles, "read edit create delete"));
+                        await roleManager.AddClaimAsync(
+                            role, 
+                            new Claim(Constants.ClaimNames.users, "read edit create delete"));
                     }
                 }
 
@@ -33,7 +40,7 @@ namespace ApplicationCore.Data
                         Email = "admin@starter.com",
                     };
                     await userManager.CreateAsync(defaultUser, "Pa$$w0rd");
-                    await userManager.AddToRoleAsync(defaultUser, "Admin");
+                    await userManager.AddToRoleAsync(defaultUser, "Admin");   
                 }
             }
             catch (Exception ex)
@@ -62,14 +69,8 @@ namespace ApplicationCore.Data
                 {
                     Id = Guid.NewGuid().ToString(),
                     Name = "Admin",
-                    NormalizedName = "ADMIN",                    
-                },
-                new AppRole()
-                {
-                    Id = Guid.NewGuid().ToString(),
-                    Name = "User",
-                    NormalizedName = "USER"
-                }
+                    NormalizedName = "ADMIN",
+                }                
             };
         }
     }

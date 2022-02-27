@@ -89,7 +89,8 @@
                                    Color="Color.Primary"                
                                    ButtonType="ButtonType.Submit"
                                    Size="Size.Large" 
-                                   FullWidth="true">Update User</MudButton>
+                                   FullWidth="true"
+                                   Disabled="!_canEdit">Update User</MudButton>
                     </MudItem>
                     <MudItem xs="4" md="2">
                         <MudButton Variant="Variant.Filled" 
@@ -103,7 +104,8 @@
                                     Color="Color.Error"                                           
                                     Size="Size.Large" 
                                     OnClick="Delete"
-                                    FullWidth="true">Delete</MudButton>
+                                    FullWidth="true"
+                                    Disabled="!_canDelete">Delete</MudButton>
                     </MudItem>
                 </MudGrid>        
             </EditForm>

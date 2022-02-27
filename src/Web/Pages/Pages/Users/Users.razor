@@ -7,7 +7,7 @@
         <MudTable ServerData="@(new Func<TableState, Task<TableData<GetPaginatedUsersQueryResponse>>>(ReloadData))"
                   Dense="true" Hover="true" @ref="_table" Context="uContext">
             <ToolBarContent>
-                <MudButton Variant="Variant.Filled" OnClick="NagivateToCreatePage">Add User</MudButton>
+                <MudButton Variant="Variant.Filled" OnClick="NagivateToCreatePage" Disabled="!_canCreate">Add User</MudButton>
                 <MudSpacer />
                 <MudTextField T="string" ValueChanged="@(s=>OnSearch(s))" Placeholder="Search" Adornment="Adornment.Start"
                               AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
@@ -25,7 +25,7 @@
                 <MudTd DataLabel="Email">@uContext.Email</MudTd>
                 <MudTd DataLabel="User Name">@uContext.UserName</MudTd>        
                 <MudTd>
-                    <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="(() => NavigateToEditPage(uContext.Id))">Edit</MudButton>
+                    <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="(() => NavigateToEditPage(uContext.Id))">View</MudButton>
                 </MudTd>
             </RowTemplate>
             <NoRecordsContent>

@@ -1,7 +1,10 @@
-﻿using ApplicationCore.Features.Roles.Queries;
+﻿using ApplicationCore;
+using ApplicationCore.Features.Roles.Queries;
 using ApplicationCore.Features.Users.Commands;
 using ApplicationCore.Features.Users.Queries;
+using ApplicationCore.Helpers;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor;
 using Web.Shared;
 
@@ -20,8 +23,27 @@ namespace Web.Pages.Pages.Users
 
         List<GetAllRolesQueryResponse> Roles { get; set; } = new List<GetAllRolesQueryResponse>();
 
+        [CascadingParameter]
+        private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+        bool _canEdit = false;
+        bool _canDelete = false;
+
         protected override async Task OnInitializedAsync()
         {
+            var state = await authenticationStateTask;
+
+            if (state.User.Identity.IsAuthenticated)
+            {
+                var permission = state.User.Claims.GetPermission(Constants.ClaimNames.roles);
+
+                if (permission != null)
+                {
+                    _canEdit = permission.can_edit;
+                    _canDelete = permission.can_delete;
+                }
+            }
+
             if (!string.IsNullOrEmpty(id))
             {
                 var request = new GetUserByIdQuery() { Id = id };

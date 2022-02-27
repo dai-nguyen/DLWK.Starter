@@ -9,12 +9,13 @@ namespace ApplicationCore.Data.Configurations
         {
             builder.Property(_ => _.FirstName).HasMaxLength(100);
             builder.Property(_ => _.LastName).HasMaxLength(100);
+            builder.Property(_ => _.Title).HasMaxLength(100);
             builder.Property(_ => _.ProfilePictureUrl).HasMaxLength(255);
 
             builder.HasGeneratedTsVectorColumn(_ =>
                 _.SearchVector,
                 "english",
-                _ => new { _.UserName, _.FirstName, _.LastName, _.Email })
+                _ => new { _.UserName, _.FirstName, _.LastName, _.Email, _.Title })
                 .HasIndex(_ => _.SearchVector)
                 .HasMethod("GIN");
 
