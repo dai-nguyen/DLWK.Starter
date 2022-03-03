@@ -3,7 +3,6 @@ using ApplicationCore.Features.Users.Queries;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor;
-using System.Text.RegularExpressions;
 
 namespace Web.Pages.Personal
 {
@@ -13,21 +12,11 @@ namespace Web.Pages.Personal
         public string AvatarIcon { get; set; }
         public string AvatarButtonText { get; set; } = "Delete Picture";
         public Color AvatarButtonColor { get; set; } = Color.Error;
-        public string FirstName { get; set; } = "Dai";
-        public string LastName { get; set; } = "Nguyen";
-        public string JobTitle { get; set; } = "Application Developer";
-        public string Email { get; set; } = "Youcanprobably@findout.com";
-        public bool FriendSwitch { get; set; } = true;
-        public bool NotificationEmail_1 { get; set; } = true;
-        public bool NotificationEmail_2 { get; set; }
-        public bool NotificationEmail_3 { get; set; }
-        public bool NotificationEmail_4 { get; set; } = true;
-        public bool NotificationChat_1 { get; set; }
-        public bool NotificationChat_2 { get; set; } = true;
-        public bool NotificationChat_3 { get; set; } = true;
-        public bool NotificationChat_4 { get; set; }
+        
 
-        UpdateUserCommand _command = new();
+        UpdateUserProfileCommand _profileCommand = new();
+        ChangePasswordCommand _changePasswordCommand = new();
+
         GetUserProfileByUserNameQueryResponse _profile = new();
 
         [CascadingParameter]
@@ -54,16 +43,14 @@ namespace Web.Pages.Personal
                     _profile = res.Data;
 
                     var user = res.Data;
-                    _command.Id = user.Id;
-                    _command.UserName = user.UserName;
-                    _command.Email = user.Email;
-                    _command.FirstName = user.FirstName;
-                    _command.LastName = user.LastName;
-                    _command.ExternalId = user.ExternalId;
-                    _command.Roles = user.Roles;
+                    _profileCommand.Id = user.Id;
+                    _profileCommand.Email = user.Email;
+                    _profileCommand.FirstName = user.FirstName;
+                    _profileCommand.LastName = user.LastName;                    
+
+                    _changePasswordCommand.Id = user.Id;
                 }
             }
-
 
             await base.OnInitializedAsync();
         }
@@ -83,39 +70,44 @@ namespace Web.Pages.Personal
             }
         }
 
-        void SaveChanges(string message, Severity severity)
+        async Task SaveProfileAsync()
         {
-            _snackBar.Add(message, severity, config =>
-            {
-                config.ShowCloseIcon = false;
-            });
-        }
+            var result = await _mediator.Send(_profileCommand);
 
-        MudForm form;
-        MudTextField<string> pwField1;
-
-        private IEnumerable<string> PasswordStrength(string pw)
-        {
-            if (string.IsNullOrWhiteSpace(pw))
+            if (!result.Succeeded)
             {
-                yield return "Password is required!";
-                yield break;
+                foreach (var msg in result.Messages)
+                {
+                    _snackBar.Add(msg, MudBlazor.Severity.Error);
+                }
             }
-            if (pw.Length < 8)
-                yield return "Password must be at least of length 8";
-            if (!Regex.IsMatch(pw, @"[A-Z]"))
-                yield return "Password must contain at least one capital letter";
-            if (!Regex.IsMatch(pw, @"[a-z]"))
-                yield return "Password must contain at least one lowercase letter";
-            if (!Regex.IsMatch(pw, @"[0-9]"))
-                yield return "Password must contain at least one digit";
+            else
+            {
+                foreach (var msg in result.Messages)
+                {
+                    _snackBar.Add(msg, MudBlazor.Severity.Success);
+                }
+            }
         }
 
-        private string PasswordMatch(string arg)
+        async Task ChangePasswordAsync()
         {
-            if (pwField1.Value != arg)
-                return "Passwords don't match";
-            return null;
+            var result = await _mediator.Send(_changePasswordCommand);
+
+            if (!result.Succeeded)
+            {
+                foreach (var msg in result.Messages)
+                {
+                    _snackBar.Add(msg, MudBlazor.Severity.Error);
+                }
+            }
+            else
+            {
+                foreach (var msg in result.Messages)
+                {
+                    _snackBar.Add(msg, MudBlazor.Severity.Success);
+                }
+            }
         }
     }
 }
