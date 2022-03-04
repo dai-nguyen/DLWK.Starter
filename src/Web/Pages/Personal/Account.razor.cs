@@ -83,7 +83,7 @@ namespace Web.Pages.Personal
             var bytes = ms.ToArray();
 
             var str = Convert.ToBase64String(bytes);
-            var data = $"data:image/jpeg;base64,{str}";
+            var data = $"data:{file.ContentType};base64,{str}";
 
             // "data:image/png;base64,{str}"
         }
