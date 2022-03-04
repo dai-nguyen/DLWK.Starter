@@ -16,19 +16,27 @@
                             </MudCardHeader>
                             <MudCardContent>
                                 <div class="d-flex justify-center mb-4">
-                                    <MudAvatar Image="@AvatarImageLink" Style="height:100px; width:100px;">
+                                    <MudAvatar Image="@_imgData" Style="height:100px; width:100px;">
                                         @if(AvatarImageLink == null)
                                         {
                                             <MudIcon Icon="@AvatarIcon" Size="Size.Large"></MudIcon>
                                         }
-                                    </MudAvatar>
-                                
+                                    </MudAvatar>                                    
+                                    @*<img src="@_imgData"  />*@
                                 </div>
                                 <MudText Align="Align.Center">@_profileCommand.FirstName @_profileCommand.LastName</MudText>
                                 <MudText Align="Align.Center">@_profileCommand.Title</MudText>
                             </MudCardContent>
                             <MudCardActions Class="d-flex justify-center">
-                                <MudButton OnClick="DeletePicture" Color="@AvatarButtonColor">@AvatarButtonText</MudButton>
+                                <InputFile id="fileInput" OnChange="UploadImage" hidden accept=".jpg, .jpqg, .png" />
+                                @*<MudButton OnClick="DeletePicture" Color="@AvatarButtonColor">@AvatarButtonText</MudButton>*@
+                                <MudButton HtmlTag="label"
+                                           Variant="Variant.Filled"
+                                           Color="Color.Primary"
+                                           StartIcon="@Icons.Filled.CloudUpload"
+                                           for="fileInput">
+                                    Upload Files
+                                </MudButton>
                             </MudCardActions>
                         </MudCard>
                     </MudItem>
@@ -75,10 +83,10 @@
                         <MudCardContent>
                             <MudGrid>
                                 <MudItem xs="12" md="6">
-                                    <MudTextField T="string" Label="Password" Variant="Variant.Outlined" InputType="InputType.Password" @bind-Value="_changePasswordCommand.CurrentPassword" />
+                                    <MudTextField T="string" Label="Current Password" Variant="Variant.Outlined" InputType="InputType.Password" @bind-Value="_changePasswordCommand.CurrentPassword" />
                                 </MudItem>
                                 <MudItem xs="12" md="6">
-                                    <MudTextField T="string" Label="Password" Variant="Variant.Outlined" InputType="InputType.Password" @bind-Value="_changePasswordCommand.NewPassword" />
+                                    <MudTextField T="string" Label="New Password" Variant="Variant.Outlined" InputType="InputType.Password" @bind-Value="_changePasswordCommand.NewPassword" />
                                 </MudItem>
                                 <MudItem xs="12" md="6">
                                     <MudTextField T="string" Label="Password Confirmation" Variant="Variant.Outlined" InputType="InputType.Password" @bind-Value="_changePasswordCommand.ConfirmPassword" />

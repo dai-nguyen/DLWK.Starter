@@ -74,7 +74,9 @@ namespace ApplicationCore.Features.Users.Commands
                     return Result<string>.Fail(errors);
                 }
 
-                return Result<string>.Success();
+                var msg = _localizer["Profile Saved"];
+
+                return Result<string>.Success(msg, msg);
             }
             catch (Exception ex)
             {

@@ -39,10 +39,12 @@ namespace ApplicationCore.Features.Users.Queries
         {
             try
             {
-                var url = await _dbContext.Users
-                    .Where(_ => _.Id == request.UserId)
-                    .Select(_ => _.ProfilePictureUrl)
-                    .FirstOrDefaultAsync();
+                //var url = await _dbContext.Users
+                //    .Where(_ => _.Id == request.UserId)
+                //    .Select(_ => _.ProfilePictureUrl)
+                //    .FirstOrDefaultAsync();
+
+                var url = "";
 
                 return Result<string>.Success(url);
             }

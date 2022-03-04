@@ -113,8 +113,9 @@ namespace ApplicationCore.Services
             {
                 return Result<string>.Fail(_localizer["User Not Found"]);
             }
-            
-            return Result<string>.Success(data: user.ProfilePictureUrl);
+
+            //return Result<string>.Success(data: user.ProfilePictureUrl);
+            return Result<string>.Success(data: "");
         }
 
         public async Task<IResult<string>> UpdateProfilePictureAsync(
@@ -127,7 +128,7 @@ namespace ApplicationCore.Services
             
             var filePath = await _fileService.UploadAsync(request);
             
-            user.ProfilePictureUrl = filePath;
+            //user.ProfilePictureUrl = filePath;
 
             var identityResult = await _userManager.UpdateAsync(user);
             

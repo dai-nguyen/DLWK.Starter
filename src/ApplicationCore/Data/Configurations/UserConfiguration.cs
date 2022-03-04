@@ -10,7 +10,8 @@ namespace ApplicationCore.Data.Configurations
             builder.Property(_ => _.FirstName).HasMaxLength(100);
             builder.Property(_ => _.LastName).HasMaxLength(100);
             builder.Property(_ => _.Title).HasMaxLength(100);
-            builder.Property(_ => _.ProfilePictureUrl).HasMaxLength(255);
+            //builder.Property(_ => _.ProfilePictureUrl).HasMaxLength(255);
+            builder.Property(_ => _.ProfilePicture);
 
             builder.HasGeneratedTsVectorColumn(_ =>
                 _.SearchVector,

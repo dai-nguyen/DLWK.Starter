@@ -15,14 +15,14 @@ using NpgsqlTypes;
 namespace ApplicationCore.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20220205164223_initial")]
+    [Migration("20220304034040_initial")]
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.1")
+                .HasAnnotation("ProductVersion", "6.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -167,10 +167,15 @@ namespace ApplicationCore.Migrations
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("tsvector")
                         .HasAnnotation("Npgsql:TsVectorConfig", "english")
-                        .HasAnnotation("Npgsql:TsVectorProperties", new[] { "UserName", "FirstName", "LastName", "Email" });
+                        .HasAnnotation("Npgsql:TsVectorProperties", new[] { "UserName", "FirstName", "LastName", "Email", "Title" });
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("text");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("boolean");

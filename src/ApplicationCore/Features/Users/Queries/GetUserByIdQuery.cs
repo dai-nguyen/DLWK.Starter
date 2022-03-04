@@ -46,10 +46,7 @@ namespace ApplicationCore.Features.Users.Queries
         {
             try
             {
-                AppUser entity = null;
-                
-                if (!string.IsNullOrEmpty(request.Id))
-                    entity = await _userManager.FindByIdAsync(request.Id);                
+                AppUser entity = await _userManager.FindByIdAsync(request.Id);
 
                 if (entity == null)
                 {
