@@ -1,4 +1,6 @@
-﻿using ApplicationCore.Data;
+﻿using ApplicationCore;
+using ApplicationCore.Data;
+using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using Microsoft.AspNetCore.Identity;
 using System.Collections.Concurrent;
 
@@ -18,11 +20,12 @@ namespace Web.Middleware
             = new ConcurrentDictionary<Guid, LoginInfo>();
 
 
-        private readonly RequestDelegate _next;
+        private readonly RequestDelegate _next;        
 
-        public LoginMiddleware(RequestDelegate next)
+        public LoginMiddleware(
+            RequestDelegate next)
         {
-            _next = next;
+            _next = next;            
         }
 
         public async Task Invoke(
@@ -53,6 +56,7 @@ namespace Web.Middleware
                 if (result.Succeeded)
                 {
                     Logins.Remove(key);
+                    
                     context.Response.Redirect("/");
                     return;
                 }                

@@ -10,7 +10,7 @@ namespace ApplicationCore.Features.Users.Queries
 {
     public class GetUserProfilePictureQuery : IRequest<Result<string>>
     {
-        public string UserId { get; set; } = string.Empty;
+        public string UserName { get; set; } = string.Empty;
     }
 
     internal class GetUserProfilePictureQueryHandler : 
@@ -39,18 +39,16 @@ namespace ApplicationCore.Features.Users.Queries
         {
             try
             {
-                //var url = await _dbContext.Users
-                //    .Where(_ => _.Id == request.UserId)
-                //    .Select(_ => _.ProfilePictureUrl)
-                //    .FirstOrDefaultAsync();
-
-                var url = "";
-
-                return Result<string>.Success(url);
+                var data = await _dbContext.Users
+                    .Where(_ => _.UserName == request.UserName)
+                    .Select(_ => _.ProfilePicture)
+                    .FirstOrDefaultAsync();
+                
+                return Result<string>.Success(data, "");
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error getting user {00} profile picture url {UserId}", 
+                _logger.LogError(ex, "Error getting user {00} profile picture {UserId}", 
                     request, _userSession.UserId);
             }
 

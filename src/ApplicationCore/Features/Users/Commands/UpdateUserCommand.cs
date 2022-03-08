@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 
 namespace ApplicationCore.Features.Users.Commands
 {
-    public partial class UpdateUserCommand : IRequest<Result<string>>
+    public class UpdateUserCommand : IRequest<Result<string>>
     {
         public string Id { get; set; } = string.Empty;
         public string UserName { get; set; } = string.Empty;
@@ -67,8 +67,6 @@ namespace ApplicationCore.Features.Users.Commands
                 {
                     return Result<string>.Fail(_localizer["User Not Found"]);
                 }
-
-                
                 
                 var currentEmail = await _userManager.GetEmailAsync(entity);
                 bool newEmail = command.Email != currentEmail;

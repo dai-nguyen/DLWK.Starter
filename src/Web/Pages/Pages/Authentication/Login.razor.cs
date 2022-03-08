@@ -1,4 +1,5 @@
 ﻿using ApplicationCore.Data;
+using ApplicationCore.States;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -7,7 +8,7 @@ using Web.Middleware;
 
 namespace Web.Pages.Pages.Authentication
 {
-    public partial class Login
+    public partial class Login : IDisposable
     {
         [Inject]
         ILogger<Login> _logger { get; set; }
@@ -17,6 +18,9 @@ namespace Web.Pages.Pages.Authentication
         SignInManager<AppUser> _signinManager { get; set; }        
         [Inject]
         AuthenticationStateProvider _authenticationStateProvider { get; set; }
+        [Inject]
+        UserProfilePictureState _profilePictureState { get; set; }
+
 
         string Username { get; set; }
         string Password { get; set; }
@@ -32,6 +36,8 @@ namespace Web.Pages.Pages.Authentication
         {
             var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
             var user = authState.User;
+
+            _profilePictureState.OnChange += StateHasChanged;
 
             if (user.Identity.IsAuthenticated)
             {
@@ -92,6 +98,9 @@ namespace Web.Pages.Pages.Authentication
                             Password = Password,
                             RememberMe = RememberMe
                         };
+
+                        _profilePictureState.ProfilePicture = user.ProfilePicture;
+
                         _navigationManager.NavigateTo($"/login?key={key}", true);                        
                     }
                     else
@@ -108,6 +117,11 @@ namespace Web.Pages.Pages.Authentication
                 _logger.LogError(ex, "Error trying to login.");
             }
 
+        }
+
+        public void Dispose()
+        {
+            _profilePictureState.OnChange -= StateHasChanged;
         }
     }
 }

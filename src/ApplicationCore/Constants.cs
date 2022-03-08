@@ -24,5 +24,10 @@ namespace ApplicationCore
             new RolePermission(ClaimNames.users, "Users"),
         };
 
+        public static class LocalStorageKeys
+        {
+            public const string ProfilePicture = "ProfilePicture";
+        }
+
     }
 }

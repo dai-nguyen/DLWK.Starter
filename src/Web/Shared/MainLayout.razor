@@ -31,7 +31,7 @@
         </MudMenu>
         <MudMenu Direction="Direction.Left" OffsetX="true" Dense="true" Class="mt-1 ml-4">
             <ActivatorContent>
-                <MudAvatar Image="https://avatars.githubusercontent.com/u/5643178?v=4" />
+                <MudAvatar Image="@_profilePictureState.ProfilePicture" />
             </ActivatorContent>
             <ChildContent>
                 <PersonCard Class="mt-n2" />
@@ -59,26 +59,3 @@
         </MudContainer>
     </MudMainContent>
 </MudLayout>
-
-
-@code {
-    private MudBlazorAdminDashboard _theme = new();
-
-    public bool _drawerOpen = true;
-
-    void DrawerToggle()
-    {
-        _drawerOpen = !_drawerOpen;
-    }
-
-    protected override void OnInitialized()
-    {
-        StateHasChanged();
-    }
-
-    private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
-    {
-        //new BreadcrumbItem("Personal", href: "#"),
-        //new BreadcrumbItem("Dashboard", href: "#"),
-    };
-}

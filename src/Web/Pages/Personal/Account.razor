@@ -16,27 +16,33 @@
                             </MudCardHeader>
                             <MudCardContent>
                                 <div class="d-flex justify-center mb-4">
-                                    <MudAvatar Image="@_imgData" Style="height:100px; width:100px;">
-                                        @if(AvatarImageLink == null)
+                                    <MudAvatar Image="@_profilePictureState.ProfilePicture" Style="height:100px; width:100px;">
+                                        @if(string.IsNullOrEmpty(_profilePictureState.ProfilePicture))
                                         {
                                             <MudIcon Icon="@AvatarIcon" Size="Size.Large"></MudIcon>
                                         }
                                     </MudAvatar>                                    
-                                    @*<img src="@_imgData"  />*@
                                 </div>
                                 <MudText Align="Align.Center">@_profileCommand.FirstName @_profileCommand.LastName</MudText>
                                 <MudText Align="Align.Center">@_profileCommand.Title</MudText>
                             </MudCardContent>
                             <MudCardActions Class="d-flex justify-center">
                                 <InputFile id="fileInput" OnChange="UploadImage" hidden accept=".jpg, .jpqg, .png" />
-                                @*<MudButton OnClick="DeletePicture" Color="@AvatarButtonColor">@AvatarButtonText</MudButton>*@
-                                <MudButton HtmlTag="label"
-                                           Variant="Variant.Filled"
-                                           Color="Color.Primary"
-                                           StartIcon="@Icons.Filled.CloudUpload"
-                                           for="fileInput">
-                                    Upload Files
-                                </MudButton>
+                                @if (!string.IsNullOrEmpty(_profilePictureState.ProfilePicture))
+                                {
+                                    <MudButton OnClick="DeletePicture" Color="@AvatarButtonColor">@AvatarButtonText</MudButton>
+                                }
+                                else
+                                {
+                                    <MudButton HtmlTag="label"
+                                               Variant="Variant.Filled"
+                                               Color="Color.Primary"
+                                               StartIcon="@Icons.Filled.CloudUpload"
+                                               for="fileInput">
+                                        Upload Picture
+                                    </MudButton>
+                                }
+                                
                             </MudCardActions>
                         </MudCard>
                     </MudItem>

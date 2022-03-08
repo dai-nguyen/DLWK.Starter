@@ -3,6 +3,7 @@ using ApplicationCore.Data;
 using ApplicationCore.Helpers;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Policies;
+using ApplicationCore.States;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -108,6 +109,7 @@ builder.Services.AddMudServices();
 
 builder.Services.UseApplicationCore(builder.Configuration);
 builder.Services.AddScoped<IUserSessionService, UserSessionService>();
+builder.Services.AddScoped<UserProfilePictureState>();
 builder.Services.AddMemoryCache();
 
 builder.Services.AddSingleton<IAuthorizationHandler, ClaimRequirementHandler>();
