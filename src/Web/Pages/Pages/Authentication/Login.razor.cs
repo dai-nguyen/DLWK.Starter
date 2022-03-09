@@ -1,7 +1,9 @@
-﻿using ApplicationCore.Data;
+﻿using ApplicationCore;
+using ApplicationCore.Data;
 using ApplicationCore.States;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using Microsoft.AspNetCore.Identity;
 using MudBlazor;
 using Web.Middleware;
@@ -20,7 +22,8 @@ namespace Web.Pages.Pages.Authentication
         AuthenticationStateProvider _authenticationStateProvider { get; set; }
         [Inject]
         UserProfilePictureState _profilePictureState { get; set; }
-
+        [Inject]
+        ProtectedLocalStorage _protectedLocalStore { get; set; }
 
         string Username { get; set; }
         string Password { get; set; }
@@ -100,6 +103,7 @@ namespace Web.Pages.Pages.Authentication
                         };
 
                         _profilePictureState.ProfilePicture = user.ProfilePicture;
+                        await _protectedLocalStore.SetAsync(Constants.LocalStorageKeys.ProfilePicture, user.ProfilePicture);
 
                         _navigationManager.NavigateTo($"/login?key={key}", true);                        
                     }

@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using MudBlazor;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
 
 namespace Web.Pages.Personal
 {
@@ -14,18 +16,19 @@ namespace Web.Pages.Personal
     {
         [Inject]
         UserProfilePictureState _profilePictureState { get; set; }
-
-        public string AvatarImageLink { get; set; } = "https://avatars.githubusercontent.com/u/5643178?v=4"; //"images/avatar_jonny.jpg";
+        [Inject]
+        ProtectedLocalStorage _protectedLocalStore { get; set; }
+        
         public string AvatarIcon { get; set; }
         public string AvatarButtonText { get; set; } = "Delete Picture";
-        public Color AvatarButtonColor { get; set; } = Color.Error;
+        public MudBlazor.Color AvatarButtonColor { get; set; } = MudBlazor.Color.Error;
         
 
         UpdateUserProfileCommand _profileCommand = new();
         ChangePasswordCommand _changePasswordCommand = new();
 
         GetUserProfileByUserNameQueryResponse _profile = new();
-
+        
         [CascadingParameter]
         private Task<AuthenticationState> authenticationStateTask { get; set; }
         
@@ -59,11 +62,23 @@ namespace Web.Pages.Personal
 
             _profilePictureState.OnChange += StateHasChanged;
 
+            if (string.IsNullOrEmpty(_profilePictureState.ProfilePicture))
+            {
+                var res = await _protectedLocalStore.GetAsync<string>(Constants.LocalStorageKeys.ProfilePicture);
+
+                if (res.Success)
+                {
+                    //_imageData = res.Value;
+                    _profilePictureState.ProfilePicture = res.Value;
+                }
+            }
+
             await base.OnInitializedAsync();
         }
 
         void DeletePicture()
         {
+            //_imageData = string.Empty;
             _profilePictureState.ProfilePicture = String.Empty;
 
             //if (!String.IsNullOrEmpty(AvatarImageLink))
@@ -82,15 +97,29 @@ namespace Web.Pages.Personal
         private async void UploadImage(InputFileChangeEventArgs e)
         {
             var file = e.File;
-            long size = file.Size;
+            //long size = file.Size;
             await using MemoryStream ms = new();
             await file.OpenReadStream().CopyToAsync(ms);            
             var bytes = ms.ToArray();
-
-            var str = Convert.ToBase64String(bytes);
-            var data = $"data:{file.ContentType};base64,{str}";
             
+            await using MemoryStream ms2 = new();
+            using (Image img = Image.Load(bytes))
+            {
+                using (Image dest = img.Clone(_ => _.Resize(new ResizeOptions()
+                {
+                    Size = new SixLabors.ImageSharp.Size(200),
+                    Mode = ResizeMode.Crop
+                })))
+                {
+                    await dest.SaveAsJpegAsync(ms2);
+                }
+            }
 
+            var bytes2 = ms2.ToArray();
+
+            var str = Convert.ToBase64String(bytes2);            
+            var data = $"data:image/jpeg;base64,{str}";
+                        
             var request = new UpdateUserPictureCommand()
             {
                 Id = _profile.Id,
@@ -101,7 +130,8 @@ namespace Web.Pages.Personal
 
             if (res.Succeeded)
             {
-                _profilePictureState.ProfilePicture = data;
+                await _protectedLocalStore.SetAsync(Constants.LocalStorageKeys.ProfilePicture, data);
+                _profilePictureState.ProfilePicture = data;                                
             }
 
             // "data:image/png;base64,{str}"

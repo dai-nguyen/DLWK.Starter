@@ -1,5 +1,7 @@
-﻿using ApplicationCore.States;
+﻿using ApplicationCore;
+using ApplicationCore.States;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 
 namespace Web.Shared
 {
@@ -7,10 +9,23 @@ namespace Web.Shared
     {
         [Inject]
         UserProfilePictureState _profilePictureState { get; set; }
+        [Inject]
+        ProtectedLocalStorage _protectedLocalStore { get; set; }
 
-        protected override void OnInitialized()
+        protected override async Task OnInitializedAsync()
         {
             _profilePictureState.OnChange += StateHasChanged;
+
+            if (string.IsNullOrEmpty(_profilePictureState.ProfilePicture))
+            {
+                var res = await _protectedLocalStore.GetAsync<string>(Constants.LocalStorageKeys.ProfilePicture);
+
+                if (res.Success)
+                {
+                    //_imageData = res.Value;
+                    _profilePictureState.ProfilePicture = res.Value;
+                }
+            }
 
             base.OnInitialized();
         }
