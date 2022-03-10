@@ -15,11 +15,11 @@ namespace Web.Pages.Personal
     public partial class Account : IDisposable
     {
         [Inject]
-        UserProfilePictureState _profilePictureState { get; set; }
+        UserProfileState _profileState { get; set; }
         [Inject]
         ProtectedLocalStorage _protectedLocalStore { get; set; }
         
-        public string AvatarIcon { get; set; }
+        public string AvatarIcon { get; set; } = Icons.Material.Outlined.Person;
         public string AvatarButtonText { get; set; } = "Delete Picture";
         public MudBlazor.Color AvatarButtonColor { get; set; } = MudBlazor.Color.Error;
         
@@ -60,26 +60,40 @@ namespace Web.Pages.Personal
                 }
             }
 
-            _profilePictureState.OnChange += StateHasChanged;
+            _profileState.OnChange += StateHasChanged;
 
-            if (string.IsNullOrEmpty(_profilePictureState.ProfilePicture))
+            if (string.IsNullOrEmpty(_profileState.ProfilePicture))
             {
                 var res = await _protectedLocalStore.GetAsync<string>(Constants.LocalStorageKeys.ProfilePicture);
 
                 if (res.Success)
                 {
                     //_imageData = res.Value;
-                    _profilePictureState.ProfilePicture = res.Value;
+                    _profileState.ProfilePicture = res.Value;
                 }
             }
 
             await base.OnInitializedAsync();
         }
 
-        void DeletePicture()
+        private async Task DeletePicture()
         {
+            var request = new UpdateUserPictureCommand()
+            {
+                Id = _profile.Id,
+                ProfilePicture = ""
+            };
+
+            var res = await _mediator.Send(request);
+
+            if (res.Succeeded)
+            {
+                await _protectedLocalStore.DeleteAsync(Constants.LocalStorageKeys.ProfilePicture);                
+                _profileState.ProfilePicture = String.Empty;
+            }
+
             //_imageData = string.Empty;
-            _profilePictureState.ProfilePicture = String.Empty;
+            _profileState.ProfilePicture = String.Empty;
 
             //if (!String.IsNullOrEmpty(AvatarImageLink))
             //{
@@ -94,7 +108,7 @@ namespace Web.Pages.Personal
             //}
         }
 
-        private async void UploadImage(InputFileChangeEventArgs e)
+        private async Task UploadImage(InputFileChangeEventArgs e)
         {
             var file = e.File;
             //long size = file.Size;
@@ -131,7 +145,7 @@ namespace Web.Pages.Personal
             if (res.Succeeded)
             {
                 await _protectedLocalStore.SetAsync(Constants.LocalStorageKeys.ProfilePicture, data);
-                _profilePictureState.ProfilePicture = data;                                
+                _profileState.ProfilePicture = data;                                
             }
 
             // "data:image/png;base64,{str}"
@@ -150,6 +164,12 @@ namespace Web.Pages.Personal
             }
             else
             {
+                var fullName = $"{_profileCommand.FirstName} {_profileCommand.LastName}";
+                _profileState.FullName = fullName;
+                _profileState.Title = _profileCommand.Title;
+                await _protectedLocalStore.SetAsync(Constants.LocalStorageKeys.ProfileFullName, fullName);
+                await _protectedLocalStore.SetAsync(Constants.LocalStorageKeys.ProfileTitle, _profileCommand.Title);
+
                 foreach (var msg in result.Messages)
                 {
                     _snackBar.Add(msg, MudBlazor.Severity.Success);
@@ -179,7 +199,7 @@ namespace Web.Pages.Personal
 
         public void Dispose()
         {
-            _profilePictureState.OnChange -= StateHasChanged;
+            _profileState.OnChange -= StateHasChanged;
         }
     }
 }

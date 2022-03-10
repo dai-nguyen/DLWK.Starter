@@ -16,8 +16,8 @@
                             </MudCardHeader>
                             <MudCardContent>
                                 <div class="d-flex justify-center mb-4">
-                                    <MudAvatar Image="@_profilePictureState.ProfilePicture" Style="height:100px; width:100px;">
-                                        @if(string.IsNullOrEmpty(_profilePictureState.ProfilePicture))
+                                    <MudAvatar Image="@_profileState.ProfilePicture" Style="height:100px; width:100px;">
+                                        @if(string.IsNullOrEmpty(_profileState.ProfilePicture))
                                         {
                                             <MudIcon Icon="@AvatarIcon" Size="Size.Large"></MudIcon>
                                         }
@@ -28,7 +28,7 @@
                             </MudCardContent>
                             <MudCardActions Class="d-flex justify-center">
                                 <InputFile id="fileInput" OnChange="UploadImage" hidden accept=".jpg, .jpqg, .png" />
-                                @if (!string.IsNullOrEmpty(_profilePictureState.ProfilePicture))
+                                @if (!string.IsNullOrEmpty(_profileState.ProfilePicture))
                                 {
                                     <MudButton OnClick="DeletePicture" Color="@AvatarButtonColor">@AvatarButtonText</MudButton>
                                 }

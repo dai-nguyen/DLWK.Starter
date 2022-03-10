@@ -38,6 +38,14 @@
 
                     <MudItem xs="12" md="6">
                         <MudTextField T="string" 
+                                      @bind-Value="_command.Title"
+                                      Label="Title" 
+                                      For="@(() => _command.Title)"
+                                      Variant="Variant.Outlined"></MudTextField>
+                    </MudItem>
+
+                    <MudItem xs="12" md="6">
+                        <MudTextField T="string" 
                                       @bind-Value="_command.Email"
                                       Label="E-mail" 
                                       For="@(() => _command.Email)"

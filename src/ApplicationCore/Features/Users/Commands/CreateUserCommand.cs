@@ -22,9 +22,7 @@ namespace ApplicationCore.Features.Users.Commands
 
         public virtual string ExternalId { get; set; } = string.Empty;
 
-        public IEnumerable<string> Roles { get; set; } = Enumerable.Empty<string>();
-        //public IEnumerable<AppClaim> Claims { get; set; } = Enumerable.Empty<AppClaim>();
-        //public IEnumerable<CustomAttribute> CustomAttributes { get; set; } = Enumerable.Empty<CustomAttribute>();
+        public IEnumerable<string> Roles { get; set; } = Enumerable.Empty<string>();        
     }
 
     internal class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Result<string>>
@@ -84,8 +82,7 @@ namespace ApplicationCore.Features.Users.Commands
                 }
 
                 await AddRolesAsync(entity, command);
-                //await AddClaimsAsync(entity, command);
-
+                
                 return Result<string>.Success(entity.Id, _localizer["User Saved"]);
             }
             catch (Exception ex)
@@ -117,28 +114,6 @@ namespace ApplicationCore.Features.Users.Commands
                     command, _userSession.UserId);
             }
         }
-
-        //private async Task AddClaimsAsync(
-        //    AppUser entity,
-        //    CreateUserCommand command)
-        //{
-        //    if (entity == null || command == null || command.Claims == null)
-        //        return;
-
-        //    try
-        //    {
-        //        foreach (var c in command.Claims)
-        //        {
-        //            await _userManager.AddClaimAsync(entity,
-        //                new System.Security.Claims.Claim(c.Type, c.Value));
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError(ex, "Error adding user claims {@0} {UserId}",
-        //            command, _userSession.UserId);
-        //    }
-        //}
     }
 
     public class CreateUserCommandValidator 

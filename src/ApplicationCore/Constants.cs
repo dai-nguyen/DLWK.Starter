@@ -27,6 +27,8 @@ namespace ApplicationCore
         public static class LocalStorageKeys
         {
             public const string ProfilePicture = "ProfilePicture";
+            public const string ProfileFullName = "ProfileFullName";
+            public const string ProfileTitle = "ProfileTitle";
         }
 
     }

@@ -21,7 +21,7 @@ namespace Web.Pages.Pages.Authentication
         [Inject]
         AuthenticationStateProvider _authenticationStateProvider { get; set; }
         [Inject]
-        UserProfilePictureState _profilePictureState { get; set; }
+        UserProfileState _profileState { get; set; }
         [Inject]
         ProtectedLocalStorage _protectedLocalStore { get; set; }
 
@@ -40,7 +40,7 @@ namespace Web.Pages.Pages.Authentication
             var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
             var user = authState.User;
 
-            _profilePictureState.OnChange += StateHasChanged;
+            _profileState.OnChange += StateHasChanged;
 
             if (user.Identity.IsAuthenticated)
             {
@@ -102,8 +102,15 @@ namespace Web.Pages.Pages.Authentication
                             RememberMe = RememberMe
                         };
 
-                        _profilePictureState.ProfilePicture = user.ProfilePicture;
+                        var fullName = $"{user.FirstName} {user.LastName}";
+                        
+                        _profileState.ProfilePicture = user.ProfilePicture;
+                        _profileState.FullName = fullName;
+                        _profileState.Title = user.Title;
+
                         await _protectedLocalStore.SetAsync(Constants.LocalStorageKeys.ProfilePicture, user.ProfilePicture);
+                        await _protectedLocalStore.SetAsync(Constants.LocalStorageKeys.ProfileFullName, fullName);
+                        await _protectedLocalStore.SetAsync(Constants.LocalStorageKeys.ProfileTitle, user.Title);
 
                         _navigationManager.NavigateTo($"/login?key={key}", true);                        
                     }
@@ -125,7 +132,7 @@ namespace Web.Pages.Pages.Authentication
 
         public void Dispose()
         {
-            _profilePictureState.OnChange -= StateHasChanged;
+            _profileState.OnChange -= StateHasChanged;
         }
     }
 }

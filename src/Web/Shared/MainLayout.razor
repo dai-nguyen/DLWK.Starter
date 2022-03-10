@@ -31,7 +31,12 @@
         </MudMenu>
         <MudMenu Direction="Direction.Left" OffsetX="true" Dense="true" Class="mt-1 ml-4">
             <ActivatorContent>
-                <MudAvatar Image="@_profilePictureState.ProfilePicture" />
+                <MudAvatar Image="@_profilePictureState.ProfilePicture">
+                    @if(string.IsNullOrEmpty(_profilePictureState.ProfilePicture))
+                    {
+                        <MudIcon Icon="@AvatarIcon" Size="Size.Medium"></MudIcon>
+                    }
+                </MudAvatar>
             </ActivatorContent>
             <ChildContent>
                 <PersonCard Class="mt-n2" />

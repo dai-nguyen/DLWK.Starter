@@ -76,7 +76,7 @@ builder.WebHost.ConfigureServices((context, services) =>
                 {
                     var bytes = Convert.FromBase64String(HostConfig.CertData);
                     var cert = new X509Certificate2(bytes, HostConfig.CertPassword);
-                    
+
                     listOpt.UseHttps(cert);
                 }
                 catch (Exception e)
@@ -109,7 +109,7 @@ builder.Services.AddMudServices();
 
 builder.Services.UseApplicationCore(builder.Configuration);
 builder.Services.AddScoped<IUserSessionService, UserSessionService>();
-builder.Services.AddScoped<UserProfilePictureState>();
+builder.Services.AddScoped<UserProfileState>();
 builder.Services.AddMemoryCache();
 
 builder.Services.AddSingleton<IAuthorizationHandler, ClaimRequirementHandler>();

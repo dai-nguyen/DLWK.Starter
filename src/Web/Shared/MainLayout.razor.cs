@@ -9,13 +9,15 @@ namespace Web.Shared
     public partial class MainLayout : IDisposable
     {
         [Inject]
-        UserProfilePictureState _profilePictureState { get; set; }
+        UserProfileState _profilePictureState { get; set; }
         [Inject]
         ProtectedLocalStorage _protectedLocalStore { get; set; }
 
         private MudBlazorAdminDashboard _theme = new();
 
         public bool _drawerOpen = true;
+
+        public string AvatarIcon { get; set; } = Icons.Material.Outlined.Person;
 
         void DrawerToggle()
         {            
@@ -37,7 +39,7 @@ namespace Web.Shared
                 }
             }
 
-            StateHasChanged();
+            //StateHasChanged();
         }
 
         public void Dispose()
