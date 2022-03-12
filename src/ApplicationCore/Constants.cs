@@ -31,5 +31,10 @@ namespace ApplicationCore
             public const string ProfileTitle = "ProfileTitle";
         }
 
+        public static class Messages
+        {
+            public const string PermissionDenied = "Permission denied";
+            public const string InternalError = "InternalError";
+        }
     }
 }

@@ -47,6 +47,11 @@ namespace ApplicationCore.Features.Roles.Commands
         {
             try
             {
+                var permission = _userSession.Claims.GetPermission(Constants.ClaimNames.roles);
+
+                if (!permission.can_edit)
+                    return Result<string>.Fail(_localizer[Constants.Messages.PermissionDenied]);
+
                 var entity = await _roleManager.FindByIdAsync(request.Id);
 
                 if (entity == null)

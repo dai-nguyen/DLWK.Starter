@@ -1,4 +1,5 @@
 ﻿using ApplicationCore.Data;
+using ApplicationCore.Helpers;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Models;
 using AutoMapper;
@@ -56,6 +57,11 @@ namespace ApplicationCore.Features.Roles.Queries
         {
             try
             {
+                var permission = _userSession.Claims.GetPermission(Constants.ClaimNames.roles);
+
+                if (!permission.can_read)
+                    return Result<IEnumerable<GetAllRolesQueryResponse>>.Fail(_localizer[Constants.Messages.PermissionDenied]);
+
                 return await _cache.GetOrCreateAsync(
                     $"GetAllRolesQuery:{JsonSerializer.Serialize(request)}",
                     async entry => 
@@ -83,7 +89,7 @@ namespace ApplicationCore.Features.Roles.Queries
                     request, _userSession.UserId);
             }
 
-            return Result<IEnumerable<GetAllRolesQueryResponse>>.Fail();
+            return Result<IEnumerable<GetAllRolesQueryResponse>>.Fail(_localizer[Constants.Messages.InternalError]);
         }
     }
 

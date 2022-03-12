@@ -47,6 +47,11 @@ namespace ApplicationCore.Features.Roles.Commands
         {
             try
             {
+                var permission = _userSession.Claims.GetPermission(Constants.ClaimNames.roles);
+
+                if (!permission.can_create)
+                    return Result<string>.Fail(_localizer[Constants.Messages.PermissionDenied]);
+
                 var found = await _roleManager.FindByNameAsync(request.Name);
 
                 if (found != null)
@@ -94,7 +99,7 @@ namespace ApplicationCore.Features.Roles.Commands
                 _logger.LogError(ex, "Error adding role {@0) {UserId}",
                     request, _userSession.UserId);
             }
-            return Result<string>.Fail(_localizer["Internal Error"]);
+            return Result<string>.Fail(_localizer[Constants.Messages.InternalError]);
         }
     }
 

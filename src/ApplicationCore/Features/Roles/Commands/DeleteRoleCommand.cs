@@ -1,4 +1,5 @@
 ﻿using ApplicationCore.Data;
+using ApplicationCore.Helpers;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Models;
 using MediatR;
@@ -38,6 +39,11 @@ namespace ApplicationCore.Features.Roles.Commands
         {
             try
             {
+                var permission = _userSession.Claims.GetPermission(Constants.ClaimNames.roles);
+
+                if (!permission.can_delete)
+                    return Result<string>.Fail(_localizer[Constants.Messages.PermissionDenied]);
+
                 var role = await _roleManager.FindByIdAsync(request.Id);
 
                 if (role == null)

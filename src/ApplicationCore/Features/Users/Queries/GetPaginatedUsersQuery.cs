@@ -1,13 +1,16 @@
 ﻿using ApplicationCore.Data;
+using ApplicationCore.Helpers;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Models;
 using ApplicationCore.Requests;
 using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using System.Linq.Dynamic.Core;
+using System.Text.Json;
 
 namespace ApplicationCore.Features.Users.Queries
 {
@@ -28,7 +31,7 @@ namespace ApplicationCore.Features.Users.Queries
         }
     }
 
-    internal class GetAllUsersQueryHandler :
+    internal class GetPaginatedUsersQueryHandler :
         IRequestHandler<GetPaginatedUsersQuery, PaginatedResult<GetPaginatedUsersQueryResponse>>
     {
         readonly ILogger _logger;
@@ -36,19 +39,22 @@ namespace ApplicationCore.Features.Users.Queries
         readonly IStringLocalizer _localizer;
         readonly AppDbContext _dbContext;
         readonly IMapper _mapper;
+        readonly IMemoryCache _cache;
 
-        public GetAllUsersQueryHandler(
-            ILogger<GetAllUsersQueryHandler> logger,
+        public GetPaginatedUsersQueryHandler(
+            ILogger<GetPaginatedUsersQueryHandler> logger,
             IUserSessionService userSession,
             AppDbContext dbContext,
-            IStringLocalizer<GetAllUsersQueryHandler> localizer,
-            IMapper mapper)
+            IStringLocalizer<GetPaginatedUsersQueryHandler> localizer,
+            IMapper mapper,
+            IMemoryCache cache)
         {
             _logger = logger;
             _userSession = userSession;
             _localizer = localizer;
             _dbContext = dbContext;
             _mapper = mapper;
+            _cache = cache;
         }
 
         public async Task<PaginatedResult<GetPaginatedUsersQueryResponse>> Handle(
@@ -57,47 +63,60 @@ namespace ApplicationCore.Features.Users.Queries
         {
             try
             {
-                if (request.PageNumber <= 0)
-                    request.PageNumber = 1;
-                if (request.PageSize <= 0)
-                    request.PageSize = 15;
+                var permission = _userSession.Claims.GetPermission(Constants.ClaimNames.users);
 
-                var sortDir = request.IsDescending ? "desc" : "asc";
+                if (!permission.can_read)
+                    PaginatedResult<GetPaginatedUsersQueryResponse>.Failure(_localizer[Constants.Messages.PermissionDenied]);
 
-                if (string.IsNullOrEmpty(request.OrderBy))
-                    request.OrderBy = "Id";
+                return await _cache.GetOrCreateAsync(
+                    $"GetPaginatedUsersQuery:{JsonSerializer.Serialize(request)}",
+                    async entry =>
+                    {
+                        entry.SlidingExpiration = TimeSpan.FromSeconds(3);
+                        entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(20);
 
-                var query = _dbContext.Users
-                    .AsNoTracking()
-                    .AsQueryable();
+                        if (request.PageNumber <= 0)
+                            request.PageNumber = 1;
+                        if (request.PageSize <= 0)
+                            request.PageSize = 15;
 
-                if (!string.IsNullOrEmpty(request.SearchString)
-                    && !string.IsNullOrWhiteSpace(request.SearchString))
-                {
-                    query = query
-                        .Where(_ => _.SearchVector.Matches(request.SearchString));
-                }
+                        var sortDir = request.IsDescending ? "desc" : "asc";
 
-                query = query.OrderBy($"{request.OrderBy} {sortDir}");
+                        if (string.IsNullOrEmpty(request.OrderBy))
+                            request.OrderBy = "Id";
 
-                int total = await query.CountAsync();
+                        var query = _dbContext.Users
+                            .AsNoTracking()
+                            .AsQueryable();
 
-                int skip = (request.PageNumber - 1) * request.PageSize;
+                        if (!string.IsNullOrEmpty(request.SearchString)
+                            && !string.IsNullOrWhiteSpace(request.SearchString))
+                        {
+                            query = query
+                                .Where(_ => _.SearchVector.Matches(request.SearchString));
+                        }
 
-                var data = await query
-                    .Take(request.PageSize)
-                    .Skip(skip)
-                    .ToArrayAsync();
+                        query = query.OrderBy($"{request.OrderBy} {sortDir}");
 
-                var dtos = _mapper.Map<IEnumerable<GetPaginatedUsersQueryResponse>>(data);
+                        int total = await query.CountAsync();
 
-                return new PaginatedResult<GetPaginatedUsersQueryResponse>(
-                    true,
-                    dtos,
-                    Enumerable.Empty<string>(),
-                    total,
-                    request.PageNumber,
-                    request.PageSize);
+                        int skip = (request.PageNumber - 1) * request.PageSize;
+
+                        var data = await query
+                            .Take(request.PageSize)
+                            .Skip(skip)
+                            .ToArrayAsync();
+
+                        var dtos = _mapper.Map<IEnumerable<GetPaginatedUsersQueryResponse>>(data);
+
+                        return new PaginatedResult<GetPaginatedUsersQueryResponse>(
+                            true,
+                            dtos,
+                            Enumerable.Empty<string>(),
+                            total,
+                            request.PageNumber,
+                            request.PageSize);
+                    });
             }
             catch (Exception ex)
             {
@@ -105,7 +124,7 @@ namespace ApplicationCore.Features.Users.Queries
                     request, _userSession.UserId);
             }
 
-            return PaginatedResult<GetPaginatedUsersQueryResponse>.Failure(_localizer["Internal Error"]);
+            return PaginatedResult<GetPaginatedUsersQueryResponse>.Failure(_localizer[Constants.Messages.InternalError]);
         }
     }
 

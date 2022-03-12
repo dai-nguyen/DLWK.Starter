@@ -43,6 +43,11 @@ namespace ApplicationCore.Features.Roles.Queries
         {
             try
             {
+                var permission = _userSession.Claims.GetPermission(Constants.ClaimNames.roles);
+
+                if (!permission.can_read)
+                    return Result<GetRoleByIdQueryResponse>.Fail(_localizer[Constants.Messages.PermissionDenied]);
+
                 return await _cache.GetOrCreateAsync(
                     $"GetRoleByIdQuery:{request.Id}",
                     async entry =>
@@ -80,7 +85,7 @@ namespace ApplicationCore.Features.Roles.Queries
                 _logger.LogError(ex, "Error getting role {@0} {UserId}",
                    request, _userSession.UserId);
             }
-            return Result<GetRoleByIdQueryResponse>.Fail(_localizer["Internal Error"]);
+            return Result<GetRoleByIdQueryResponse>.Fail(_localizer[Constants.Messages.InternalError]);
         }
     }
 

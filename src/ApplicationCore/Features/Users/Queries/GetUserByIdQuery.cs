@@ -1,9 +1,11 @@
 ﻿using ApplicationCore.Data;
+using ApplicationCore.Helpers;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Models;
 using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
@@ -23,6 +25,7 @@ namespace ApplicationCore.Features.Users.Queries
         readonly UserManager<AppUser> _userManager;
         readonly AppDbContext _dbContext;
         readonly IMapper _mapper;
+        readonly IMemoryCache _cache;
 
         public GetUserByIdQueryHandler(
             ILogger<GetUserByIdQueryHandler> logger,
@@ -30,7 +33,8 @@ namespace ApplicationCore.Features.Users.Queries
             UserManager<AppUser> userManager,
             AppDbContext dbContext,
             IStringLocalizer<GetUserByIdQueryHandler> localizer,
-            IMapper mapper)
+            IMapper mapper,
+            IMemoryCache cache)
         {
             _logger = logger;
             _userSession = userSession;
@@ -38,6 +42,7 @@ namespace ApplicationCore.Features.Users.Queries
             _userManager = userManager;
             _dbContext = dbContext;
             _mapper = mapper;
+            _cache = cache;
         }
 
         public async Task<Result<GetUserByIdQueryResponse>> Handle(
@@ -46,27 +51,40 @@ namespace ApplicationCore.Features.Users.Queries
         {
             try
             {
-                AppUser entity = await _userManager.FindByIdAsync(request.Id);
+                var permission = _userSession.Claims.GetPermission(Constants.ClaimNames.users);
 
-                if (entity == null)
-                {
-                    return Result<GetUserByIdQueryResponse>.Fail(_localizer["User Not Found"]);
-                }
+                if (!permission.can_read)
+                    return Result<GetUserByIdQueryResponse>.Fail(_localizer[Constants.Messages.PermissionDenied]);
 
-                var roles = await _userManager.GetRolesAsync(entity);
-                var claims = await _userManager.GetClaimsAsync(entity);
+                return await _cache.GetOrCreateAsync(
+                    $"GetUserByIdQuery:{request.Id}",
+                    async entry =>
+                    {
+                        entry.SlidingExpiration = TimeSpan.FromSeconds(3);
+                        entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(20);
 
-                var dto = _mapper.Map<GetUserByIdQueryResponse>(entity);
+                        AppUser entity = await _userManager.FindByIdAsync(request.Id);
 
-                dto.Roles = roles;
+                        if (entity == null)
+                        {
+                            return Result<GetUserByIdQueryResponse>.Fail(_localizer["User Not Found"]);
+                        }
 
-                if (claims != null)
-                {
-                    dto.Claims = claims.Select(_ => new AppClaim(_.Type, _.Value))
-                        .ToArray();
-                }
+                        var roles = await _userManager.GetRolesAsync(entity);
+                        var claims = await _userManager.GetClaimsAsync(entity);
 
-                return Result<GetUserByIdQueryResponse>.Success(dto);
+                        var dto = _mapper.Map<GetUserByIdQueryResponse>(entity);
+
+                        dto.Roles = roles;
+
+                        if (claims != null)
+                        {
+                            dto.Claims = claims.Select(_ => new AppClaim(_.Type, _.Value))
+                                .ToArray();
+                        }
+
+                        return Result<GetUserByIdQueryResponse>.Success(dto);
+                    });
             }
             catch (Exception ex)
             {
@@ -74,7 +92,7 @@ namespace ApplicationCore.Features.Users.Queries
                    request, _userSession.UserId);
             }
 
-            return Result<GetUserByIdQueryResponse>.Fail(_localizer["Internal Error"]);
+            return Result<GetUserByIdQueryResponse>.Fail(_localizer[Constants.Messages.InternalError]);
         }
     }
 
