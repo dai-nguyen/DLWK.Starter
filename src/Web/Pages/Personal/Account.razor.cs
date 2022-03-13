@@ -40,7 +40,7 @@ namespace Web.Pages.Personal
             {                
                 var request = new GetUserProfileByUserNameQuery()
                 {
-                    Name = state.User.Identity.Name
+                    UserName = state.User.Identity.Name
                 };
 
                 var res = await _mediator.Send(request);

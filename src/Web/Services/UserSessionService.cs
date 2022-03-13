@@ -31,6 +31,22 @@ namespace Web.Services
             }
         }
 
+        public string UserName
+        {
+            get
+            {
+                var authState = AsyncHelper.RunSync(async () => await _authenticationStateProvider.GetAuthenticationStateAsync());
+                var user = authState.User;
+
+                if (user == null || user.Identity == null || !user.Identity.IsAuthenticated)
+                {
+                    return "?";
+                }
+
+                return user.FindFirstValue(ClaimTypes.Name);
+            }
+        }
+
         public IEnumerable<Claim> Claims 
         { 
             get

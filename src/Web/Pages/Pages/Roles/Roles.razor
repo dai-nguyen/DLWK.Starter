@@ -13,12 +13,12 @@
                 <MudTextField T="string" ValueChanged="@(s=>OnSearch(s))" Placeholder="Search" Adornment="Adornment.Start"
                               AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
             </ToolBarContent>
-            <HeaderContent>
+            <HeaderContent>                
                 <MudTh><MudTableSortLabel SortLabel="Name" T="GetPaginatedRolesQueryResponse">Name</MudTableSortLabel></MudTh>
                 <MudTh><MudTableSortLabel SortLabel="Description" T="GetPaginatedRolesQueryResponse">Description</MudTableSortLabel></MudTh>
                 <MudTh></MudTh>
             </HeaderContent>
-            <RowTemplate>
+            <RowTemplate>                
                 <MudTd DataLabel="Name">@rcontext.Name</MudTd>
                 <MudTd DataLabel="Description">@rcontext.Description</MudTd>     
                 <MudTd>

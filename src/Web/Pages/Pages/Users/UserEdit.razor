@@ -4,119 +4,143 @@
 
 <MudPaper Class="pa-4">
     <AuthorizeView Policy="@Constants.ClaimNames.users">
-        <Authorized>
-            <EditForm Model="@_command" OnValidSubmit="SubmitAsync" Context="eContext">
-                <MudGrid>
-                    <MudItem xs="12" md="12">
-                        <FluentValidationValidator/>
-                    </MudItem>
+        <Authorized>            
+            <MudGrid>
+                <MudItem xs="12" sm="4" md="3">
+                    <MudCard>
+                        <MudCardContent>
+                            <div class="d-flex justify-center mb-4">
+                                <MudAvatar Image="@_profilePicture" Style="height:100px; width:100px;">
+                                    @if(string.IsNullOrEmpty(_profilePicture))
+                                    {
+                                        <MudIcon Icon="@Icons.Material.Outlined.Person" Size="Size.Large"></MudIcon>
+                                    }
+                                </MudAvatar>                                    
+                            </div>                            
+                        </MudCardContent>
+                    </MudCard>                        
+                </MudItem>
+
+                <MudItem xs="12" sm="8" md="9">
+                    <EditForm Model="@_command" OnValidSubmit="SubmitAsync" Context="eContext">
+                        <MudCard>
+                            <MudCardContent>
+                                <MudGrid>
+                                    <MudItem xs="12" md="12">
+                                        <FluentValidationValidator/>
+                                    </MudItem>
         
-                    <MudItem xs="12" md="6">
-                        <MudTextField T="string" 
-                                      @bind-Value="_command.UserName"
-                                      Label="Username" 
-                                      For="@(() => _command.UserName)"
-                                      Variant="Variant.Outlined" 
-                                      ReadOnly="true"/>
-                    </MudItem>
+                                    <MudItem xs="12" md="6">
+                                        <MudTextField T="string" 
+                                                        @bind-Value="_command.UserName"
+                                                        Label="Username" 
+                                                        For="@(() => _command.UserName)"
+                                                        Variant="Variant.Outlined" 
+                                                        ReadOnly="true"/>
+                                    </MudItem>
             
-                    <MudItem xs="12" md="6">
-                        <MudTextField T="string" 
-                                      @bind-Value="_command.FirstName"
-                                      Label="First Name" 
-                                      For="@(() => _command.FirstName)"
-                                      Variant="Variant.Outlined" />
-                    </MudItem>
+                                    <MudItem xs="12" md="6">
+                                        <MudTextField T="string" 
+                                                        @bind-Value="_command.FirstName"
+                                                        Label="First Name" 
+                                                        For="@(() => _command.FirstName)"
+                                                        Variant="Variant.Outlined" />
+                                    </MudItem>
 
-                    <MudItem xs="12" md="6">
-                        <MudTextField T="string" 
-                                      @bind-Value="_command.LastName"
-                                      Label="Last Name" 
-                                      For="@(() => _command.LastName)"
-                                      Variant="Variant.Outlined"></MudTextField>
-                    </MudItem>
+                                    <MudItem xs="12" md="6">
+                                        <MudTextField T="string" 
+                                                        @bind-Value="_command.LastName"
+                                                        Label="Last Name" 
+                                                        For="@(() => _command.LastName)"
+                                                        Variant="Variant.Outlined"></MudTextField>
+                                    </MudItem>
 
-                    <MudItem xs="12" md="6">
-                        <MudTextField T="string" 
-                                      @bind-Value="_command.Title"
-                                      Label="Title" 
-                                      For="@(() => _command.Title)"
-                                      Variant="Variant.Outlined"></MudTextField>
-                    </MudItem>
+                                    <MudItem xs="12" md="6">
+                                        <MudTextField T="string" 
+                                                        @bind-Value="_command.Title"
+                                                        Label="Title" 
+                                                        For="@(() => _command.Title)"
+                                                        Variant="Variant.Outlined"></MudTextField>
+                                    </MudItem>
 
-                    <MudItem xs="12" md="6">
-                        <MudTextField T="string" 
-                                      @bind-Value="_command.Email"
-                                      Label="E-mail" 
-                                      For="@(() => _command.Email)"
-                                      Variant="Variant.Outlined" />
-                    </MudItem>
+                                    <MudItem xs="12" md="6">
+                                        <MudTextField T="string" 
+                                                        @bind-Value="_command.Email"
+                                                        Label="E-mail" 
+                                                        For="@(() => _command.Email)"
+                                                        Variant="Variant.Outlined" />
+                                    </MudItem>
 
-                    <MudItem xs="12" md="6">
-                        <MudTextField @bind-Value="_command.Password" 
-                                      Label="Password" 
-                                      For="@(() => _command.Password)"
-                                      Variant="Variant.Outlined" 
-                                      InputType="@PasswordInput" 
-                                      Adornment="Adornment.End" 
-                                      AdornmentIcon="@PasswordInputIcon" 
-                                      OnAdornmentClick="TogglePasswordVisibility" />
-                    </MudItem>
+                                    <MudItem xs="12" md="6">
+                                        <MudTextField @bind-Value="_command.Password" 
+                                                        Label="Password" 
+                                                        For="@(() => _command.Password)"
+                                                        Variant="Variant.Outlined" 
+                                                        InputType="@PasswordInput" 
+                                                        Adornment="Adornment.End" 
+                                                        AdornmentIcon="@PasswordInputIcon" 
+                                                        OnAdornmentClick="TogglePasswordVisibility" />
+                                    </MudItem>
 
-                    <MudItem xs="12" md="6">
-                        <MudTextField @bind-Value="_command.ConfirmPassword" 
-                                      Label="Confirm Password" 
-                                      For="@(() => _command.ConfirmPassword)"
-                                      Variant="Variant.Outlined" 
-                                      InputType="InputType.Password" />
-                    </MudItem>
+                                    <MudItem xs="12" md="6">
+                                        <MudTextField @bind-Value="_command.ConfirmPassword" 
+                                                        Label="Confirm Password" 
+                                                        For="@(() => _command.ConfirmPassword)"
+                                                        Variant="Variant.Outlined" 
+                                                        InputType="InputType.Password" />
+                                    </MudItem>
 
-                    <MudItem xs="12" md="6">
-                        <MudTextField T="string" 
-                                      @bind-Value="_command.ExternalId"
-                                      Label="External ID" 
-                                      For="@(() => _command.ExternalId)"
-                                      Variant="Variant.Outlined" />
-                    </MudItem>
+                                    <MudItem xs="12" md="6">
+                                        <MudTextField T="string" 
+                                                        @bind-Value="_command.ExternalId"
+                                                        Label="External ID" 
+                                                        For="@(() => _command.ExternalId)"
+                                                        Variant="Variant.Outlined" />
+                                    </MudItem>
 
-                    <MudItem xs="12" md="6">
-                        <MudSelect T="string" 
-                                   Label="Roles" 
-                                   Variant="Variant.Text"
-                                   MultiSelection="true"               
-                                   @bind-SelectedValues="_command.Roles">
-                            @foreach (var role in Roles)
-                            {
-                                <MudSelectItem T="string" Value="role.Name">@role.Name</MudSelectItem>
-                            }        
-                        </MudSelect>
-                    </MudItem>
+                                    <MudItem xs="12" md="6">
+                                        <MudSelect T="string" 
+                                                    Label="Roles" 
+                                                    Variant="Variant.Text"
+                                                    MultiSelection="true"               
+                                                    @bind-SelectedValues="_command.Roles">
+                                            @foreach (var role in Roles)
+                                            {
+                                                <MudSelectItem T="string" Value="role.Name">@role.Name</MudSelectItem>
+                                            }        
+                                        </MudSelect>
+                                    </MudItem>
         
-                    <MudItem xs="4" md="2">
-                        <MudButton Variant="Variant.Filled" 
-                                   Color="Color.Primary"                
-                                   ButtonType="ButtonType.Submit"
-                                   Size="Size.Large" 
-                                   FullWidth="true"
-                                   Disabled="!_canEdit">Update User</MudButton>
-                    </MudItem>
-                    <MudItem xs="4" md="2">
-                        <MudButton Variant="Variant.Filled" 
-                                    Color="Color.Default"                                           
-                                    Size="Size.Large" 
-                                    OnClick="GoBack"
-                                    FullWidth="true">Back</MudButton>
-                    </MudItem>
-                    <MudItem xs="4" md="2">
-                        <MudButton Variant="Variant.Filled" 
-                                    Color="Color.Error"                                           
-                                    Size="Size.Large" 
-                                    OnClick="Delete"
-                                    FullWidth="true"
-                                    Disabled="!_canDelete">Delete</MudButton>
-                    </MudItem>
-                </MudGrid>        
-            </EditForm>
+                                    <MudItem xs="4" md="2">
+                                        <MudButton Variant="Variant.Filled" 
+                                                    Color="Color.Primary"                
+                                                    ButtonType="ButtonType.Submit"
+                                                    Size="Size.Large" 
+                                                    FullWidth="true"
+                                                    Disabled="!_canEdit">Update</MudButton>
+                                    </MudItem>
+                                    <MudItem xs="4" md="2">
+                                        <MudButton Variant="Variant.Filled" 
+                                                    Color="Color.Default"                                           
+                                                    Size="Size.Large" 
+                                                    OnClick="GoBack"
+                                                    FullWidth="true">Back</MudButton>
+                                    </MudItem>
+                                    <MudItem xs="4" md="2">
+                                        <MudButton Variant="Variant.Filled" 
+                                                    Color="Color.Error"                                           
+                                                    Size="Size.Large" 
+                                                    OnClick="Delete"
+                                                    FullWidth="true"
+                                                    Disabled="!_canDelete">Delete</MudButton>
+                                    </MudItem>
+                                </MudGrid>
+                            </MudCardContent>
+                        </MudCard>                            
+                    </EditForm>
+                </MudItem>
+            </MudGrid>        
+            
         </Authorized>
         <NotAuthorized>
             <p>You are not authorized to see this page.</p>

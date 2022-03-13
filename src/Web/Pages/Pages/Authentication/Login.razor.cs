@@ -4,6 +4,7 @@ using ApplicationCore.States;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
+using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Identity;
 using MudBlazor;
 using Web.Middleware;
@@ -26,6 +27,7 @@ namespace Web.Pages.Pages.Authentication
         ProtectedLocalStorage _protectedLocalStore { get; set; }
 
         string Username { get; set; }
+        
         string Password { get; set; }
         bool RememberMe { get; set; }
         string ErrorMessage { get; set; } = "";
@@ -128,6 +130,14 @@ namespace Web.Pages.Pages.Authentication
                 _logger.LogError(ex, "Error trying to login.");
             }
 
+        }
+
+        async Task OnKeyDown(KeyboardEventArgs e)
+        {
+            if (e.Code == "Enter" || e.Code == "NumpadEnter")
+            {
+                await SubmitLogin();
+            }
         }
 
         public void Dispose()

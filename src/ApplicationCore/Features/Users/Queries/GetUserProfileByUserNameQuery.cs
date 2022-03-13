@@ -4,6 +4,7 @@ using ApplicationCore.Models;
 using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
@@ -11,7 +12,7 @@ namespace ApplicationCore.Features.Users.Queries
 {
     public class GetUserProfileByUserNameQuery : IRequest<Result<GetUserProfileByUserNameQueryResponse>>
     {
-        public string Name { get; set; } = string.Empty;
+        public string UserName { get; set; } = string.Empty;
     }
 
     internal class GetUserProfileByUserNameQueryHandler :
@@ -20,24 +21,24 @@ namespace ApplicationCore.Features.Users.Queries
         readonly ILogger _logger;
         readonly IUserSessionService _userSession;
         readonly IStringLocalizer _localizer;
-        readonly UserManager<AppUser> _userManager;
-        readonly AppDbContext _dbContext;
+        readonly UserManager<AppUser> _userManager;        
         readonly IMapper _mapper;
+        readonly IMemoryCache _cache;
 
         public GetUserProfileByUserNameQueryHandler(
             ILogger<GetUserProfileByUserNameQueryHandler> logger,
             IUserSessionService userSession,
-            UserManager<AppUser> userManager,
-            AppDbContext dbContext,
+            UserManager<AppUser> userManager,            
             IStringLocalizer<GetUserProfileByUserNameQueryHandler> localizer,
-            IMapper mapper)
+            IMapper mapper,
+            IMemoryCache cache)
         {
             _logger = logger;
             _userSession = userSession;
             _localizer = localizer;
-            _userManager = userManager;
-            _dbContext = dbContext;
+            _userManager = userManager;            
             _mapper = mapper;
+            _cache = cache;
         }
 
         public async Task<Result<GetUserProfileByUserNameQueryResponse>> Handle(
@@ -45,21 +46,32 @@ namespace ApplicationCore.Features.Users.Queries
             CancellationToken cancellationToken)
         {
             try
-            {
-                var entity = await _userManager.FindByNameAsync(request.Name);
+            {                
+                if (_userSession.UserName != request.UserName)
+                    return Result<GetUserProfileByUserNameQueryResponse>.Fail(Constants.Messages.PermissionDenied);
 
-                if (entity == null)
-                {
-                    return Result<GetUserProfileByUserNameQueryResponse>.Fail(_localizer["User Not Found"]);
-                }
+                return await _cache.GetOrCreateAsync(
+                    $"GetUserProfileByUserNameQuery:{request.UserName}",
+                    async entry =>
+                    {
+                        entry.SlidingExpiration = TimeSpan.FromSeconds(3);
+                        entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(20);
 
-                var roles = await _userManager.GetRolesAsync(entity);
+                        var entity = await _userManager.FindByNameAsync(request.UserName);
 
-                var dto = _mapper.Map<GetUserProfileByUserNameQueryResponse>(entity);
+                        if (entity == null)
+                        {
+                            return Result<GetUserProfileByUserNameQueryResponse>.Fail(_localizer["User Not Found"]);
+                        }
 
-                dto.Roles = roles;
+                        var roles = await _userManager.GetRolesAsync(entity);
 
-                return Result<GetUserProfileByUserNameQueryResponse>.Success(dto);
+                        var dto = _mapper.Map<GetUserProfileByUserNameQueryResponse>(entity);
+
+                        dto.Roles = roles;
+
+                        return Result<GetUserProfileByUserNameQueryResponse>.Success(dto);
+                    });
             }
             catch (Exception ex)
             {
@@ -67,7 +79,7 @@ namespace ApplicationCore.Features.Users.Queries
                    request, _userSession.UserId);
             }
 
-            return Result<GetUserProfileByUserNameQueryResponse>.Fail(_localizer["Internal Error"]);
+            return Result<GetUserProfileByUserNameQueryResponse>.Fail(_localizer[Constants.Messages.InternalError]);
         }
     }
 
@@ -79,8 +91,7 @@ namespace ApplicationCore.Features.Users.Queries
         public string Email { get; set; } = string.Empty;
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
-        public string Title { get; set; } = string.Empty;
-        public string ProfilePictureUrl { get; set; } = "";
+        public string Title { get; set; } = string.Empty;        
 
         public string ExternalId { get; set; } = string.Empty;
         public IEnumerable<string> Roles { get; set; } = Enumerable.Empty<string>();

@@ -13,6 +13,7 @@
                               AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
             </ToolBarContent>
             <HeaderContent>
+                <MudTh></MudTh>
                 <MudTh><MudTableSortLabel SortLabel="FirstName" T="GetPaginatedUsersQueryResponse">First Name</MudTableSortLabel></MudTh>
                 <MudTh><MudTableSortLabel SortLabel="LastName" T="GetPaginatedUsersQueryResponse">Last Name</MudTableSortLabel></MudTh>
                 <MudTh><MudTableSortLabel SortLabel="Email" T="GetPaginatedUsersQueryResponse">Email</MudTableSortLabel></MudTh>
@@ -20,6 +21,14 @@
                 <MudTh></MudTh>
             </HeaderContent>
             <RowTemplate>
+                <MudTd>
+                    <MudAvatar Image="@uContext.ProfilePicture">
+                        @if(string.IsNullOrEmpty(@uContext.ProfilePicture))
+                        {
+                            <MudIcon Icon="@Icons.Outlined.Person" Size="Size.Medium"></MudIcon>
+                        }
+                    </MudAvatar>
+                </MudTd>
                 <MudTd DataLabel="First Name">@uContext.FirstName</MudTd>
                 <MudTd DataLabel="Last Name">@uContext.LastName</MudTd>
                 <MudTd DataLabel="Email">@uContext.Email</MudTd>

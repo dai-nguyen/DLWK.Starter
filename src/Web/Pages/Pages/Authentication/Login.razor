@@ -23,7 +23,8 @@
               InputType="@PasswordInput" 
               Adornment="Adornment.End" 
               AdornmentIcon="@PasswordInputIcon" 
-              OnAdornmentClick="TogglePasswordVisibility" />
+              OnAdornmentClick="TogglePasswordVisibility"
+              OnKeyDown="OnKeyDown"/>
 
 <div Class="d-flex justify-space-between align-center">
     <MudCheckBox T="bool" 
@@ -38,6 +39,6 @@
 <MudButton Variant="Variant.Filled" 
            Color="Color.Primary" 
            @onclick="SubmitLogin" 
-           Size="Size.Large" 
+           Size="Size.Large"            
            FullWidth="true">Sign In</MudButton>
 

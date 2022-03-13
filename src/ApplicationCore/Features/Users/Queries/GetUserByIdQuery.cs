@@ -22,16 +22,14 @@ namespace ApplicationCore.Features.Users.Queries
         readonly ILogger _logger;
         readonly IUserSessionService _userSession;
         readonly IStringLocalizer _localizer;
-        readonly UserManager<AppUser> _userManager;
-        readonly AppDbContext _dbContext;
+        readonly UserManager<AppUser> _userManager;        
         readonly IMapper _mapper;
         readonly IMemoryCache _cache;
 
         public GetUserByIdQueryHandler(
             ILogger<GetUserByIdQueryHandler> logger,
             IUserSessionService userSession,
-            UserManager<AppUser> userManager,
-            AppDbContext dbContext,
+            UserManager<AppUser> userManager,            
             IStringLocalizer<GetUserByIdQueryHandler> localizer,
             IMapper mapper,
             IMemoryCache cache)
@@ -39,8 +37,7 @@ namespace ApplicationCore.Features.Users.Queries
             _logger = logger;
             _userSession = userSession;
             _localizer = localizer;
-            _userManager = userManager;
-            _dbContext = dbContext;
+            _userManager = userManager;            
             _mapper = mapper;
             _cache = cache;
         }
@@ -105,7 +102,7 @@ namespace ApplicationCore.Features.Users.Queries
         public string FirstName { get; set; } = "";
         public string LastName { get; set; } = "";
         public string Title { get; set; } = "";
-        public string ProfilePictureUrl { get; set; } = "";
+        public string ProfilePicture { get; set; } = "";
 
         public string ExternalId { get; set; } = "";
 

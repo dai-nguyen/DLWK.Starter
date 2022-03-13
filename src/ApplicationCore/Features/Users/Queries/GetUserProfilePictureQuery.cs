@@ -3,6 +3,7 @@ using ApplicationCore.Interfaces;
 using ApplicationCore.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
@@ -19,18 +20,21 @@ namespace ApplicationCore.Features.Users.Queries
         readonly ILogger _logger;
         readonly IUserSessionService _userSession;
         readonly IStringLocalizer _localizer;        
-        readonly AppDbContext _dbContext;        
+        readonly AppDbContext _dbContext;
+        readonly IMemoryCache _cache;
 
         public GetUserProfilePictureQueryHandler(
             ILogger<GetUserProfilePictureQueryHandler> logger,
             IUserSessionService userSession,            
             AppDbContext dbContext,
-            IStringLocalizer<GetUserProfilePictureQueryHandler> localizer)
+            IStringLocalizer<GetUserProfilePictureQueryHandler> localizer,
+            IMemoryCache cache)
         {
             _logger = logger;
             _userSession = userSession;
             _dbContext = dbContext;
             _localizer = localizer;
+            _cache = cache;
         }
 
         public async Task<Result<string>> Handle(
@@ -39,12 +43,20 @@ namespace ApplicationCore.Features.Users.Queries
         {
             try
             {
-                var data = await _dbContext.Users
-                    .Where(_ => _.UserName == request.UserName)
-                    .Select(_ => _.ProfilePicture)
-                    .FirstOrDefaultAsync();
-                
-                return Result<string>.Success(data, "");
+                if (_userSession.UserName != request.UserName)
+                    return Result<string>.Fail(Constants.Messages.PermissionDenied);
+
+                return await _cache.GetOrCreateAsync(
+                    $"GetUserProfilePictureQuery:{request.UserName}",
+                    async entry =>
+                    {
+                        var data = await _dbContext.Users
+                            .Where(_ => _.UserName == request.UserName)
+                            .Select(_ => _.ProfilePicture)
+                            .FirstOrDefaultAsync();
+
+                                return Result<string>.Success(data, String.Empty);
+                    });
             }
             catch (Exception ex)
             {
@@ -52,7 +64,7 @@ namespace ApplicationCore.Features.Users.Queries
                     request, _userSession.UserId);
             }
 
-            return Result<string>.Fail(_localizer["Internal Error"]);
+            return Result<string>.Fail(_localizer[Constants.Messages.InternalError]);
         }
 
     }

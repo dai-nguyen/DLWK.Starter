@@ -29,6 +29,8 @@ namespace Web.Pages.Pages.Users
         bool _canEdit = false;
         bool _canDelete = false;
 
+        string _profilePicture = string.Empty;
+
         protected override async Task OnInitializedAsync()
         {
             var state = await authenticationStateTask;
@@ -55,11 +57,14 @@ namespace Web.Pages.Pages.Users
                     var user = res.Data;
                     _command.Id = user.Id;
                     _command.UserName = user.UserName;
+                    _command.Title = user.Title;
                     _command.Email = user.Email;
                     _command.FirstName = user.FirstName;
                     _command.LastName = user.LastName;
                     _command.ExternalId = user.ExternalId;
                     _command.Roles = user.Roles;
+
+                    _profilePicture = user.ProfilePicture;
                 }
             }
 

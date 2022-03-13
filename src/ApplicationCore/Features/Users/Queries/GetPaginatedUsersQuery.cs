@@ -138,6 +138,8 @@ namespace ApplicationCore.Features.Users.Queries
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
         public string Title { get; set; } = string.Empty;
+
+        public string ProfilePicture { get; set; } = string.Empty;
     }
 
     public class GetAllUsersQueryProfile : Profile
