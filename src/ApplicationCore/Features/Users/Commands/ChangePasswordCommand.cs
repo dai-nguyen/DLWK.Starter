@@ -1,4 +1,5 @@
 ﻿using ApplicationCore.Data;
+using ApplicationCore.Helpers;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Models;
 using FluentValidation;
@@ -57,6 +58,9 @@ namespace ApplicationCore.Features.Users.Commands
                     var errors = res.Errors.Select(_ => _.Description).ToArray();
                     return Result<string>.Fail(errors);
                 }
+
+                entity.SecurityCode = Helper.CreateRandomPasswordWithRandomLength();
+                await _userManager.UpdateAsync(entity);
 
                 return Result<string>.Success();
             }

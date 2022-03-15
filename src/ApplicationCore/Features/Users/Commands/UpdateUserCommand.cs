@@ -1,4 +1,5 @@
 ﻿using ApplicationCore.Data;
+using ApplicationCore.Helpers;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Models;
 using AutoMapper;
@@ -23,11 +24,7 @@ namespace ApplicationCore.Features.Users.Commands
 
         public virtual string ExternalId { get; set; } = string.Empty;
 
-        public IEnumerable<string> Roles { get; set; } = Enumerable.Empty<string>();
-
-        //public IEnumerable<AppClaim> Claims { get; set; } = Enumerable.Empty<AppClaim>();
-
-        //public IEnumerable<CustomAttribute> CustomAttributes { get; set; } = Enumerable.Empty<CustomAttribute>();
+        public IEnumerable<string> Roles { get; set; } = Enumerable.Empty<string>();        
     }
 
     internal class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, Result<string>>
@@ -76,6 +73,9 @@ namespace ApplicationCore.Features.Users.Commands
                 entity.Title = command.Title;
                 entity.ExternalId = command.ExternalId;
 
+                if (!string.IsNullOrWhiteSpace(command.Password))
+                    entity.SecurityCode = Helper.CreateRandomPasswordWithRandomLength();
+
                 var updated = await _userManager.UpdateAsync(entity);
 
                 if (!updated.Succeeded)
@@ -84,32 +84,22 @@ namespace ApplicationCore.Features.Users.Commands
                     return Result<string>.Fail(errors);
                 }
 
-                await UpsertRolesAsync(entity, command);
-                //await UpsertClaimsAsync(entity, command);
+                await UpsertRolesAsync(entity, command);                
 
                 if (!string.IsNullOrEmpty(command.Password))
                 {
                     var token = await _userManager.GeneratePasswordResetTokenAsync(entity);
-                    var res = await _userManager.ResetPasswordAsync(entity, token, command.Password);
-                    
+                    var res = await _userManager.ResetPasswordAsync(entity, token, command.Password);                   
+
                     if (!res.Succeeded)
                     {
                         var errors = res.Errors.Select(_ => _.Description).ToArray();
                         return Result<string>.Fail(errors);
-                    }
+                    }                    
                 }
 
                 if (newEmail)
-                {
-                    //var token = await _userManager.GenerateChangeEmailTokenAsync(entity, command.Email);
-                    //var res = await _userManager.ChangeEmailAsync(entity, command.Email, token);
-
-                    //if (!res.Succeeded)
-                    //{
-                    //    var errors = res.Errors.Select(_ => _.Description).ToArray();
-                    //    return Result<string>.Fail(errors);
-                    //}
-
+                {                    
                     var res = await _userManager.SetEmailAsync(entity, command.Email);
 
                     if (!res.Succeeded)

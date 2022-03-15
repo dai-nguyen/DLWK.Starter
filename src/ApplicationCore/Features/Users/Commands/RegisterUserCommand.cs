@@ -1,4 +1,5 @@
 ﻿using ApplicationCore.Data;
+using ApplicationCore.Helpers;
 using ApplicationCore.Models;
 using FluentValidation;
 using MediatR;
@@ -54,6 +55,7 @@ namespace ApplicationCore.Features.Users.Commands
                     UserName = command.UserName.Trim(),
                     Title = command.Title.Trim(),
                     Email = command.Email.Trim(),
+                    SecurityCode = Helper.CreateRandomPasswordWithRandomLength()
                 };
 
                 var result = await _userManager.CreateAsync(entity, command.Password);

@@ -70,6 +70,7 @@ namespace ApplicationCore.Data
                     Id = Guid.NewGuid().ToString(),
                     Name = "Admin",
                     NormalizedName = "ADMIN",
+                    Description = "Administrator"
                 }                
             };
         }

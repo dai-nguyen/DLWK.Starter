@@ -91,8 +91,8 @@ namespace ApplicationCore.Features.Users.Queries
         public string Email { get; set; } = string.Empty;
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
-        public string Title { get; set; } = string.Empty;        
-
+        public string Title { get; set; } = string.Empty;
+        public string SecurityCode { get; set; } = string.Empty;
         public string ExternalId { get; set; } = string.Empty;
         public IEnumerable<string> Roles { get; set; } = Enumerable.Empty<string>();
     }

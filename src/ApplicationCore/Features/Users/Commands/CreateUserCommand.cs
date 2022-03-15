@@ -1,4 +1,5 @@
 ﻿using ApplicationCore.Data;
+using ApplicationCore.Helpers;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Models;
 using FluentValidation;
@@ -72,6 +73,7 @@ namespace ApplicationCore.Features.Users.Commands
                 entity.LastName = command.LastName;
                 entity.Title = command.Title;
                 entity.ExternalId = command.ExternalId;
+                entity.SecurityCode = Helper.CreateRandomPasswordWithRandomLength();
 
                 var created = await _userManager.CreateAsync(entity, command.Password);
 

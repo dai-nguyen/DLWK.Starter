@@ -102,6 +102,8 @@ namespace ApplicationCore.Data
             builder.UseNpgsql(connStr,
                 sql => sql.MigrationsAssembly(migrationsAssembly.Name).UseNodaTime());
 
+            builder.UseOpenIddict();            
+
             return new AppDbContext(builder.Options, null, null);
         }
     }

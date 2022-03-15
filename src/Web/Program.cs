@@ -1,15 +1,14 @@
 using ApplicationCore;
 using ApplicationCore.Data;
-using ApplicationCore.Helpers;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Policies;
 using ApplicationCore.States;
+using ApplicationCore.Workers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using MudBlazor.Services;
 using NpgsqlTypes;
+using Quartz;
 using Serilog;
 using Serilog.Sinks.PostgreSQL;
 using Serilog.Sinks.PostgreSQL.ColumnWriters;
@@ -108,6 +107,60 @@ builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddMudServices();
 
 builder.Services.UseApplicationCore(builder.Configuration);
+
+builder.Services.AddQuartz(options =>
+{
+    options.UseMicrosoftDependencyInjectionJobFactory();
+    options.UseSimpleTypeLoader();
+    options.UseInMemoryStore();
+});
+
+// Register the Quartz.NET service and configure it to block shutdown until jobs are complete.
+builder.Services.AddQuartzHostedService(options => options.WaitForJobsToComplete = true);
+
+builder.Services.AddOpenIddict()
+    .AddCore(options =>
+    {
+        options.UseEntityFrameworkCore()
+            .UseDbContext<AppDbContext>();
+        options.UseQuartz();        
+    })
+    .AddServer(options =>
+    {
+        // Enable the token endpoint.
+        options.SetTokenEndpointUris("/connect/token");
+
+        // Enable the password flow.
+        options.AllowPasswordFlow()
+        .AllowRefreshTokenFlow();
+
+        // Accept anonymous clients (i.e clients that don't send a client_id).
+        options.AcceptAnonymousClients();
+        //options.AllowClientCredentialsFlow();
+
+        // Register the signing and encryption credentials.
+        //options.AddDevelopmentEncryptionCertificate()
+        //       .AddDevelopmentSigningCertificate();
+
+        options.AddEphemeralEncryptionKey()
+            .AddEphemeralSigningKey();
+
+        // Register the ASP.NET Core host and configure the ASP.NET Core-specific options.
+        options.UseAspNetCore()
+               .EnableTokenEndpointPassthrough();
+
+    })
+    .AddValidation(options =>
+    {
+        // Import the configuration from the local OpenIddict server instance.
+        options.UseLocalServer();
+
+        // Register the ASP.NET Core host.
+        options.UseAspNetCore();
+    });
+
+builder.Services.AddHostedService<DefaultWorker>();
+
 builder.Services.AddScoped<IUserSessionService, UserSessionService>();
 builder.Services.AddScoped<UserProfileState>();
 builder.Services.AddMemoryCache();
@@ -126,18 +179,18 @@ builder.Services.AddAuthorization(options =>
 var app = builder.Build();
 
 
-using (var scope = app.Services.CreateScope())
-{
-    var services = scope.ServiceProvider;
-    var dbContext = services.GetRequiredService<AppDbContext>();
-    dbContext.Database.EnsureCreated();
-    dbContext.Database.Migrate();
+//using (var scope = app.Services.CreateScope())
+//{
+//    var services = scope.ServiceProvider;
+//    var dbContext = services.GetRequiredService<AppDbContext>();
+//    dbContext.Database.EnsureCreated();
+//    dbContext.Database.Migrate();
 
-    var logFactory = services.GetRequiredService<ILoggerFactory>();
-    var userManager = services.GetRequiredService<UserManager<AppUser>>();
-    var roleManager = services.GetRequiredService<RoleManager<AppRole>>();
-    AsyncHelper.RunSync(() => AppDbContextSeed.SeedAsync(dbContext, userManager, roleManager, logFactory));
-}
+//    var logFactory = services.GetRequiredService<ILoggerFactory>();
+//    var userManager = services.GetRequiredService<UserManager<AppUser>>();
+//    var roleManager = services.GetRequiredService<RoleManager<AppRole>>();
+//    AsyncHelper.RunSync(() => AppDbContextSeed.SeedAsync(dbContext, userManager, roleManager, logFactory));
+//}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -162,6 +215,12 @@ app.UseMiddleware<LogoutMiddleware>();
 
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
+
+app.UseEndpoints(options =>
+{
+    options.MapControllers();
+    options.MapDefaultControllerRoute();
+});
 
 app.Run();
 

@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
+using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace ApplicationCore
 {
@@ -29,8 +30,6 @@ namespace ApplicationCore
             services.AddValidations();
 
             services.AddTransient<IFileService, FileService>();
-
-            
 
             return services;
         }
@@ -54,6 +53,8 @@ namespace ApplicationCore
 
             builder.UseNpgsql(connStr,
                 sql => sql.MigrationsAssembly(migrationsAssembly.Name).UseNodaTime());
+
+            builder.UseOpenIddict();
         }        
 
         internal static IServiceCollection AddIdentity(this IServiceCollection services)
@@ -69,6 +70,14 @@ namespace ApplicationCore
             })
                 .AddEntityFrameworkStores<AppDbContext>()
                 .AddDefaultTokenProviders();
+
+            services.Configure<IdentityOptions>(options =>
+            {
+                options.ClaimsIdentity.UserNameClaimType = Claims.Name;
+                options.ClaimsIdentity.UserIdClaimType = Claims.Subject;
+                options.ClaimsIdentity.RoleClaimType = Claims.Role;
+                options.ClaimsIdentity.EmailClaimType = Claims.Email;
+            });
 
             return services;
         }
