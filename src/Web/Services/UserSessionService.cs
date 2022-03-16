@@ -43,7 +43,7 @@ namespace Web.Services
                     return "?";
                 }
 
-                return user.FindFirstValue(ClaimTypes.Name);
+                return user.Identity.Name;
             }
         }
 

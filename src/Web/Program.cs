@@ -131,8 +131,8 @@ builder.Services.AddOpenIddict()
         options.SetTokenEndpointUris("/connect/token");
 
         // Enable the password flow.
-        options.AllowPasswordFlow()
-        .AllowRefreshTokenFlow();
+        options.AllowPasswordFlow();
+        options.AllowRefreshTokenFlow();
 
         // Accept anonymous clients (i.e clients that don't send a client_id).
         options.AcceptAnonymousClients();

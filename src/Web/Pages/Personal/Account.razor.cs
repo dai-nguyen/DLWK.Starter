@@ -197,6 +197,28 @@ namespace Web.Pages.Personal
             }
         }
 
+        async Task ResetSecurityCodeAsync()
+        {
+            var command = new ResetSecurityCodeCommand()
+            {
+                Id = _profileCommand.Id
+            };
+
+            var res = await _mediator.Send(command);
+
+            if (!res.Succeeded)
+            {
+                foreach (var msg in res.Messages)
+                {
+                    _snackBar.Add(msg, MudBlazor.Severity.Error);
+                }
+            }
+            else
+            {
+                _profile.SecurityCode = res.Data;
+            }
+        }
+
         public void Dispose()
         {
             _profileState.OnChange -= StateHasChanged;

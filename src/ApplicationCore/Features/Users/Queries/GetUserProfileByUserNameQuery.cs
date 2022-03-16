@@ -46,8 +46,10 @@ namespace ApplicationCore.Features.Users.Queries
             CancellationToken cancellationToken)
         {
             try
-            {                
-                if (_userSession.UserName != request.UserName)
+            {
+                var userName = _userSession.UserName;
+
+                if (userName != request.UserName)
                     return Result<GetUserProfileByUserNameQueryResponse>.Fail(Constants.Messages.PermissionDenied);
 
                 return await _cache.GetOrCreateAsync(
@@ -102,7 +104,8 @@ namespace ApplicationCore.Features.Users.Queries
         public GetUserByUserNameQueryProfile()
         {
             CreateMap<AppUser, GetUserProfileByUserNameQueryResponse>()
-                .ForMember(dest => dest.Roles, opt => opt.Ignore());
+                .ForMember(dest => dest.Roles, opt => opt.Ignore())
+                .ForMember(dest => dest.SecurityCode, opt => opt.Ignore());
         }
     }
 }

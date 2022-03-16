@@ -103,8 +103,7 @@ namespace ApplicationCore.Features.Users.Queries
         public string LastName { get; set; } = "";
         public string Title { get; set; } = "";
         public string ProfilePicture { get; set; } = "";
-        public string SecurityCode { get; set; } = string.Empty;
-
+        
         public string ExternalId { get; set; } = "";
 
         public IEnumerable<string> Roles { get; set; } = Enumerable.Empty<string>();

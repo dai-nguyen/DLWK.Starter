@@ -60,7 +60,7 @@ namespace Web.Api
                     return Forbid(properties, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
                 }
 
-                request.Password = request.Password.Substring(request.Password.Length - user.SecurityCode.Length, user.SecurityCode.Length);
+                request.Password = request.Password.Substring(0, request.Password.Length - user.SecurityCode.Length);
 
                 // Validate the username/password parameters and ensure the account is not locked out.
                 var result = await _signInManager.CheckPasswordSignInAsync(user, request.Password, lockoutOnFailure: true);
@@ -83,11 +83,14 @@ namespace Web.Api
                 var principal = await _signInManager.CreateUserPrincipalAsync(user);
 
                 // Set the list of scopes granted to the client application.
+                // Note: the offline_access scope must be granted
+                // to allow OpenIddict to return a refresh token.
                 principal.SetScopes(new[]
                 {
                     Scopes.OpenId,
                     Scopes.Email,
                     Scopes.Profile,
+                    Scopes.OfflineAccess,
                     Scopes.Roles
                 }.Intersect(request.GetScopes()));
 

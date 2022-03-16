@@ -57,7 +57,7 @@ namespace ApplicationCore.Features.Users.Commands
                     return Result<string>.Fail(errors);
                 }
 
-                return Result<string>.Success();
+                return Result<string>.Success(entity.SecurityCode, "");
             }
             catch (Exception ex)
             {

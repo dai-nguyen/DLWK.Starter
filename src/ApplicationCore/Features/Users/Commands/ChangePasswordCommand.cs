@@ -62,7 +62,7 @@ namespace ApplicationCore.Features.Users.Commands
                 entity.SecurityCode = Helper.CreateRandomPasswordWithRandomLength();
                 await _userManager.UpdateAsync(entity);
 
-                return Result<string>.Success();
+                return Result<string>.Success(entity.SecurityCode, "");
             }
             catch (Exception ex)
             {
