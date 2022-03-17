@@ -17,14 +17,14 @@
               Variant="Variant.Outlined" 
               Class="my-6"></MudTextField>
 
-<MudTextField @bind-Value="Password" 
+<MudTextField ValueChanged="@(_ => Enter(_))" 
+              T="string"
               Label="Password" 
               Variant="Variant.Outlined" 
               InputType="@PasswordInput" 
               Adornment="Adornment.End" 
               AdornmentIcon="@PasswordInputIcon" 
-              OnAdornmentClick="TogglePasswordVisibility"
-              OnKeyDown="OnKeyDown"/>
+              OnAdornmentClick="TogglePasswordVisibility"/>
 
 <div Class="d-flex justify-space-between align-center">
     <MudCheckBox T="bool" 

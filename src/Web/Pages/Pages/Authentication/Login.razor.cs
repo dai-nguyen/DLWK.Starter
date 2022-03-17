@@ -4,7 +4,6 @@ using ApplicationCore.States;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
-using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Identity;
 using MudBlazor;
 using Web.Middleware;
@@ -132,12 +131,10 @@ namespace Web.Pages.Pages.Authentication
 
         }
 
-        async Task OnKeyDown(KeyboardEventArgs e)
+        async Task Enter(string text)
         {
-            if (e.Code == "Enter" || e.Code == "NumpadEnter")
-            {
-                await SubmitLogin();
-            }
+            Password = text;
+            await SubmitLogin();
         }
 
         public void Dispose()

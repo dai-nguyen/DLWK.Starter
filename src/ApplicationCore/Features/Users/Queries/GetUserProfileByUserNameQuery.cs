@@ -104,8 +104,7 @@ namespace ApplicationCore.Features.Users.Queries
         public GetUserByUserNameQueryProfile()
         {
             CreateMap<AppUser, GetUserProfileByUserNameQueryResponse>()
-                .ForMember(dest => dest.Roles, opt => opt.Ignore())
-                .ForMember(dest => dest.SecurityCode, opt => opt.Ignore());
+                .ForMember(dest => dest.Roles, opt => opt.Ignore());
         }
     }
 }

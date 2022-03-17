@@ -90,7 +90,7 @@ namespace Web.Api
                     Scopes.OpenId,
                     Scopes.Email,
                     Scopes.Profile,
-                    Scopes.OfflineAccess,
+                    Scopes.OfflineAccess,                    
                     Scopes.Roles
                 }.Intersect(request.GetScopes()));
 
