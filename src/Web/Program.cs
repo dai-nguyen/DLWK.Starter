@@ -59,6 +59,10 @@ builder.WebHost.ConfigureServices((context, services) =>
     HostConfig.CertPath = context.Configuration["CertPath"];
     HostConfig.CertPassword = context.Configuration["CertPassword"];
     HostConfig.CertData = context.Configuration["CertData"];
+    HostConfig.OpenIddictKeyEncipherment = context.Configuration["OpenIddictKeyEncipherment"];
+    HostConfig.OpenIddictKeyEnciphermentPass = context.Configuration["OpenIddictKeyEnciphermentPass"];
+    HostConfig.OpenIddictDigitalSignature = context.Configuration["OpenIddictDigitalSignature"];
+    HostConfig.OpenIddictDigitalSignaturePass = context.Configuration["OpenIddictDigitalSignaturePass"];
 })
 .ConfigureKestrel((context, options) =>
 {
@@ -112,7 +116,20 @@ builder.Services.AddQuartz(options =>
 {
     options.UseMicrosoftDependencyInjectionJobFactory();
     options.UseSimpleTypeLoader();
-    options.UseInMemoryStore();
+    options.UseInMemoryStore();    
+    //options.UsePersistentStore(s =>
+    //{
+    //    s.UseProperties = true;
+    //    s.RetryInterval = TimeSpan.FromSeconds(15);
+
+    //    s.UsePostgres(sql =>
+    //    {
+    //        sql.ConnectionString = connStr;
+    //        sql.TablePrefix = "QRTZ_";
+    //    });
+    //    s.UseJsonSerializer();
+
+    //});
 });
 
 // Register the Quartz.NET service and configure it to block shutdown until jobs are complete.
@@ -135,15 +152,22 @@ builder.Services.AddOpenIddict()
         options.AllowRefreshTokenFlow();
 
         // Accept anonymous clients (i.e clients that don't send a client_id).
-        options.AcceptAnonymousClients();
-        //options.AllowClientCredentialsFlow();
+        options.AcceptAnonymousClients();        
 
-        // Register the signing and encryption credentials.
-        //options.AddDevelopmentEncryptionCertificate()
-        //       .AddDevelopmentSigningCertificate();
+        var keyBytes = Convert.FromBase64String(HostConfig.OpenIddictKeyEncipherment);
+        var keyCert = new X509Certificate2(
+            keyBytes,
+            HostConfig.OpenIddictKeyEnciphermentPass,
+            X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.EphemeralKeySet);
 
-        options.AddEphemeralEncryptionKey()
-            .AddEphemeralSigningKey();
+        var signBytes = Convert.FromBase64String(HostConfig.OpenIddictDigitalSignature);
+        var signCert = new X509Certificate2(
+            signBytes,
+            HostConfig.OpenIddictDigitalSignaturePass,
+            X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.EphemeralKeySet);
+
+        options.AddEncryptionCertificate(keyCert);
+        options.AddSigningCertificate(signCert);
 
         // Register the ASP.NET Core host and configure the ASP.NET Core-specific options.
         options.UseAspNetCore()
@@ -177,20 +201,6 @@ builder.Services.AddAuthorization(options =>
 });
 
 var app = builder.Build();
-
-
-//using (var scope = app.Services.CreateScope())
-//{
-//    var services = scope.ServiceProvider;
-//    var dbContext = services.GetRequiredService<AppDbContext>();
-//    dbContext.Database.EnsureCreated();
-//    dbContext.Database.Migrate();
-
-//    var logFactory = services.GetRequiredService<ILoggerFactory>();
-//    var userManager = services.GetRequiredService<UserManager<AppUser>>();
-//    var roleManager = services.GetRequiredService<RoleManager<AppRole>>();
-//    AsyncHelper.RunSync(() => AppDbContextSeed.SeedAsync(dbContext, userManager, roleManager, logFactory));
-//}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -229,4 +239,9 @@ public static class HostConfig
     public static string CertPath { get; set; } = string.Empty;
     public static string CertPassword { get; set; } = string.Empty;
     public static string CertData { get; set; } = string.Empty;
+
+    public static string OpenIddictKeyEncipherment { get; set; } = string.Empty;
+    public static string OpenIddictKeyEnciphermentPass { get; set; } = string.Empty;
+    public static string OpenIddictDigitalSignature { get; set; } = string.Empty;
+    public static string OpenIddictDigitalSignaturePass { get; set; } = string.Empty;
 }
