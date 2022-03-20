@@ -7,11 +7,11 @@ using System.Security.Claims;
 
 namespace ApplicationCore.Workers
 {
-    public class DefaultWorker : IHostedService
+    public class SeedWorker : IHostedService
     {
         private readonly IServiceProvider _serviceProvider;
 
-        public DefaultWorker(IServiceProvider serviceProvider)
+        public SeedWorker(IServiceProvider serviceProvider)
             => _serviceProvider = serviceProvider;
 
         public async Task StartAsync(CancellationToken cancellationToken)

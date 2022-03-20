@@ -1,6 +1,7 @@
 using ApplicationCore;
 using ApplicationCore.Data;
 using ApplicationCore.Interfaces;
+using ApplicationCore.Jobs;
 using ApplicationCore.Policies;
 using ApplicationCore.States;
 using ApplicationCore.Workers;
@@ -116,7 +117,7 @@ builder.Services.AddQuartz(options =>
 {
     options.UseMicrosoftDependencyInjectionJobFactory();
     options.UseSimpleTypeLoader();
-    options.UseInMemoryStore();    
+    options.UseInMemoryStore();
     //options.UsePersistentStore(s =>
     //{
     //    s.UseProperties = true;
@@ -130,6 +131,10 @@ builder.Services.AddQuartz(options =>
     //    s.UseJsonSerializer();
 
     //});
+
+    options.AddJob<TestJob>(_ =>
+        _.StoreDurably()
+        .WithIdentity("test_job"));
 });
 
 // Register the Quartz.NET service and configure it to block shutdown until jobs are complete.
@@ -183,7 +188,8 @@ builder.Services.AddOpenIddict()
         options.UseAspNetCore();
     });
 
-builder.Services.AddHostedService<DefaultWorker>();
+builder.Services.AddHostedService<SeedWorker>();
+builder.Services.AddTransient<TestJob>();
 
 builder.Services.AddScoped<IUserSessionService, UserSessionService>();
 builder.Services.AddScoped<UserProfileState>();
