@@ -16,6 +16,7 @@ namespace ApplicationCore
             public const string edit = "edit";
             public const string create = "create";
             public const string delete = "delete";
+            public const string bulk = "bulk";
         }
 
         public static IEnumerable<RolePermission> PermissionCheckList => new RolePermission[]
@@ -35,6 +36,13 @@ namespace ApplicationCore
         {
             public const string PermissionDenied = "Permission denied";
             public const string InternalError = "InternalError";
+        }
+
+        public static class BulkJobStatus
+        {
+            public const string Pending = "Pending";
+            public const string Completed = "Completed";
+
         }
     }
 }

@@ -148,6 +148,8 @@ namespace ApplicationCore.Helpers
                     found.can_create = true;
                 if (values.Contains(Constants.Permissions.delete))
                     found.can_delete = true;
+                if (values.Contains(Constants.Permissions.bulk))
+                    found.can_bulk = true;
             }
 
             return permissions;

@@ -10,6 +10,7 @@ namespace ApplicationCore.Models
         public bool can_edit { get; set; }
         public bool can_create { get; set; }
         public bool can_delete { get; set; }
+        public bool can_bulk { get; set; }
 
         public RolePermission()
         {

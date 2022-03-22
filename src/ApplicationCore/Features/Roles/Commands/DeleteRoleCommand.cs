@@ -11,7 +11,7 @@ namespace ApplicationCore.Features.Roles.Commands
 {
     public class DeleteRoleCommand : IRequest<Result<string>>
     {
-        public string Id { get; set; }
+        public string Id { get; set; } = string.Empty;
     }
 
     internal class DeleteRoleCommandHandler : IRequestHandler<DeleteRoleCommand, Result<string>>

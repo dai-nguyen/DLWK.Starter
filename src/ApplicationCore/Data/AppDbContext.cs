@@ -13,8 +13,10 @@ namespace ApplicationCore.Data
         readonly ILoggerFactory _loggerFactory;
         readonly IUserSessionService _userSession;
 
+        public DbSet<BulkJob> BulkJobs { get; set; }
         public DbSet<Document> Documents { get; set; }
         public DbSet<DocumentType> DocumentTypes { get; set; }
+
 
 
         public AppDbContext(
@@ -73,6 +75,7 @@ namespace ApplicationCore.Data
             builder.ApplyConfiguration(new RoleConfiguration());
             //builder.ApplyConfiguration(new RoleClaimConfiguration());
             builder.ApplyConfiguration(new LogMsgConfiguration());
+            builder.ApplyConfiguration(new BulkJobConfiguration());
             builder.ApplyConfiguration(new DocumentConfiguration());
             builder.ApplyConfiguration(new DocumentTypeConfiguration());
 
