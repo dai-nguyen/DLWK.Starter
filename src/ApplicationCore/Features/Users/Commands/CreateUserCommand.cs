@@ -51,6 +51,11 @@ namespace ApplicationCore.Features.Users.Commands
         {
             try
             {
+                var permission = _userSession.Claims.GetPermission(Constants.ClaimNames.users);
+
+                if (!permission.can_create)
+                    return Result<string>.Fail(_localizer[Constants.Messages.PermissionDenied]);
+
                 var found = await _userManager.FindByNameAsync(command.UserName);
 
                 if (found != null)

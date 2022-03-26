@@ -2,7 +2,6 @@
 using ApplicationCore.Helpers;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Models;
-using AutoMapper;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
@@ -31,25 +30,19 @@ namespace ApplicationCore.Features.Users.Commands
     {
         readonly ILogger _logger;
         readonly IUserSessionService _userSession;
-        readonly IStringLocalizer _localizer;
-        readonly AppDbContext _dbContext;
-        readonly UserManager<AppUser> _userManager;
-        readonly IFileService _fileService;        
+        readonly IStringLocalizer _localizer;        
+        readonly UserManager<AppUser> _userManager;        
 
         public UpdateUserCommandHandler(
             ILogger<UpdateUserCommandHandler> logger,
             IUserSessionService userSession,
-            IStringLocalizer<UpdateUserCommandHandler> localizer,
-            AppDbContext dbContext,
-            UserManager<AppUser> userManager,
-            IFileService fileService)
+            IStringLocalizer<UpdateUserCommandHandler> localizer,            
+            UserManager<AppUser> userManager)
         {
             _logger = logger;
             _userSession = userSession;
-            _localizer = localizer;
-            _dbContext = dbContext;
-            _userManager = userManager;
-            _fileService = fileService;            
+            _localizer = localizer;            
+            _userManager = userManager;            
         }
 
         public async Task<Result<string>> Handle(
@@ -58,6 +51,11 @@ namespace ApplicationCore.Features.Users.Commands
         {
             try
             {
+                var permission = _userSession.Claims.GetPermission(Constants.ClaimNames.users);
+
+                if (!permission.can_edit)
+                    return Result<string>.Fail(_localizer[Constants.Messages.PermissionDenied]);
+
                 var entity = await _userManager.FindByIdAsync(command.Id);
 
                 if (entity == null)

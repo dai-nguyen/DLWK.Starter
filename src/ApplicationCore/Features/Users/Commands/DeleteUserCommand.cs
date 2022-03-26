@@ -1,4 +1,5 @@
 ﻿using ApplicationCore.Data;
+using ApplicationCore.Helpers;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Models;
 using MediatR;
@@ -17,10 +18,8 @@ namespace ApplicationCore.Features.Users.Commands
     {
         readonly ILogger _logger;
         readonly IUserSessionService _userSession;
-        readonly IStringLocalizer _localizer;
-        readonly AppDbContext _dbContext;
-        readonly UserManager<AppUser> _userManager;
-        readonly IFileService _fileService;
+        readonly IStringLocalizer _localizer;        
+        readonly UserManager<AppUser> _userManager;        
 
         public DeleteUserCommandHandler(
             ILogger<DeleteUserCommandHandler> logger,
@@ -32,10 +31,8 @@ namespace ApplicationCore.Features.Users.Commands
         {
             _logger = logger;
             _userSession = userSession;
-            _localizer = localizer;
-            _dbContext = dbContext;
-            _userManager = userManager;
-            _fileService = fileService;
+            _localizer = localizer;            
+            _userManager = userManager;            
         }
 
         public async Task<Result<string>> Handle(
@@ -44,6 +41,11 @@ namespace ApplicationCore.Features.Users.Commands
         {
             try
             {
+                var permission = _userSession.Claims.GetPermission(Constants.ClaimNames.users);
+
+                if (!permission.can_delete)
+                    return Result<string>.Fail(_localizer[Constants.Messages.PermissionDenied]);
+
                 var user = await _userManager.FindByIdAsync(command.Id);
 
                 if (user == null)

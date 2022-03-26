@@ -1,5 +1,7 @@
-﻿using ApplicationCore.Features.Users.Commands;
+﻿using ApplicationCore;
+using ApplicationCore.Features.Users.Commands;
 using ApplicationCore.Features.Users.Queries;
+using ApplicationCore.Interfaces;
 using ApplicationCore.Models;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -17,15 +19,18 @@ namespace Web.Api
         readonly ILogger _logger;
         readonly ISchedulerFactory _schedulerFactory;
         readonly IMediator _mediator;
+        readonly IUserSessionService _userSession;
         
         public UsersController(
             ILogger<UsersController> logger,
             ISchedulerFactory schedulerFactory,
-            IMediator mediator)
+            IMediator mediator,
+            IUserSessionService userSession)
         {
             _logger = logger;
             _schedulerFactory = schedulerFactory;
             _mediator = mediator;
+            _userSession = userSession;
         }
 
         [HttpGet]
@@ -57,7 +62,30 @@ namespace Web.Api
             return await _mediator.Send(command);
         }
 
+        [HttpPost]
+        public async Task<Result<string>> Bulk(BulkUserCommand command)
+        {
+            try
+            {
+                IScheduler scheduler = await _schedulerFactory.GetScheduler();
 
-        // bulk
+                var id = Guid.NewGuid().ToString();
+
+                var data = new Dictionary<string, string>();
+                data.Add("id", id);
+                data.Add("data", System.Text.Json.JsonSerializer.Serialize(command));
+                JobDataMap jobData = new JobDataMap(data);
+                var jobKey = new JobKey(Constants.ClaimNames.users);
+                await scheduler.TriggerJob(jobKey, jobData);
+
+                return Result<string>.Success(id);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error bulk user {@0) {UserId}",
+                    command, _userSession.UserId);
+            }
+            return Result<string>.Fail("Internal Server Error");
+        }
     }
 }
