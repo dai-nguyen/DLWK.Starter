@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Text.Json;
 using ApplicationCore.Features.Users.Commands;
+using ApplicationCore.Features.BulkJobs.Commands;
 
 namespace ApplicationCore.Jobs
 {
@@ -33,8 +34,16 @@ namespace ApplicationCore.Jobs
             var id = dataMap.GetString("id");
             var data = dataMap.GetString("data"); 
             var command = JsonSerializer.Deserialize<BulkUserCommand>(data);
-            await _mediator.Send(command);
+            var res = await _mediator.Send(command);
 
+            var updateBulkJobCommand = new UpdateBulkJobCommand()
+            {
+                Id = id,
+                Status = Constants.BulkJobStatus.Completed,
+                Error = 
+            }
+
+            var job = _mediator.Send(new UpdateUserCommand)
 
         }
     }

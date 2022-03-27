@@ -11,7 +11,7 @@ using System.Text.Json;
 
 namespace ApplicationCore.Features.Users.Commands
 {
-    public class BulkUser : BulkBaseModel
+    public class BulkUser : BulkModelBase
     {
         public string UserName { get; set; } = string.Empty;        
         public string Email { get; set; } = string.Empty;
@@ -23,12 +23,12 @@ namespace ApplicationCore.Features.Users.Commands
         public IEnumerable<string> Roles { get; set; } = Enumerable.Empty<string>();
     }
 
-    public class BulkUserCommand : IRequest<Result<IEnumerable<string>>>
+    public class BulkUserCommand : IRequest<Result<BulkResponseBase>>
     {
         public IEnumerable<BulkUser> Users { get; set; } = Enumerable.Empty<BulkUser>();
     }
 
-    internal class BulkUserCommandHandler : IRequestHandler<BulkUserCommand, Result<IEnumerable<string>>>
+    internal class BulkUserCommandHandler : IRequestHandler<BulkUserCommand, Result<BulkResponseBase>>
     {
         readonly ILogger _logger;
         readonly IUserSessionService _userSession;
@@ -53,25 +53,24 @@ namespace ApplicationCore.Features.Users.Commands
             _mediator = mediator;
         }
 
-        public async Task<Result<IEnumerable<string>>> Handle(
+        public async Task<Result<BulkResponseBase>> Handle(
             BulkUserCommand request, 
             CancellationToken cancellationToken)
         {
-            var list = new List<string>();
+            var messages = new List<BulkMessageResponse>();
             int processed = 0;
             int failed = 0;
-
 
             try
             {
                 var permission = _userSession.Claims.GetPermission(Constants.ClaimNames.users);
 
                 if (!permission.can_bulk)
-                    return Result<IEnumerable<string>>.Fail(_localizer[Constants.Messages.PermissionDenied]);
+                    return Result<BulkResponseBase>.Fail(_localizer[Constants.Messages.PermissionDenied]);
 
                 foreach (var r in request.Users)
                 {
-                    string operation = string.Empty;
+                    Result<string> operation = null;
 
                     if (r.Operation == BulkOperation.Upsert)
                     {
@@ -83,7 +82,12 @@ namespace ApplicationCore.Features.Users.Commands
                         operation = await DeleteAsync(r);
                     }            
                     
-                    list.Add(operation);
+                    list.Add(operation.Data);
+
+                    if (operation.Succeeded)
+                        processed += 1;
+                    else
+                        failed += 1;
                 }
             }
             catch (Exception ex)
@@ -92,11 +96,21 @@ namespace ApplicationCore.Features.Users.Commands
                     request, _userSession.UserId);
             }
 
-            return Result<IEnumerable<string>>.Success(list);
+            var data = new BulkResponseBase()
+            {
+                Messages = list,
+                Processed = processed,
+                Failed = failed
+            };
+
+            return Result<BulkResponseBase>.Success(data);
         }
 
-        async Task<string> UpsertAsync(BulkUser request)
+        async Task<Result<BulkMessageResponse>> UpsertAsync(BulkUser request)
         {
+            var message = new BulkMessageResponse();
+            message.Request = JsonSerializer.Serialize(request);
+
             try
             {
                 AppUser entity = null;
@@ -115,6 +129,8 @@ namespace ApplicationCore.Features.Users.Commands
 
                 if (entity == null)
                 {
+                    message.Operation = "add";
+
                     // add
                     var command = new CreateUserCommand()
                     {
@@ -129,12 +145,19 @@ namespace ApplicationCore.Features.Users.Commands
                         Roles = request.Roles,
                     };
 
-                    var added = await _mediator.Send(command);
+                    var addedRes = await _mediator.Send(command);
 
-                    return $"{JsonSerializer.Serialize(request)}|add|{JsonSerializer.Serialize(added)}";
+                    message.Response = JsonSerializer.Serialize(addedRes);
+
+                    if (addedRes.Succeeded)
+                        return Result<BulkMessageResponse>.Success(message);
+                    else
+                        return Result<BulkMessageResponse>.Fail(message);
                 }
                 else if (entity != null)
                 {
+                    message.Operation = "update";
+
                     // update
                     var command = new UpdateUserCommand()
                     {
@@ -154,9 +177,13 @@ namespace ApplicationCore.Features.Users.Commands
                         command.ConfirmPassword = request.Password;
                     }
 
-                    var updated = await _mediator.Send(command);
+                    var updatedRes = await _mediator.Send(command);
+                    message.Response = JsonSerializer.Serialize(updatedRes);
 
-                    return $"{JsonSerializer.Serialize(request)}|update|{JsonSerializer.Serialize(updated)}";
+                    if (updatedRes.Succeeded)
+                        return Result<BulkMessageResponse>.Success(message);
+                    else
+                        return Result<BulkMessageResponse>.Fail(message);
                 }
 
             }
@@ -166,11 +193,15 @@ namespace ApplicationCore.Features.Users.Commands
                     request, _userSession.UserId);
             }
 
-            return $"{JsonSerializer.Serialize(request)}|error|";
+            return Result<BulkMessageResponse>.Fail(message);
         }
 
-        async Task<string> DeleteAsync(BulkUser request)
+        async Task<Result<BulkMessageResponse>> DeleteAsync(BulkUser request)
         {
+            var message = new BulkMessageResponse();
+            message.Request = JsonSerializer.Serialize(request);
+            message.Operation = "delete";
+
             try
             {
                 AppUser entity = null;
@@ -189,7 +220,8 @@ namespace ApplicationCore.Features.Users.Commands
 
                 if (entity == null)
                 {
-                    return $"{JsonSerializer.Serialize(request)}|delete|not found";
+                    message.Response = "not found";
+                    return Result<BulkMessageResponse>.Fail(message);
                 }
 
                 var command = new DeleteUserCommand()
@@ -197,16 +229,21 @@ namespace ApplicationCore.Features.Users.Commands
                     Id = entity.Id
                 };
 
-                var deleted = await _mediator.Send(command);
+                var deletedRes = await _mediator.Send(command);
 
-                return $"{JsonSerializer.Serialize(request)}|delete|{JsonSerializer.Serialize(deleted)}";
+                message.Response = JsonSerializer.Serialize(deletedRes);
+
+                if (deletedRes.Succeeded)
+                    return Result<BulkMessageResponse>.Success(message);
+                else
+                    return Result<BulkMessageResponse>.Fail(message);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error bulk processing user {@0) {UserId}",
                     request, _userSession.UserId);
             }
-            return $"{JsonSerializer.Serialize(request)}|error|";
+            return Result<BulkMessageResponse>.Fail(message);
         }
     }
 }

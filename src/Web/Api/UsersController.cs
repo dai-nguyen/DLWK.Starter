@@ -1,4 +1,5 @@
 ﻿using ApplicationCore;
+using ApplicationCore.Features.BulkJobs.Commands;
 using ApplicationCore.Features.Users.Commands;
 using ApplicationCore.Features.Users.Queries;
 using ApplicationCore.Interfaces;
@@ -67,9 +68,17 @@ namespace Web.Api
         {
             try
             {
+                var jobCommand = new CreateBulkJobCommand();
+                var jobRes = await _mediator.Send(jobCommand);
+
+                if (!jobRes.Succeeded)
+                {
+                    return jobRes;
+                }
+
                 IScheduler scheduler = await _schedulerFactory.GetScheduler();
 
-                var id = Guid.NewGuid().ToString();
+                var id = jobRes.Data;
 
                 var data = new Dictionary<string, string>();
                 data.Add("id", id);

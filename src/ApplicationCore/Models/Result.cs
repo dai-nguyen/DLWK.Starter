@@ -51,6 +51,11 @@ namespace ApplicationCore.Models
             return new Result<T> { Succeeded = false };
         }
 
+        public new static Result<T> Fail(T data)
+        {
+            return new Result<T> { Succeeded = false, Data = data };
+        }
+
         public new static Result<T> Fail(string message)
         {
             return new Result<T> { Succeeded = false, Messages = new List<string> { message } };
