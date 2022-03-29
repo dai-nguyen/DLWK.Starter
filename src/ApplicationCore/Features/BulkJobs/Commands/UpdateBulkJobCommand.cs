@@ -11,7 +11,7 @@ namespace ApplicationCore.Features.BulkJobs.Commands
     {
         public string Id { get; set; } = string.Empty;
         public string Status { get; set; } = string.Empty;
-        public IEnumerable<string> Messages { get; set; } = En
+        public IEnumerable<BulkMessageResponse> Messages { get; set; }
         public int Processed { get; set; }
         public int Failed { get; set; }
     }
@@ -49,7 +49,7 @@ namespace ApplicationCore.Features.BulkJobs.Commands
                 }
 
                 entity.Status = request.Status;
-                entity.Error = request.Error;
+                entity.Error = System.Text.Json.JsonSerializer.Serialize(request.Messages);
                 entity.Processed = request.Processed;
                 entity.Failed = request.Failed;
 

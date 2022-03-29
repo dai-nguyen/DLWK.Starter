@@ -70,7 +70,7 @@ namespace ApplicationCore.Features.Users.Commands
 
                 foreach (var r in request.Users)
                 {
-                    Result<string> operation = null;
+                    Result<BulkMessageResponse> operation = null;
 
                     if (r.Operation == BulkOperation.Upsert)
                     {
@@ -82,7 +82,7 @@ namespace ApplicationCore.Features.Users.Commands
                         operation = await DeleteAsync(r);
                     }            
                     
-                    list.Add(operation.Data);
+                    messages.Add(operation.Data);
 
                     if (operation.Succeeded)
                         processed += 1;
@@ -98,7 +98,7 @@ namespace ApplicationCore.Features.Users.Commands
 
             var data = new BulkResponseBase()
             {
-                Messages = list,
+                Messages = messages,
                 Processed = processed,
                 Failed = failed
             };

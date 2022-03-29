@@ -28,10 +28,12 @@ namespace ApplicationCore.Jobs
         public async Task Execute(IJobExecutionContext context)
         {
             // get job id from the context
-            JobKey key = context.JobDetail.Key;
+            //JobKey key = context.JobDetail.Key;
 
             JobDataMap dataMap = context.JobDetail.JobDataMap;
             var id = dataMap.GetString("id");
+            _logger.LogInformation($"Processing Job ID {id}");
+
             var data = dataMap.GetString("data"); 
             var command = JsonSerializer.Deserialize<BulkUserCommand>(data);
             var res = await _mediator.Send(command);
@@ -40,11 +42,13 @@ namespace ApplicationCore.Jobs
             {
                 Id = id,
                 Status = Constants.BulkJobStatus.Completed,
-                Error = 
-            }
+                Messages = res.Data.Messages,
+                Processed = res.Data.Processed,
+                Failed = res.Data.Failed
+            };
 
-            var job = _mediator.Send(new UpdateUserCommand)
-
+            _logger.LogInformation($"Updating Job ID {id}");
+            var updated = await _mediator.Send(updateBulkJobCommand);
         }
     }
 }
