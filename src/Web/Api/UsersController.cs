@@ -63,6 +63,7 @@ namespace Web.Api
             return await _mediator.Send(command);
         }
 
+        [Route("Bulk")]
         [HttpPost]
         public async Task<Result<string>> Bulk(BulkUserCommand command)
         {

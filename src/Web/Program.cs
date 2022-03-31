@@ -7,6 +7,7 @@ using ApplicationCore.States;
 using ApplicationCore.Workers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.OpenApi.Models;
 using MudBlazor.Services;
 using NpgsqlTypes;
 using Quartz;
@@ -14,6 +15,7 @@ using Serilog;
 using Serilog.Sinks.PostgreSQL;
 using Serilog.Sinks.PostgreSQL.ColumnWriters;
 using System.Security.Cryptography.X509Certificates;
+using System.Text.Json.Serialization;
 using Web;
 using Web.Data;
 using Web.Middleware;
@@ -197,6 +199,17 @@ builder.Services.AddMemoryCache();
 
 builder.Services.AddSingleton<IAuthorizationHandler, ClaimRequirementHandler>();
 
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "DLWK.Starter API", Version = "v1" });
+});
+
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy(Constants.ClaimNames.roles,
@@ -205,6 +218,7 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy(Constants.ClaimNames.users,
         policy => policy.RequireClaim(Constants.ClaimNames.users));
 });
+
 
 var app = builder.Build();
 
@@ -219,6 +233,12 @@ if (!app.Environment.IsDevelopment())
 if (!string.IsNullOrEmpty(certData) || !string.IsNullOrEmpty(certPath))
     app.UseHttpsRedirection();
 
+app.UseSwagger();
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("v1/swagger.json", "My API V1");
+});
+
 app.UseStaticFiles();
 
 app.UseRouting();
@@ -229,14 +249,20 @@ app.UseAuthorization();
 app.UseMiddleware<LoginMiddleware>();
 app.UseMiddleware<LogoutMiddleware>();
 
-app.MapBlazorHub();
-app.MapFallbackToPage("/_Host");
+//app.MapBlazorHub();
+//app.MapFallbackToPage("/_Host");
 
 app.UseEndpoints(options =>
-{
+{    
     options.MapControllers();
     options.MapDefaultControllerRoute();
+    options.MapSwagger();
+    options.MapBlazorHub();
+    options.MapFallbackToPage("/_Host");
 });
+
+
+
 
 app.Run();
 
