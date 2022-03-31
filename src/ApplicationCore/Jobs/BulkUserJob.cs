@@ -29,26 +29,34 @@ namespace ApplicationCore.Jobs
         {
             // get job id from the context
             //JobKey key = context.JobDetail.Key;
-
-            JobDataMap dataMap = context.JobDetail.JobDataMap;
-            var id = dataMap.GetString("id");
-            _logger.LogInformation($"Processing Job ID {id}");
-
-            var data = dataMap.GetString("data"); 
-            var command = JsonSerializer.Deserialize<BulkUserCommand>(data);
-            var res = await _mediator.Send(command);
-
-            var updateBulkJobCommand = new UpdateBulkJobCommand()
+            string data = string.Empty;
+            try
             {
-                Id = id,
-                Status = Constants.BulkJobStatus.Completed,
-                Messages = res.Data.Messages,
-                Processed = res.Data.Processed,
-                Failed = res.Data.Failed
-            };
+                JobDataMap dataMap = context.JobDetail.JobDataMap;
+                var id = dataMap.GetString("id");
+                _logger.LogInformation($"Processing Job ID {id}");
 
-            _logger.LogInformation($"Updating Job ID {id}");
-            var updated = await _mediator.Send(updateBulkJobCommand);
+                data = dataMap.GetString("data");
+                var command = JsonSerializer.Deserialize<BulkUserCommand>(data);
+                var res = await _mediator.Send(command);
+
+                var updateBulkJobCommand = new UpdateBulkJobCommand()
+                {
+                    Id = id,
+                    Status = Constants.BulkJobStatus.Completed,
+                    Messages = res.Data.Messages,
+                    Processed = res.Data.Processed,
+                    Failed = res.Data.Failed
+                };
+
+                _logger.LogInformation($"Updating Job ID {id}");
+                var updated = await _mediator.Send(updateBulkJobCommand);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error while executing {0} data {1}",
+                    ex, data);
+            }
         }
     }
 }

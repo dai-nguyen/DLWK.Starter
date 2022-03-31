@@ -1,6 +1,4 @@
-﻿using ApplicationCore.Interfaces;
-
-namespace ApplicationCore.Models
+﻿namespace ApplicationCore.Models
 {
     public enum BulkOperation
     {
@@ -10,7 +8,7 @@ namespace ApplicationCore.Models
 
     public class BulkModelBase
     {
-        public string ExternalId { get; set; }
+        public string ExternalId { get; set; } = string.Empty;
         public BulkOperation Operation { get; set; }
     }
 
@@ -23,8 +21,9 @@ namespace ApplicationCore.Models
 
     public class BulkMessageResponse
     {
-        public string Request { get; set; }
-        public string Operation { get; set; }        
-        public string Response { get; set; }
+        public string Id { get; set; } = string.Empty;
+        public string Request { get; set; }= string.Empty;
+        public string Operation { get; set; } = string.Empty;
+        public string Response { get; set; } = string.Empty;
     }
 }

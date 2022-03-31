@@ -11,7 +11,7 @@ namespace ApplicationCore.Features.BulkJobs.Commands
 {
     public partial class CreateBulkJobCommand : IRequest<Result<string>>
     {
-        public string EntityName { get; set; }
+        public string EntityName { get; set; } = String.Empty;
     }
 
     internal class CreateBulkJobCommandHandler : IRequestHandler<CreateBulkJobCommand, Result<string>>

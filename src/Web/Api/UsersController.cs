@@ -45,6 +45,13 @@ namespace Web.Api
             return await _mediator.Send(query);
         }
 
+        [Route("Find")]
+        [HttpPost]
+        public async Task<PaginatedResult<GetPaginatedUsersQueryResponse>> Find(GetPaginatedUsersQuery query)
+        {
+            return await _mediator.Send(query);
+        }
+
         [HttpPost]
         public async Task<Result<string>> Post(CreateUserCommand command)
         {
@@ -69,7 +76,11 @@ namespace Web.Api
         {
             try
             {
-                var jobCommand = new CreateBulkJobCommand();
+                var jobCommand = new CreateBulkJobCommand()
+                {
+                    EntityName = Constants.ClaimNames.users
+                };
+
                 var jobRes = await _mediator.Send(jobCommand);
 
                 if (!jobRes.Succeeded)

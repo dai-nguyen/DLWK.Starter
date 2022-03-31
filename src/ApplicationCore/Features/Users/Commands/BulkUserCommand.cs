@@ -150,7 +150,10 @@ namespace ApplicationCore.Features.Users.Commands
                     message.Response = JsonSerializer.Serialize(addedRes);
 
                     if (addedRes.Succeeded)
+                    {
+                        message.Id = addedRes.Data;
                         return Result<BulkMessageResponse>.Success(message);
+                    }
                     else
                         return Result<BulkMessageResponse>.Fail(message);
                 }
@@ -167,8 +170,8 @@ namespace ApplicationCore.Features.Users.Commands
                         FirstName = request.FirstName,
                         LastName= request.LastName,
                         Title = request.Title,
-                        ExternalId= request.ExternalId,
-                        Roles= request.Roles,
+                        ExternalId = request.ExternalId,
+                        Roles = request.Roles,
                     };
 
                     if (!string.IsNullOrWhiteSpace(request.Password))
@@ -179,9 +182,10 @@ namespace ApplicationCore.Features.Users.Commands
 
                     var updatedRes = await _mediator.Send(command);
                     message.Response = JsonSerializer.Serialize(updatedRes);
+                    message.Id = entity.Id;
 
-                    if (updatedRes.Succeeded)
-                        return Result<BulkMessageResponse>.Success(message);
+                    if (updatedRes.Succeeded)                    
+                        return Result<BulkMessageResponse>.Success(message);                    
                     else
                         return Result<BulkMessageResponse>.Fail(message);
                 }
@@ -232,9 +236,10 @@ namespace ApplicationCore.Features.Users.Commands
                 var deletedRes = await _mediator.Send(command);
 
                 message.Response = JsonSerializer.Serialize(deletedRes);
+                message.Id = entity.Id;
 
-                if (deletedRes.Succeeded)
-                    return Result<BulkMessageResponse>.Success(message);
+                if (deletedRes.Succeeded)                
+                    return Result<BulkMessageResponse>.Success(message);                
                 else
                     return Result<BulkMessageResponse>.Fail(message);
             }
