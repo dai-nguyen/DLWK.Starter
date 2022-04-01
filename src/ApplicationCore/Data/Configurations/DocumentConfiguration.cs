@@ -12,9 +12,8 @@ namespace ApplicationCore.Data.Configurations
             builder.Property(_ => _.Id).HasMaxLength(37);
 
             builder.Property(_ => _.Title).HasMaxLength(100);
-            builder.Property(_ => _.Description).HasMaxLength(255);
-            builder.Property(_ => _.IsPublic);
-            builder.Property(_ => _.URL).HasMaxLength(255);
+            builder.Property(_ => _.Description).HasMaxLength(255);            
+            builder.Property(_ => _.Data);
 
             // full index
             builder.HasGeneratedTsVectorColumn(_ => 

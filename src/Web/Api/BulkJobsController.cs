@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using ApplicationCore.Features.BulkJobs.Queries;
+using ApplicationCore.Models;
+using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OpenIddict.Validation.AspNetCore;
-using Quartz;
 
 
 namespace Web.Api
@@ -12,20 +14,20 @@ namespace Web.Api
     public class BulkJobsController : Controller
     {
         readonly ILogger _logger;
-        readonly ISchedulerFactory _schedulerFactory;
+        readonly IMediator _mediator;
 
         public BulkJobsController(
             ILogger<BulkJobsController> logger,
-            ISchedulerFactory schedulerFactory)
+            IMediator mediator)
         {
             _logger = logger;
-            _schedulerFactory = schedulerFactory;
+            _mediator = mediator;
         }
 
         [HttpGet]
-        public async Task<Result<GetUserByIdQueryResponse>> Get(string id)
+        public async Task<Result<GetBulkJobByIdQueryResponse>> Get(string id)
         {
-            var query = new GetUserByIdQuery()
+            var query = new GetBulkJobByIdQuery()
             {
                 Id = id
             };

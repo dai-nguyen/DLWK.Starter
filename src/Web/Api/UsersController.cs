@@ -47,7 +47,8 @@ namespace Web.Api
 
         [Route("Find")]
         [HttpPost]
-        public async Task<PaginatedResult<GetPaginatedUsersQueryResponse>> Find(GetPaginatedUsersQuery query)
+        public async Task<PaginatedResult<GetPaginatedUsersQueryResponse>> Find(
+            GetPaginatedUsersQuery query)
         {
             return await _mediator.Send(query);
         }

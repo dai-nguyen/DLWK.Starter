@@ -36,6 +36,9 @@ namespace ApplicationCore
         {
             public const string PermissionDenied = "Permission denied";
             public const string InternalError = "InternalError";
+            public const string NotFound = "NotFound";
+            public const string Saved = "Saved";
+            public const string Deleted = "Deleted";
         }
 
         public static class BulkJobStatus

@@ -2,94 +2,73 @@
 using ApplicationCore.Entities;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Models;
-using ApplicationCore.Requests;
-using AutoMapper;
+using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using System.ComponentModel.DataAnnotations;
 
 namespace ApplicationCore.Features.Documents.Commands
 {
     public partial class UpsertDocumentCommand : IRequest<Result<string>>
     {
-        public string Id { get; set; } = Guid.NewGuid().ToString();
-        [Required]
-        public string Title { get; set; } = "";
-        [Required]
-        public string Description { get; set; } = "";
-        public bool IsPublic { get; set; } = false;
-        [Required]
-        public string URL { get; set; } = "";
-        [Required]
-        public string DocumentTypeId { get; set; } = "";
-        public UploadRequest? UploadRequest { get; set; }
+        public string Id { get; set; } = Guid.NewGuid().ToString();        
+        public string Title { get; set; } = "";        
+        public string Description { get; set; } = "";                
+        public string Data { get; set; } = "";        
+        public string DocumentTypeId { get; set; } = "";        
     }
 
     internal class UpsertDocumentCommandHandler : IRequestHandler<UpsertDocumentCommand, Result<string>>
     {
         readonly ILogger _logger;
         readonly IUserSessionService _userSession;
-        readonly IStringLocalizer _localizer;
-        readonly IMapper _mapper;
-        readonly AppDbContext _dbContext;
-        readonly IFileService _fileService;
+        readonly IStringLocalizer _localizer;        
+        readonly AppDbContext _dbContext;        
         
         public UpsertDocumentCommandHandler(
             ILogger<UpsertDocumentCommandHandler> logger,
             IUserSessionService userSession,
-            IStringLocalizer<UpsertDocumentCommandHandler> localizer,
-            IMapper mapper,
-            AppDbContext dbContext,
-            IFileService fileService)
+            IStringLocalizer<UpsertDocumentCommandHandler> localizer,            
+            AppDbContext dbContext)
         {
             _logger = logger;
             _userSession = userSession;
-            _localizer = localizer;
-            _mapper = mapper;
-            _dbContext = dbContext;
-            _fileService = fileService;            
+            _localizer = localizer;            
+            _dbContext = dbContext;            
         }
 
         public async Task<Result<string>> Handle(
             UpsertDocumentCommand command,
             CancellationToken cancellationToken)
-        {
-            var uploadRequest = command.UploadRequest;
-
-            if (uploadRequest != null)
-            {
-                uploadRequest.FileName = $"D-{Guid.NewGuid()}{uploadRequest.Extension}";
-            }
-
+        {            
             if (string.IsNullOrEmpty(command.Id))
             {
-                return await AddAsync(uploadRequest, command, cancellationToken);
+                return await AddAsync(command, cancellationToken);
             }
             else
             {
-                return await UpdateAsync(uploadRequest, command, cancellationToken);
+                return await UpdateAsync(command, cancellationToken);
             }
         }
 
-        private async Task<Result<string>> AddAsync(
-            UploadRequest? uploadRequest,
+        private async Task<Result<string>> AddAsync(            
             UpsertDocumentCommand command,
             CancellationToken cancellationToken)
         {
             try
             {
-                var doc = _mapper.Map<Document>(command);
-
-                if (uploadRequest != null)
-                    doc.URL = await _fileService.UploadAsync(uploadRequest);
-
-                doc.Id = Guid.NewGuid().ToString();
-
-                _dbContext.Documents.Add(doc);
+                var entity = new Document()
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Title = command.Title,
+                    Description = command.Description,
+                    Data = command.Data
+                };
+                
+                _dbContext.Documents.Add(entity);
                 await _dbContext.SaveChangesAsync(cancellationToken);
 
-                return Result<string>.Success(doc.Id, _localizer["Document Saved"]);
+                return Result<string>.Success(entity.Id, _localizer[Constants.Messages.Saved]);
             }
             catch (Exception ex)
             {
@@ -100,41 +79,55 @@ namespace ApplicationCore.Features.Documents.Commands
             return Result<string>.Fail(_localizer["Internal Error"]);
         }
 
-        private async Task<Result<string>> UpdateAsync(
-            UploadRequest? uploadRequest,
+        private async Task<Result<string>> UpdateAsync(            
             UpsertDocumentCommand command,
             CancellationToken cancellationToken)
         {
             try
             {
-                var doc = await _dbContext.Documents.FindAsync(command.Id);
+                var entity = await _dbContext.Documents.FindAsync(command.Id);
 
-                if (doc == null)
-                    return Result<string>.Fail(_localizer["Document Not Found!"]);
+                if (entity == null)
+                    return Result<string>.Fail(_localizer[Constants.Messages.NotFound]);
 
-                doc.Title = command.Title ?? doc.Title;
-                doc.Description = command.Description ?? doc.Description;
-                doc.IsPublic = command.IsPublic;
+                entity.Title = command.Title;
+                entity.Description = command.Description;
+                entity.DocumentTypeId = command.DocumentTypeId;
+                entity.Data = command.Data;
 
-                if (uploadRequest != null)
-                {
-                    doc.URL = await _fileService.UploadAsync(uploadRequest);
-                }
-
-                doc.DocumentTypeId = string.IsNullOrEmpty(command.DocumentTypeId) ? doc.DocumentTypeId : command.DocumentTypeId;
-
-                _dbContext.Update(doc);
+                _dbContext.Update(entity);
 
                 await _dbContext.SaveChangesAsync(cancellationToken);
 
-                return Result<string>.Success(doc.Id, _localizer["Document Updated"]);
+                return Result<string>.Success(entity.Id, _localizer[Constants.Messages.Saved]);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error updating Document {@0) {UserId}", 
                     command, _userSession.UserId);
             }
-            return Result<string>.Fail(_localizer["Internal Error"]);
+            return Result<string>.Fail(_localizer[Constants.Messages.InternalError]);
         }
     }    
+
+    public class UpsertDocumentCommandValidator : AbstractValidator<UpsertDocumentCommand>
+    {
+        readonly IStringLocalizer _localizer;        
+
+        public UpsertDocumentCommandValidator(
+            IStringLocalizer<UpsertDocumentCommandValidator> localizer)
+        {
+            _localizer = localizer;
+
+            RuleFor(_ => _.Title)
+                .NotEmpty().WithMessage(_localizer["Title is required"])
+                .MaximumLength(100).WithMessage(_localizer["Title cannot be longer than 100 characters"]);
+
+            RuleFor(_ => _.Data)
+                .NotEmpty().WithMessage(_localizer["Data is required"]);
+
+            RuleFor(_ => _.DocumentTypeId)
+                .NotEmpty().WithMessage(_localizer["Document Type ID is required"]);
+        }
+    }
 }

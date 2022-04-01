@@ -17,22 +17,19 @@ namespace ApplicationCore.Features.Documents.Commands
         readonly ILogger _logger;
         readonly IUserSessionService _userSession;
         readonly IStringLocalizer _localizer;
-        readonly AppDbContext _dbContext;        
-        readonly IFileService _fileService;
+        readonly AppDbContext _dbContext;                
         
 
         public DeleteDocumentCommandHandler(
             ILogger<DeleteDocumentCommandHandler> logger,
             IUserSessionService userSession,
             IStringLocalizer<DeleteDocumentCommandHandler> localizer,            
-            AppDbContext dbContext,            
-            IFileService fileService)
+            AppDbContext dbContext)
         {
             _logger = logger;
             _userSession = userSession;
             _localizer = localizer;
-            _dbContext = dbContext;            
-            _fileService = fileService;            
+            _dbContext = dbContext;                        
         }
 
         public async Task<Result<string>> Handle(
@@ -41,19 +38,15 @@ namespace ApplicationCore.Features.Documents.Commands
         {
             try
             {
-                var doc = await _dbContext.Documents.FindAsync(command.Id);
+                var entity = await _dbContext.Documents.FindAsync(command.Id);
 
-                if (doc == null)
-                    return Result<string>.Fail(_localizer["Document Not Found!"]);
-
-                var dbPath = doc.URL;
-
-                _dbContext.Documents.Remove(doc);
+                if (entity == null)
+                    return Result<string>.Fail(_localizer[Constants.Messages.NotFound]);
+                
+                _dbContext.Documents.Remove(entity);
                 await _dbContext.SaveChangesAsync();
-
-                await _fileService.DeleteAsync(dbPath);
-
-                return Result<string>.Success(_localizer["Document Deleted"]);
+               
+                return Result<string>.Success(_localizer[Constants.Messages.Deleted]);
             }
             catch (Exception ex)
             {
@@ -61,7 +54,7 @@ namespace ApplicationCore.Features.Documents.Commands
                     command.Id, _userSession.UserId);
             }
 
-            return Result<string>.Fail(_localizer["Internal Error"]);
+            return Result<string>.Fail(_localizer[Constants.Messages.InternalError]);
         }
     }
 }
