@@ -115,7 +115,7 @@ namespace Web.Pages.Personal
             await using MemoryStream ms = new();
             await file.OpenReadStream().CopyToAsync(ms);            
             var bytes = ms.ToArray();
-            
+                        
             await using MemoryStream ms2 = new();
             using (Image img = Image.Load(bytes))
             {

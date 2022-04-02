@@ -97,8 +97,7 @@ namespace ApplicationCore.Features.Documents.Queries
 
                         int skip = (request.PageNumber - 1) * request.PageSize;
 
-                        var dtos = await query
-                            .Include(_ => _.DocumentType)
+                        var dtos = await query                            
                             .Select(_ => new GetPaginatedDocumentsQueryResponse
                             {
                                 Id = _.Id,
@@ -109,8 +108,8 @@ namespace ApplicationCore.Features.Documents.Queries
                                 ExternalId = _.ExternalId,
                                 Title = _.Title,
                                 Description = _.Description,
-                                DocumentTypeName = _.DocumentType.Name,
-                                DocumentTypeId = _.DocumentTypeId,
+                                Size = _.Size,
+                                ContentType = _.ContentType
                             })
                             .Take(request.PageSize)
                             .Skip(skip)
@@ -146,8 +145,8 @@ namespace ApplicationCore.Features.Documents.Queries
 
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
-        public string DocumentTypeName { get; set; } = string.Empty;
-        public string DocumentTypeId { get; set; } = string.Empty;
+        public long Size { get; set; }
+        public string ContentType { get; set; } = string.Empty;
     }
 
     public class GetAllDocumentsQueryProfile : Profile

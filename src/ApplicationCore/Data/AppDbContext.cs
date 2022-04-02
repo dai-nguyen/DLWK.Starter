@@ -15,8 +15,6 @@ namespace ApplicationCore.Data
 
         public DbSet<BulkJob> BulkJobs { get; set; }
         public DbSet<Document> Documents { get; set; }
-        public DbSet<DocumentType> DocumentTypes { get; set; }
-
 
 
         public AppDbContext(
@@ -76,8 +74,7 @@ namespace ApplicationCore.Data
             //builder.ApplyConfiguration(new RoleClaimConfiguration());
             builder.ApplyConfiguration(new LogMsgConfiguration());
             builder.ApplyConfiguration(new BulkJobConfiguration());
-            builder.ApplyConfiguration(new DocumentConfiguration());
-            builder.ApplyConfiguration(new DocumentTypeConfiguration());
+            builder.ApplyConfiguration(new DocumentConfiguration());            
 
             base.OnModelCreating(builder);
         }

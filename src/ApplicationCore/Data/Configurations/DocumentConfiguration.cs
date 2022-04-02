@@ -14,6 +14,8 @@ namespace ApplicationCore.Data.Configurations
             builder.Property(_ => _.Title).HasMaxLength(100);
             builder.Property(_ => _.Description).HasMaxLength(255);            
             builder.Property(_ => _.Data);
+            builder.Property(_ => _.Size);
+            builder.Property(_ => _.ContentType).HasMaxLength(50);
 
             // full index
             builder.HasGeneratedTsVectorColumn(_ => 
@@ -21,12 +23,7 @@ namespace ApplicationCore.Data.Configurations
                 "english",
                 _ => new { _.Title, _.Description })
                 .HasIndex(_ => _.SearchVector)
-                .HasMethod("GIN");
-            
-            builder.HasOne(_ => _.DocumentType)
-                .WithMany()
-                .HasForeignKey(_ => _.DocumentTypeId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .HasMethod("GIN");            
         }
     }
 }
