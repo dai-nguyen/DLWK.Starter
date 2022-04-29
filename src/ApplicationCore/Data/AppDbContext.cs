@@ -16,8 +16,14 @@ namespace ApplicationCore.Data
         public DbSet<BulkJob> BulkJobs { get; set; }
         public DbSet<Document> Documents { get; set; }
 
+        // PointReward module
+        public DbSet<Modules.PointReward.Entities.PointReward> PointRewards { get; set; }
+        public DbSet<Modules.PointReward.Entities.PointRewardSummary> PointRewardSummaries { get; set; }
 
+
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         public AppDbContext(
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
             DbContextOptions options,
             ILoggerFactory loggerFactory,
             IUserSessionService userSession) 
