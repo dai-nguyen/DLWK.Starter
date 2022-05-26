@@ -1,6 +1,6 @@
 ﻿using ApplicationCore.Entities;
 
-namespace ApplicationCore.Modules.PointReward.Entities
+namespace PointRewardModule.Entities
 {
     public class PointRewardSummary : AuditableEntity<string>
     {

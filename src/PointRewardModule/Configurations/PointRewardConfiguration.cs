@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace ApplicationCore.Modules.PointReward.Configurations
+namespace PointRewardModule.Configurations
 {
     public class PointRewardConfiguration : IEntityTypeConfiguration<Entities.PointReward>
     {

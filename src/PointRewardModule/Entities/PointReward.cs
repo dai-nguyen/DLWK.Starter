@@ -1,7 +1,7 @@
 ﻿using ApplicationCore.Entities;
 using NpgsqlTypes;
 
-namespace ApplicationCore.Modules.PointReward.Entities
+namespace PointRewardModule.Entities
 {
     public class PointReward : AuditableEntity<string>
     {

@@ -1,12 +1,11 @@
-﻿using ApplicationCore.Modules.PointReward.Entities;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace ApplicationCore.Modules.PointReward.Configurations
+namespace PointRewardModule.Configurations
 {
-    public class PointRewardSummaryConfiguration : IEntityTypeConfiguration<PointRewardSummary>
+    public class PointRewardSummaryConfiguration : IEntityTypeConfiguration<Entities.PointRewardSummary>
     {
-        public void Configure(EntityTypeBuilder<PointRewardSummary> builder)
+        public void Configure(EntityTypeBuilder<Entities.PointRewardSummary> builder)
         {
             builder.HasKey(_ => _.Id);
             builder.Property(_ => _.Id).HasMaxLength(37);

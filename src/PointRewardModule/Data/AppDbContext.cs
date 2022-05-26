@@ -1,32 +1,31 @@
-﻿using ApplicationCore.Data.Configurations;
-using ApplicationCore.Entities;
+﻿using ApplicationCore.Data;
 using ApplicationCore.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace ApplicationCore.Data
+namespace PointRewardModule.Data
 {
     public class AppDbContext : AuditableDbContext
     {
         readonly ILoggerFactory _loggerFactory;
         readonly IUserSessionService _userSession;
 
-        public DbSet<BulkJob> BulkJobs { get; set; }
-        public DbSet<Document> Documents { get; set; }
-        
+        public DbSet<Entities.PointReward> PointRewards { get; set; }
+        public DbSet<Entities.PointRewardSummary> PointRewardSummaries { get; set; }
 
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         public AppDbContext(
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
             DbContextOptions options,
             ILoggerFactory loggerFactory,
             IUserSessionService userSession) 
             : base(options)
         {
-            _loggerFactory = loggerFactory;
-            _userSession = userSession;
         }
 
         public override async Task<int> SaveChangesAsync(
@@ -37,8 +36,8 @@ namespace ApplicationCore.Data
             {
                 switch (entry.State)
                 {
-                    case EntityState.Added:                        
-                        entry.Entity.DateCreated = DateTime.UtcNow;                        
+                    case EntityState.Added:
+                        entry.Entity.DateCreated = DateTime.UtcNow;
                         entry.Entity.CreatedBy = _userSession.UserId;
                         entry.Entity.DateUpdated = DateTime.UtcNow;
                         entry.Entity.UpdatedBy = _userSession.UserId;
@@ -68,15 +67,8 @@ namespace ApplicationCore.Data
             foreach (var property in properties)
             {
                 if (property.Name is "CreatedBy" or "UpdatedBy")
-                    property.SetColumnType("varchar(128)");                
+                    property.SetColumnType("varchar(128)");
             }
-
-            builder.ApplyConfiguration(new UserConfiguration());
-            builder.ApplyConfiguration(new RoleConfiguration());
-            //builder.ApplyConfiguration(new RoleClaimConfiguration());
-            builder.ApplyConfiguration(new LogMsgConfiguration());
-            builder.ApplyConfiguration(new BulkJobConfiguration());
-            builder.ApplyConfiguration(new DocumentConfiguration());            
 
             base.OnModelCreating(builder);
         }
@@ -104,7 +96,7 @@ namespace ApplicationCore.Data
             builder.UseNpgsql(connStr,
                 sql => sql.MigrationsAssembly(migrationsAssembly.Name).UseNodaTime());
 
-            builder.UseOpenIddict();            
+            builder.UseOpenIddict();
 
             return new AppDbContext(builder.Options, null, null);
         }
