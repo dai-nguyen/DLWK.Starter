@@ -4,28 +4,27 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PointRewardModule.Data
 {
-    public class AppDbContext : AuditableDbContext
+    public class PointRewardModuleDbContext : AuditableDbContext
     {
         readonly ILoggerFactory _loggerFactory;
         readonly IUserSessionService _userSession;
 
-        public DbSet<Entities.PointReward> PointRewards { get; set; }
-        public DbSet<Entities.PointRewardSummary> PointRewardSummaries { get; set; }
+        public DbSet<Entities.Bank> Banks { get; set; }
+        public DbSet<Entities.Transaction> Transactions { get; set; }        
 
-        public AppDbContext(
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+        public PointRewardModuleDbContext(
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
             DbContextOptions options,
             ILoggerFactory loggerFactory,
             IUserSessionService userSession) 
             : base(options)
         {
+            _loggerFactory = loggerFactory;
+            _userSession = userSession;
         }
 
         public override async Task<int> SaveChangesAsync(
@@ -77,9 +76,9 @@ namespace PointRewardModule.Data
             => optionsBuilder.UseLoggerFactory(_loggerFactory);
     }
 
-    public class AppDbContextDesignFactory : IDesignTimeDbContextFactory<AppDbContext>
+    public class PointRewardModuleDbContextDesignFactory : IDesignTimeDbContextFactory<PointRewardModuleDbContext>
     {
-        public AppDbContext CreateDbContext(string[] args)
+        public PointRewardModuleDbContext CreateDbContext(string[] args)
         {
             var configuration = new ConfigurationBuilder()
                .SetBasePath(Path.Combine(Directory.GetCurrentDirectory()))
@@ -87,18 +86,18 @@ namespace PointRewardModule.Data
                //.AddEnvironmentVariables()
                .Build();
 
-            var migrationsAssembly = typeof(AppDbContext).Assembly.GetName();
+            var migrationsAssembly = typeof(PointRewardModuleDbContext).Assembly.GetName();
 
             string connStr = configuration.GetSection("DefaultConnection").Value;
 
-            var builder = new DbContextOptionsBuilder<AppDbContext>();
+            var builder = new DbContextOptionsBuilder<PointRewardModuleDbContext>();
 
             builder.UseNpgsql(connStr,
                 sql => sql.MigrationsAssembly(migrationsAssembly.Name).UseNodaTime());
 
             builder.UseOpenIddict();
 
-            return new AppDbContext(builder.Options, null, null);
+            return new PointRewardModuleDbContext(builder.Options, null, null);
         }
     }
 }

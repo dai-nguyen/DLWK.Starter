@@ -16,9 +16,7 @@ namespace ApplicationCore.Data
         IdentityUserLogin<string>,
         IdentityRoleClaim<string>, //AppRoleClaim,
         IdentityUserToken<string>>
-    {
-        
-
+    {        
         public DbSet<Audit> AuditTrails { get; set; }
 
         public AuditableDbContext(DbContextOptions options)

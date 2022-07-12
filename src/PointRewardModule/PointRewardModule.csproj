@@ -12,12 +12,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.5" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.6" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Features\Commands\" />
-    <Folder Include="Features\Queries\" />
+    <Folder Include="Features\Transactions\Commands\" />
+    <Folder Include="Features\Transactions\Queries\" />
   </ItemGroup>
 
   <ItemGroup>
