@@ -1,11 +1,13 @@
 ﻿using ApplicationCore;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Models;
+using AutoMapper;
 using MediatR;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using PointRewardModule.Data;
+using PointRewardModule.Entities;
 using System.Text.Json;
 
 namespace PointRewardModule.Features.Banks.Queries
@@ -20,19 +22,22 @@ namespace PointRewardModule.Features.Banks.Queries
         readonly ILogger _logger;
         readonly IUserSessionService _userSession;
         readonly IStringLocalizer _localizer;
+        readonly IMapper _mapper;
         readonly IMemoryCache _cache;
         readonly PointRewardModuleDbContext _dbContext;
 
         public GetBankByIdQueryHandler(
             ILogger<GetBankByIdQueryHandler> logger, 
             IUserSessionService userSession, 
-            IStringLocalizer localizer, 
+            IStringLocalizer localizer,
+            IMapper mapper,
             IMemoryCache cache, 
             PointRewardModuleDbContext dbContext)
         {
             _logger = logger;
             _userSession = userSession;
             _localizer = localizer;
+            _mapper = mapper;
             _cache = cache;
             _dbContext = dbContext;
         }
@@ -55,7 +60,12 @@ namespace PointRewardModule.Features.Banks.Queries
 
                     var enitty = await _dbContext.Banks.FindAsync(query.Id);
 
-                    if ()
+                    if (entity == null)
+                    {
+                        return Result<GetBankByIdQueryResponse>.Fail(_localizer["Not Found"]);
+                    }
+
+                    return Result<GetBankByIdQueryResponse>.Success(_mapper.Map<GetBankByIdQueryResponse>(entity));
                 });
         }
     }
@@ -65,5 +75,13 @@ namespace PointRewardModule.Features.Banks.Queries
         public string Id { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty;
         public int Balance { get; set; }
+    }
+
+    public class GetBankByIdQueryProfile : Profile
+    {
+        public GetBankByIdQueryProfile()
+        {
+            CreateMap<Bank, GetBankByIdQueryResponse>();
+        }
     }
 }
