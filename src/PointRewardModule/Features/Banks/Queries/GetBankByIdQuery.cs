@@ -45,12 +45,7 @@ namespace PointRewardModule.Features.Banks.Queries
         public async Task<Result<GetBankByIdQueryResponse>> Handle(
             GetBankByIdQuery query,
             CancellationToken cancellationToken)
-        {
-            var entity = await _dbContext.Banks.FindAsync(query.Id);
-
-            if (entity == null)
-                return Result<GetBankByIdQueryResponse>.Fail(_localizer[Constants.Messages.NotFound]);
-
+        {            
             return await _cache.GetOrCreateAsync(
                 $"GetBankByIdQuery:{JsonSerializer.Serialize(query)}",
                 async entry =>
@@ -58,11 +53,11 @@ namespace PointRewardModule.Features.Banks.Queries
                     entry.SlidingExpiration = TimeSpan.FromSeconds(3);
                     entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(20);
 
-                    var enitty = await _dbContext.Banks.FindAsync(query.Id);
+                    var entity = await _dbContext.Banks.FindAsync(query.Id);
 
                     if (entity == null)
                     {
-                        return Result<GetBankByIdQueryResponse>.Fail(_localizer["Not Found"]);
+                        return Result<GetBankByIdQueryResponse>.Fail(_localizer[Constants.Messages.NotFound]);
                     }
 
                     return Result<GetBankByIdQueryResponse>.Success(_mapper.Map<GetBankByIdQueryResponse>(entity));
