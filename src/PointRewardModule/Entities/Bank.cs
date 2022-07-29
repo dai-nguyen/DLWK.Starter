@@ -3,7 +3,7 @@
 namespace PointRewardModule.Entities
 {
     public class Bank : AuditableEntity<string>
-    {
+    {        
         public string OwnerId { get; set; } = string.Empty;
         public string BankType { get; set; } = BankTypes.Checking;
 

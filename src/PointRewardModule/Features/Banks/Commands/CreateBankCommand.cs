@@ -1,12 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using ApplicationCore.Models;
+using FluentValidation;
+using MediatR;
 
 namespace PointRewardModule.Features.Banks.Commands
 {
-    internal class CreateBankCommand
+    public class CreateBankCommand : IRequest<Result<string>>
     {
+        public string Id { get; set; } = Guid.NewGuid().ToString();        
+        public string BankType { get; set; } = string.Empty;
+    }
+
+    public class CreateBankCommandValidator : AbstractValidator<CreateBankCommand>
+    {
+
     }
 }

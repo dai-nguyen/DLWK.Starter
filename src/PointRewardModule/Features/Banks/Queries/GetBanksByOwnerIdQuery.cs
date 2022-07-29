@@ -69,8 +69,8 @@ namespace PointRewardModule.Features.Banks.Queries
 
     public class GetBankByOwnerIdQueryResponse
     {
-        public string Id { get; set; } = string.Empty;
-        public string Name { get; set; } = string.Empty;
+        public string Id { get; set; } = string.Empty;        
+        public string BankType { get; set; } = string.Empty;
         public int Balance { get; set; }
     }
 
