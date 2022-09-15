@@ -122,7 +122,7 @@ namespace Web.Pages.Personal
                 using (Image dest = img.Clone(_ => _.Resize(new ResizeOptions()
                 {
                     Size = new SixLabors.ImageSharp.Size(200),
-                    Mode = ResizeMode.Crop
+                    Mode = SixLabors.ImageSharp.Processing.ResizeMode.Crop
                 })))
                 {
                     await dest.SaveAsJpegAsync(ms2);

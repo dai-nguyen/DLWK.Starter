@@ -46,9 +46,7 @@ namespace PointRewardModule.Features.Banks.Queries
         public async Task<Result<GetBankByOwnerIdQueryResponse>> Handle(
             GetBanksByOwnerIdQuery query,
             CancellationToken cancellationToken)
-        {
-            
-
+        {            
             return await _cache.GetOrCreateAsync(
                 $"GetBankByOwnerIdQuery:{JsonSerializer.Serialize(query)}",
                 async entry =>
@@ -62,7 +60,7 @@ namespace PointRewardModule.Features.Banks.Queries
                     if (entity == null)
                         return Result<GetBankByOwnerIdQueryResponse>.Fail(_localizer[Constants.Messages.NotFound]);
 
-                    return Result<GetBankByIdQueryResponse>.Success(_mapper.Map<GetBankByIdQueryResponse>(entity));
+                    return Result<GetBankByOwnerIdQueryResponse>.Success(_mapper.Map<GetBankByOwnerIdQueryResponse>(entity));
                 });
         }
     }
