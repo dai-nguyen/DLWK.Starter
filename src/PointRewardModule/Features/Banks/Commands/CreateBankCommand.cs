@@ -1,5 +1,4 @@
 ﻿using ApplicationCore;
-using ApplicationCore.Data;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Models;
 using FluentValidation;
@@ -48,10 +47,9 @@ namespace PointRewardModule.Features.Banks.Commands
                 entity.Balance = 0;
 
                 _dbContext.Banks.Add(entity);
-                int count = await _dbContext.SaveChangesAsync();
+                await _dbContext.SaveChangesAsync(cancellationToken);
 
-                if (count > 0)
-                    return Result<string>.Success(entity.Id, "");
+                return Result<string>.Success(entity.Id, _localizer[Constants.Messages.Saved]);
 
             }
             catch (Exception ex)
@@ -65,6 +63,20 @@ namespace PointRewardModule.Features.Banks.Commands
 
     public class CreateBankCommandValidator : AbstractValidator<CreateBankCommand>
     {
+        readonly IStringLocalizer _localizer;
 
+        public CreateBankCommandValidator(
+            IStringLocalizer<CreateBankCommandValidator> localizer)
+        {
+            _localizer = localizer;
+
+            RuleFor(_ => _.BankType)
+                .NotEmpty().WithMessage(_localizer["Bank Type is required"])
+                .MaximumLength(100).WithMessage(_localizer["Bank Type cannot be longer than 100 characters"]);            
+
+            RuleFor(_ => _.BankType)
+                .NotEmpty().WithMessage(_localizer["Bank Type is required"])
+                .MaximumLength(100).WithMessage(_localizer["Bank Type cannot be longer than 100 characters"]);
+        }
     }
 }

@@ -19,7 +19,6 @@ namespace ApplicationCore.Features.Documents.Commands
         readonly IStringLocalizer _localizer;
         readonly AppDbContext _dbContext;                
         
-
         public DeleteDocumentCommandHandler(
             ILogger<DeleteDocumentCommandHandler> logger,
             IUserSessionService userSession,
@@ -38,19 +37,19 @@ namespace ApplicationCore.Features.Documents.Commands
         {
             try
             {
-                var entity = await _dbContext.Documents.FindAsync(command.Id);
+                var entity = await _dbContext.Documents.FindAsync(command.Id, cancellationToken);
 
                 if (entity == null)
                     return Result<string>.Fail(_localizer[Constants.Messages.NotFound]);
                 
                 _dbContext.Documents.Remove(entity);
-                await _dbContext.SaveChangesAsync();
+                await _dbContext.SaveChangesAsync(cancellationToken);
                
                 return Result<string>.Success(_localizer[Constants.Messages.Deleted]);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error deleting document {0} {UserId}", 
+                _logger.LogError(ex, "Error deleting Document {0} {UserId}", 
                     command.Id, _userSession.UserId);
             }
 

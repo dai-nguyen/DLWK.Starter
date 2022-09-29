@@ -13,6 +13,7 @@ namespace PointRewardModule.Configurations
             builder.Property(_ => _.OwnerId).HasMaxLength(100);
             builder.HasIndex(_ => _.OwnerId);
 
+            builder.Property(_ => _.BankType).HasMaxLength(100);
             builder.Property(_ => _.Balance);
         }
     }

@@ -4,20 +4,19 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using PointRewardModule.Configurations;
 
 namespace PointRewardModule.Data
 {
-    public class PointRewardModuleDbContext : AuditableDbContext
+    public class PointRewardModuleDbContext : AudiableDbContextBase
     {
         readonly ILoggerFactory _loggerFactory;
         readonly IUserSessionService _userSession;
-
+        
         public DbSet<Entities.Bank> Banks { get; set; }
         public DbSet<Entities.Transaction> Transactions { get; set; }        
 
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         public PointRewardModuleDbContext(
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
             DbContextOptions options,
             ILoggerFactory loggerFactory,
             IUserSessionService userSession) 
@@ -69,6 +68,9 @@ namespace PointRewardModule.Data
                     property.SetColumnType("varchar(128)");
             }
 
+            builder.ApplyConfiguration(new BankConfiguration());
+            builder.ApplyConfiguration(new TransactionConfiguration());
+
             base.OnModelCreating(builder);
         }
 
@@ -88,14 +90,14 @@ namespace PointRewardModule.Data
 
             var migrationsAssembly = typeof(PointRewardModuleDbContext).Assembly.GetName();
 
-            string connStr = configuration.GetSection("DefaultConnection").Value;
+            string connStr = configuration.GetSection("PointRewardConnection").Value;
 
             var builder = new DbContextOptionsBuilder<PointRewardModuleDbContext>();
 
             builder.UseNpgsql(connStr,
                 sql => sql.MigrationsAssembly(migrationsAssembly.Name).UseNodaTime());
 
-            builder.UseOpenIddict();
+            //builder.UseOpenIddict();
 
             return new PointRewardModuleDbContext(builder.Options, null, null);
         }
