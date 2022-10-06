@@ -53,7 +53,7 @@ namespace PointRewardModule.Features.Banks.Queries
                     entry.SlidingExpiration = TimeSpan.FromSeconds(3);
                     entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(20);
 
-                    var entity = await _dbContext.Banks.FindAsync(query.Id);
+                    var entity = await _dbContext.Banks.FindAsync(query.Id, cancellationToken);
 
                     if (entity == null)
                     {

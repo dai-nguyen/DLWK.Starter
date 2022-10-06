@@ -51,7 +51,7 @@ namespace ApplicationCore.Features.BulkJobs.Commands
                 entity.Failed = 0;
 
                 _dbContext.BulkJobs.Add(entity);
-                int count = await _dbContext.SaveChangesAsync();
+                int count = await _dbContext.SaveChangesAsync(cancellationToken);
 
                 if (count > 0)
                     return Result<string>.Success(entity.Id, "");

@@ -55,7 +55,7 @@ namespace PointRewardModule.Features.Banks.Queries
                     entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(20);
 
                     var entity = await _dbContext.Banks
-                        .FirstOrDefaultAsync(_ => _.OwnerId == query.OwnerId);
+                        .FirstOrDefaultAsync(_ => _.OwnerId == query.OwnerId, cancellationToken);
 
                     if (entity == null)
                         return Result<GetBankByOwnerIdQueryResponse>.Fail(_localizer[Constants.Messages.NotFound]);

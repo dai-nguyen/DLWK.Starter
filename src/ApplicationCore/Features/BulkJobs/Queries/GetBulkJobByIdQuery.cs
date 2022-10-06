@@ -40,7 +40,7 @@ namespace ApplicationCore.Features.BulkJobs.Queries
             CancellationToken cancellationToken)
         {
             var entity = await _dbContext.BulkJobs
-                .FindAsync(request.Id);
+                .FindAsync(request.Id, cancellationToken);
 
             if (entity == null)            
                 return Result<GetBulkJobByIdQueryResponse>.Fail(_localizer[Constants.Messages.NotFound]);

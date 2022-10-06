@@ -60,6 +60,8 @@ namespace PointRewardModule.Data
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            builder.HasDefaultSchema("PointReward");
+
             var properties = builder.Model.GetEntityTypes().SelectMany(_ => _.GetProperties());
 
             foreach (var property in properties)
@@ -90,7 +92,7 @@ namespace PointRewardModule.Data
 
             var migrationsAssembly = typeof(PointRewardModuleDbContext).Assembly.GetName();
 
-            string connStr = configuration.GetSection("PointRewardConnection").Value;
+            string connStr = configuration.GetSection("DefaultConnection").Value;
 
             var builder = new DbContextOptionsBuilder<PointRewardModuleDbContext>();
 

@@ -93,7 +93,7 @@ namespace ApplicationCore.Features.Documents.Queries
 
                         query = query.OrderBy($"{request.OrderBy} {sortDir}");
 
-                        int total = await query.CountAsync();
+                        int total = await query.CountAsync(cancellationToken);
 
                         int skip = (request.PageNumber - 1) * request.PageSize;
 
@@ -113,7 +113,7 @@ namespace ApplicationCore.Features.Documents.Queries
                             })
                             .Take(request.PageSize)
                             .Skip(skip)
-                            .ToArrayAsync();                        
+                            .ToArrayAsync(cancellationToken);                        
 
                         return new PaginatedResult<GetPaginatedDocumentsQueryResponse>(
                             true,

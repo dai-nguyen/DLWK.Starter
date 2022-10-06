@@ -98,14 +98,14 @@ namespace ApplicationCore.Features.Roles.Queries
 
                         query = query.OrderBy($"{request.OrderBy} {sortDir}");
 
-                        int total = await query.CountAsync();
+                        int total = await query.CountAsync(cancellationToken);
 
                         int skip = (request.PageNumber - 1) * request.PageSize;
 
                         var data = await query
                             .Take(request.PageSize)
                             .Skip(skip)
-                            .ToArrayAsync();
+                            .ToArrayAsync(cancellationToken);
 
                         var dtos = _mapper.Map<IEnumerable<GetPaginatedRolesQueryResponse>>(data);
 

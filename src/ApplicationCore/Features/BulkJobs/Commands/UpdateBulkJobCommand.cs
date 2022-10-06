@@ -41,7 +41,7 @@ namespace ApplicationCore.Features.BulkJobs.Commands
         {
             try
             {
-                var entity = await _dbContext.BulkJobs.FindAsync(request.Id);
+                var entity = await _dbContext.BulkJobs.FindAsync(request.Id, cancellationToken);
 
                 if (entity == null)
                 {
@@ -53,7 +53,7 @@ namespace ApplicationCore.Features.BulkJobs.Commands
                 entity.Processed = request.Processed;
                 entity.Failed = request.Failed;
 
-                await _dbContext.SaveChangesAsync();
+                await _dbContext.SaveChangesAsync(cancellationToken);
 
                 return Result<string>.Success();
             }

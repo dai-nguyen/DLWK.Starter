@@ -44,7 +44,7 @@ namespace ApplicationCore.Features.Documents.Queries
         {
             try
             {
-                var entity = await _dbContext.Documents.FindAsync(request.Id);
+                var entity = await _dbContext.Documents.FindAsync(request.Id, cancellationToken);
 
                 if (entity == null)
                 {

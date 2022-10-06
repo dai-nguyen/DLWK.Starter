@@ -76,7 +76,7 @@ namespace ApplicationCore.Features.Roles.Queries
                         if (!string.IsNullOrWhiteSpace(request.SearchString))
                             query = query.Where(_ => _.SearchVector.Matches(request.SearchString));
 
-                        var entities = await query.OrderBy(_ => _.Name).ToArrayAsync();
+                        var entities = await query.OrderBy(_ => _.Name).ToArrayAsync(cancellationToken);
 
                         var roles = _mapper.Map<IEnumerable<GetAllRolesQueryResponse>>(entities);
 

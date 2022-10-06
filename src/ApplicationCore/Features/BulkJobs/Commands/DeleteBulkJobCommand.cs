@@ -45,7 +45,7 @@ namespace ApplicationCore.Features.BulkJobs.Commands
                 }
 
                 _dbContext.BulkJobs.Remove(entity);
-                await _dbContext.SaveChangesAsync();
+                await _dbContext.SaveChangesAsync(cancellationToken);
                 return Result<string>.Success();
             }
             catch (Exception ex)

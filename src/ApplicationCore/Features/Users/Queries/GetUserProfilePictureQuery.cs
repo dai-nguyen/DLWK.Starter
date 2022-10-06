@@ -53,9 +53,9 @@ namespace ApplicationCore.Features.Users.Queries
                         var data = await _dbContext.Users
                             .Where(_ => _.UserName == request.UserName)
                             .Select(_ => _.ProfilePicture)
-                            .FirstOrDefaultAsync();
+                            .FirstOrDefaultAsync(cancellationToken);
 
-                                return Result<string>.Success(data, String.Empty);
+                        return Result<string>.Success(data, String.Empty);
                     });
             }
             catch (Exception ex)
