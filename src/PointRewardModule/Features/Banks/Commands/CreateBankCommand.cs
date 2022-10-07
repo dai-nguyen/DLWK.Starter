@@ -11,8 +11,7 @@ using PointRewardModule.Entities;
 namespace PointRewardModule.Features.Banks.Commands
 {
     public class CreateBankCommand : IRequest<Result<string>>
-    {
-        public string Id { get; set; } = Guid.NewGuid().ToString();        
+    {        
         public string BankType { get; set; } = string.Empty;
     }
 
