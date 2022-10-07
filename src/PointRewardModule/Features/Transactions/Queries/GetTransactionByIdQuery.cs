@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace PointRewardModule.Features.Transactions.Queries
 {
-    public class GetTransactionByIdQuery : IRequest<GetTransactionByIdQueryResponse>
+    public class GetTransactionByIdQuery : IRequest<Result<GetTransactionByIdQueryResponse>>
     {
         public string Id { get; set; } = string.Empty;
     }
