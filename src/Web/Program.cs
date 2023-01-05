@@ -23,10 +23,10 @@ using Web.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-string certData = builder.Configuration.GetSection("CertData").Value;
-string certPath = builder.Configuration.GetSection("CertPath").Value;
+string certData = builder.Configuration.GetSection("CertData")?.Value ?? "";
+string certPath = builder.Configuration.GetSection("CertPath")?.Value ?? "";
 
-string connStr = builder.Configuration.GetSection("DefaultConnection").Value;
+string connStr = builder.Configuration.GetSection("DefaultConnection")?.Value ?? "";
 string tableName = "Logs";
 
 var columnWriters = new Dictionary<string, ColumnWriterBase>
@@ -152,7 +152,7 @@ builder.Services.AddOpenIddict()
     .AddServer(options =>
     {
         // Enable the token endpoint.
-        options.SetTokenEndpointUris("/connect/token");
+        options.SetTokenEndpointUris("connect/token");
 
         // Enable the password flow.
         options.AllowPasswordFlow();

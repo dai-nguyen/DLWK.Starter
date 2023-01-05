@@ -27,6 +27,7 @@ namespace Web.Api
         public async Task<IActionResult> Exchange()
         {
             var request = HttpContext.GetOpenIddictServerRequest();
+#pragma warning disable CS8604 // Possible null reference argument.
             if (request.IsPasswordGrantType())
             {
                 var user = await _userManager.FindByNameAsync(request.Username);
@@ -45,6 +46,7 @@ namespace Web.Api
                 }
 
                 // Validate Security Code
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
                 if (!request.Password.EndsWith(user.SecurityCode)
                     || request.Password.Length <= user.SecurityCode.Length)
                 {
@@ -59,6 +61,7 @@ namespace Web.Api
 
                     return Forbid(properties, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
                 }
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
 
                 request.Password = request.Password.Substring(0, request.Password.Length - user.SecurityCode.Length);
 
@@ -149,6 +152,7 @@ namespace Web.Api
 
                 return SignIn(principal, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
             }
+#pragma warning restore CS8604 // Possible null reference argument.
             throw new NotImplementedException("The specified grant type is not implemented.");
         }
 
