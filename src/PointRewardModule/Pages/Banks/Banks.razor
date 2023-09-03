@@ -1,0 +1,16 @@
+﻿@using PointRewardModule.Features.Banks.Queries
+
+@foreach(var bank in _banks)
+{
+<MudCard>
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">@bank.BankType</MudText>
+        </CardHeaderContent>        
+    </MudCardHeader>
+    
+    <MudCardContent>
+            <MudText>@bank.Balance.ToString("C")</MudText>
+    </MudCardContent>    
+</MudCard>
+}

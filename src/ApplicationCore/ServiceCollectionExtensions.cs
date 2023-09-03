@@ -4,7 +4,6 @@ using ApplicationCore.Features.Users.Commands;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Services;
 using FluentValidation;
-using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -26,7 +25,10 @@ namespace ApplicationCore
             services.AddEmailSender(configuration);
 
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
-            services.AddMediatR(Assembly.GetExecutingAssembly());            
+            services.AddMediatR(cfg =>
+            {
+                cfg.RegisterServicesFromAssemblies(typeof(ServiceCollectionExtensions).Assembly);
+            });
             services.AddValidations();
 
             services.AddTransient<IFileService, FileService>();

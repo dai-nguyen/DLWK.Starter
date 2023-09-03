@@ -124,7 +124,7 @@ namespace Web.Pages.Pages.Users
             var p = new DialogParameters();
             p.Add("ContentText", $"Do you really want to delete user '{_command.UserName}'?");
             p.Add("ButtonText", "Delete");
-            p.Add("Color", Color.Error);
+            p.Add("Color", MudBlazor.Color.Error);
 
             var options = new DialogOptions()
             {

@@ -15,7 +15,7 @@ namespace Web.Shared
         public string ButtonText { get; set; }
 
         [Parameter] 
-        public Color Color { get; set; }
+        public MudBlazor.Color Color { get; set; }
 
         private void Cancel()
         {

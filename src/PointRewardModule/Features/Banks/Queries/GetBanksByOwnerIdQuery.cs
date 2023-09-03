@@ -13,12 +13,12 @@ using System.Text.Json;
 
 namespace PointRewardModule.Features.Banks.Queries
 {
-    public class GetBanksByOwnerIdQuery : IRequest<Result<GetBankByOwnerIdQueryResponse>>
+    public class GetBanksByOwnerIdQuery : IRequest<Result<IEnumerable<GetBankByOwnerIdQueryResponse>>>
     {
         public string OwnerId { get; set; } = string.Empty;
     }
 
-    internal class GetBankByOwnerIdQueryHandler : IRequestHandler<GetBanksByOwnerIdQuery, Result<GetBankByOwnerIdQueryResponse>>
+    internal class GetBanksByOwnerIdQueryHandler : IRequestHandler<GetBanksByOwnerIdQuery, Result<IEnumerable<GetBankByOwnerIdQueryResponse>>>
     {
         readonly ILogger _logger;
         readonly IUserSessionService _userSession;
@@ -27,8 +27,8 @@ namespace PointRewardModule.Features.Banks.Queries
         readonly IMemoryCache _cache;
         readonly PointRewardModuleDbContext _dbContext;
 
-        public GetBankByOwnerIdQueryHandler(
-            ILogger<GetBankByOwnerIdQueryHandler> logger,
+        public GetBanksByOwnerIdQueryHandler(
+            ILogger<GetBanksByOwnerIdQueryHandler> logger,
             IUserSessionService userSession,
             IStringLocalizer localizer,
             IMapper mapper,
@@ -43,7 +43,7 @@ namespace PointRewardModule.Features.Banks.Queries
             _dbContext = dbContext;
         }
 
-        public async Task<Result<GetBankByOwnerIdQueryResponse>> Handle(
+        public async Task<Result<IEnumerable<GetBankByOwnerIdQueryResponse>>> Handle(
             GetBanksByOwnerIdQuery query,
             CancellationToken cancellationToken)
         {            
@@ -54,13 +54,17 @@ namespace PointRewardModule.Features.Banks.Queries
                     entry.SlidingExpiration = TimeSpan.FromSeconds(3);
                     entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(20);
 
-                    var entity = await _dbContext.Banks
-                        .FirstOrDefaultAsync(_ => _.OwnerId == query.OwnerId, cancellationToken);
+                    var entities = await _dbContext.Banks
+                        .Where(_ => _.OwnerId == query.OwnerId)
+                        .ToListAsync();
 
-                    if (entity == null)
-                        return Result<GetBankByOwnerIdQueryResponse>.Fail(_localizer[Constants.Messages.NotFound]);
+                    if (entities == null)
+                        return Result<IEnumerable<GetBankByOwnerIdQueryResponse>>.Fail(_localizer[Constants.Messages.NotFound]);
 
-                    return Result<GetBankByOwnerIdQueryResponse>.Success(_mapper.Map<GetBankByOwnerIdQueryResponse>(entity));
+                    var dtos = _mapper.Map<IEnumerable<GetBankByOwnerIdQueryResponse>>(entities);
+
+                    return Result<IEnumerable<GetBankByOwnerIdQueryResponse>>
+                        .Success(dtos);
                 });
         }
     }

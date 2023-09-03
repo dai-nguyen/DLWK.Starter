@@ -26,7 +26,7 @@ namespace ApplicationCore.Workers
             var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<AppRole>>();
 
 
-            if (!dbContext.Roles.Any())
+            if (!await dbContext.Roles.AnyAsync())
             {
                 foreach (var role in GetPreconfiguredRoles())
                 {
@@ -40,7 +40,7 @@ namespace ApplicationCore.Workers
                 }
             }
 
-            if (!dbContext.Users.Any())
+            if (!await dbContext.Users.AnyAsync())
             {
                 var defaultUser = new AppUser()
                 {

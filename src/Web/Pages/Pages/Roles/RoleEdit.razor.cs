@@ -91,7 +91,7 @@ namespace Web.Pages.Pages.Roles
             var p = new DialogParameters();
             p.Add("ContentText", $"Do you really want to delete role '{_command.Name}'?");
             p.Add("ButtonText", "Delete");
-            p.Add("Color", Color.Error);
+            p.Add("Color", MudBlazor.Color.Error);
 
             var options = new DialogOptions()
             {

@@ -18,7 +18,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTest", "tests\UnitTest\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Web", "src\Web\Web.csproj", "{C715A887-1F07-414D-8F18-FC041D6B5D7B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PointRewardModule", "src\PointRewardModule\PointRewardModule.csproj", "{30CCA4E2-D032-423C-A1A6-ABE386211C56}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PointRewardModule", "src\PointRewardModule\PointRewardModule.csproj", "{30CCA4E2-D032-423C-A1A6-ABE386211C56}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
