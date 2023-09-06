@@ -1,6 +1,4 @@
-﻿using ApplicationCore;
-using ApplicationCore.Data;
-using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
+﻿using ApplicationCore.Data;
 using Microsoft.AspNetCore.Identity;
 using System.Collections.Concurrent;
 

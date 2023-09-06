@@ -34,11 +34,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ApplicationCore\ApplicationCore.csproj" />
-    <ProjectReference Include="..\PointRewardModule\PointRewardModule.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Modules\" />
+    <Folder Include="Workers\" />
   </ItemGroup>
 
 </Project>

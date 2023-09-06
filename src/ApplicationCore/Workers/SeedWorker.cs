@@ -45,8 +45,12 @@ namespace ApplicationCore.Workers
                 var defaultUser = new AppUser()
                 {
                     Id = Guid.NewGuid().ToString(),
+                    FirstName = "Admin",
+                    LastName = "User",
+                    Title = "Administrator",
                     UserName = "admin",
                     Email = "admin@starter.com",
+                    SecurityCode = "RavenCave",
                 };
                 await userManager.CreateAsync(defaultUser, "Pa$$w0rd");
                 await userManager.AddToRoleAsync(defaultUser, "Admin");
