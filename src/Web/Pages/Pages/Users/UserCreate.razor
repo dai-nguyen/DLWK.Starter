@@ -1,9 +1,10 @@
 ﻿@page "/pages/users/create"
 @using ApplicationCore.Features.Users.Commands
 @using ApplicationCore;
+@using ApplicationCore.Constants;
 
 <MudPaper Class="pa-4">
-    <AuthorizeView Policy="@Constants.ClaimNames.users">
+    <AuthorizeView Policy="@Const.ClaimNames.users">
         <Authorized>
             <EditForm Model="@_command" OnValidSubmit="SubmitAsync" Context="userContext">
                 <MudGrid>

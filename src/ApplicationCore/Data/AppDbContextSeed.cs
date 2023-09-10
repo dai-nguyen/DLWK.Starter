@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using ApplicationCore.Constants;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using System.Security.Claims;
 
@@ -24,10 +25,10 @@ namespace ApplicationCore.Data
                         await roleManager.CreateAsync(role);
                         await roleManager.AddClaimAsync(
                             role, 
-                            new Claim(Constants.ClaimNames.roles, "read edit create delete"));
+                            new Claim(Const.ClaimNames.roles, "read edit create delete"));
                         await roleManager.AddClaimAsync(
                             role, 
-                            new Claim(Constants.ClaimNames.users, "read edit create delete"));
+                            new Claim(Const.ClaimNames.users, "read edit create delete"));
                     }
                 }
 

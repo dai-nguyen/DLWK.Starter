@@ -15,7 +15,9 @@ namespace ApplicationCore.Data
 
         public DbSet<BulkJob> BulkJobs { get; set; }
         public DbSet<Document> Documents { get; set; }
-        
+        public DbSet<Customer> Customers { get; set; }
+        public DbSet<Contact> Contacts { get; set; }
+
 
         public AppDbContext(
             DbContextOptions options,
@@ -75,6 +77,8 @@ namespace ApplicationCore.Data
             builder.ApplyConfiguration(new LogMsgConfiguration());
             builder.ApplyConfiguration(new BulkJobConfiguration());
             builder.ApplyConfiguration(new DocumentConfiguration());            
+            builder.ApplyConfiguration(new CustomerConfiguration());
+            builder.ApplyConfiguration(new ContactConfiguration());
 
             base.OnModelCreating(builder);
         }

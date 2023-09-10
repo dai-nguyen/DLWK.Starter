@@ -1,6 +1,5 @@
-﻿using ApplicationCore.Constants;
-using ApplicationCore.Data;
-using ApplicationCore.Helpers;
+﻿using ApplicationCore.Data;
+using ApplicationCore.Entities;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Models;
 using ApplicationCore.Requests;
@@ -10,16 +9,19 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using System.Collections.Immutable;
+using System.Collections.ObjectModel;
 using System.Linq.Dynamic.Core;
 using System.Text.Json;
 
-namespace ApplicationCore.Features.Roles.Queries
+namespace ApplicationCore.Features.Contacts.Queries
 {
-    public class GetPaginatedRolesQuery : PaginateRequest, IRequest<PaginatedResult<GetPaginatedRolesQueryResponse>>
+    public class GetPaginatedContactsQuery : PaginateRequest, IRequest<PaginatedResult<GetPaginatedContactsQueryResponse>>
     {
+        public string CustomerId { get; set; }
         public string SearchString { get; set; }
 
-        public GetPaginatedRolesQuery(
+        public GetPaginatedContactsQuery(
             int pageNumber,
             int pageSize,
             string orderBy,
@@ -32,8 +34,8 @@ namespace ApplicationCore.Features.Roles.Queries
         }
     }
 
-    internal class GetPaginatedRolesQueryHandler :
-        IRequestHandler<GetPaginatedRolesQuery, PaginatedResult<GetPaginatedRolesQueryResponse>>
+    internal class GetPaginatedContactsQueryHandler :
+        IRequestHandler<GetPaginatedContactsQuery, PaginatedResult<GetPaginatedContactsQueryResponse>>
     {
         readonly ILogger _logger;
         readonly IUserSessionService _userSession;
@@ -42,11 +44,11 @@ namespace ApplicationCore.Features.Roles.Queries
         readonly IMapper _mapper;
         readonly IMemoryCache _cache;
 
-        public GetPaginatedRolesQueryHandler(
-            ILogger<GetPaginatedRolesQueryHandler> logger,
+        public GetPaginatedContactsQueryHandler(
+            ILogger<GetPaginatedContactsQueryHandler> logger,
             IUserSessionService userSession,
             AppDbContext dbContext,
-            IStringLocalizer<GetPaginatedRolesQueryHandler> localizer,
+            IStringLocalizer<GetPaginatedContactsQueryHandler> localizer,
             IMapper mapper,
             IMemoryCache cache)
         {
@@ -58,20 +60,15 @@ namespace ApplicationCore.Features.Roles.Queries
             _cache = cache;
         }
 
-        public async Task<PaginatedResult<GetPaginatedRolesQueryResponse>> Handle(
-            GetPaginatedRolesQuery request,
+        public async Task<PaginatedResult<GetPaginatedContactsQueryResponse>> Handle(
+            GetPaginatedContactsQuery request, 
             CancellationToken cancellationToken)
         {
             try
             {
-                var permission = _userSession.Claims.GetPermission(Const.ClaimNames.roles);
-
-                if (!permission.can_read)
-                    PaginatedResult<GetPaginatedRolesQueryResponse>.Failure(_localizer[Const.Messages.PermissionDenied]);
-
 #pragma warning disable CS8603 // Possible null reference return.
                 return await _cache.GetOrCreateAsync(
-                    $"GetPaginatedRolesQuery:{JsonSerializer.Serialize(request)}",
+                    $"GetPaginatedContactsQuery:{JsonSerializer.Serialize(request)}",
                     async entry =>
                     {
                         entry.SlidingExpiration = TimeSpan.FromSeconds(3);
@@ -87,7 +84,7 @@ namespace ApplicationCore.Features.Roles.Queries
                         if (string.IsNullOrEmpty(request.OrderBy))
                             request.OrderBy = "Id";
 
-                        var query = _dbContext.Roles
+                        var query = _dbContext.Contacts
                             .AsNoTracking()
                             .AsQueryable();
 
@@ -104,14 +101,15 @@ namespace ApplicationCore.Features.Roles.Queries
 
                         int skip = (request.PageNumber - 1) * request.PageSize;
 
-                        var data = await query
+                        var entities = await query
                             .Take(request.PageSize)
                             .Skip(skip)
                             .ToArrayAsync(cancellationToken);
 
-                        var dtos = _mapper.Map<IEnumerable<GetPaginatedRolesQueryResponse>>(data);
-
-                        return new PaginatedResult<GetPaginatedRolesQueryResponse>(
+                        var dtos = entities == null ? Enumerable.Empty<GetPaginatedContactsQueryResponse>()
+                            : _mapper.Map<Contact[], GetPaginatedContactsQueryResponse[]>(entities);
+                        
+                        return new PaginatedResult<GetPaginatedContactsQueryResponse>(
                             true,
                             dtos,
                             Enumerable.Empty<string>(),
@@ -120,33 +118,37 @@ namespace ApplicationCore.Features.Roles.Queries
                             request.PageSize);
                     });
 #pragma warning restore CS8603 // Possible null reference return.
-
-
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error getting paginated roles {@0} {UserId}",
+                _logger.LogError(ex, "Error getting paginated contacts {@0} {UserId}",
                     request, _userSession.UserId);
             }
 
-            return PaginatedResult<GetPaginatedRolesQueryResponse>
-                .Failure(_localizer[Const.Messages.InternalError]);
+            return PaginatedResult<GetPaginatedContactsQueryResponse>.Failure(_localizer["Internal Error"]);
         }
     }
 
-
-    public class GetPaginatedRolesQueryResponse
+    public class GetPaginatedContactsQueryResponse
     {
         public string Id { get; set; } = string.Empty;
-        public string Name { get; set; } = string.Empty;
-        public string Description { get; set; } = string.Empty;
+        public DateTime DateCreated { get; set; }
+        public DateTime DateUpdated { get; set; }
+        public string CreatedBy { get; set; } = string.Empty;
+        public string UpdatedBy { get; set; } = string.Empty;
+        public string ExternalId { get; set; } = string.Empty;
+
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Email { get; set; }
+        public string Phone { get; set; }
     }
 
-    public class GetPaginatedRolesQueryResponseProfile : Profile
+    public class GetPaginatedContactsQueryProfile : Profile
     {
-        public GetPaginatedRolesQueryResponseProfile()
+        public GetPaginatedContactsQueryProfile()
         {
-            CreateMap<AppRole, GetPaginatedRolesQueryResponse>();
+            CreateMap<Contact, GetPaginatedContactsQueryResponse>();
         }
     }
 }

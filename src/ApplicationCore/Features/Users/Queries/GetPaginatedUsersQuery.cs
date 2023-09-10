@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Data;
+﻿using ApplicationCore.Constants;
+using ApplicationCore.Data;
 using ApplicationCore.Helpers;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Models;
@@ -63,11 +64,12 @@ namespace ApplicationCore.Features.Users.Queries
         {
             try
             {
-                var permission = _userSession.Claims.GetPermission(Constants.ClaimNames.users);
+                var permission = _userSession.Claims.GetPermission(Const.ClaimNames.users);
 
                 if (!permission.can_read)
-                    PaginatedResult<GetPaginatedUsersQueryResponse>.Failure(_localizer[Constants.Messages.PermissionDenied]);
+                    PaginatedResult<GetPaginatedUsersQueryResponse>.Failure(_localizer[Const.Messages.PermissionDenied]);
 
+#pragma warning disable CS8603 // Possible null reference return.
                 return await _cache.GetOrCreateAsync(
                     $"GetPaginatedUsersQuery:{JsonSerializer.Serialize(request)}",
                     async entry =>
@@ -117,6 +119,7 @@ namespace ApplicationCore.Features.Users.Queries
                             request.PageNumber,
                             request.PageSize);
                     });
+#pragma warning restore CS8603 // Possible null reference return.
             }
             catch (Exception ex)
             {
@@ -124,7 +127,7 @@ namespace ApplicationCore.Features.Users.Queries
                     request, _userSession.UserId);
             }
 
-            return PaginatedResult<GetPaginatedUsersQueryResponse>.Failure(_localizer[Constants.Messages.InternalError]);
+            return PaginatedResult<GetPaginatedUsersQueryResponse>.Failure(_localizer[Const.Messages.InternalError]);
         }
     }
 

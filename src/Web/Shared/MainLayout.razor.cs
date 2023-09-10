@@ -1,4 +1,4 @@
-﻿using ApplicationCore;
+﻿using ApplicationCore.Constants;
 using ApplicationCore.States;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
@@ -30,7 +30,7 @@ namespace Web.Shared
 
             if (string.IsNullOrEmpty(_profilePictureState.ProfilePicture))
             {
-                var res = await _protectedLocalStore.GetAsync<string>(Constants.LocalStorageKeys.ProfilePicture);
+                var res = await _protectedLocalStore.GetAsync<string>(Const.LocalStorageKeys.ProfilePicture);
 
                 if (res.Success)
                 {

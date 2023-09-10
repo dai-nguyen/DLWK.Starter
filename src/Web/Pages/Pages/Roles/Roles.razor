@@ -1,8 +1,9 @@
 ﻿@page "/pages/roles"
 @using ApplicationCore.Features.Roles.Queries
 @using ApplicationCore;
+@using ApplicationCore.Constants;
 
-<AuthorizeView Policy="@Constants.ClaimNames.roles">
+<AuthorizeView Policy="@Const.ClaimNames.roles">
     <Authorized>
 
         <MudTable ServerData="@(new Func<TableState, Task<TableData<GetPaginatedRolesQueryResponse>>>(ReloadData))"

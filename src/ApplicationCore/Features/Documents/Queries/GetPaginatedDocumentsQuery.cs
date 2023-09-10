@@ -63,6 +63,7 @@ namespace ApplicationCore.Features.Documents.Queries
         {
             try
             {
+#pragma warning disable CS8603 // Possible null reference return.
                 return await _cache.GetOrCreateAsync(
                     $"GetPaginatedDocumentsQuery:{JsonSerializer.Serialize(request)}",
                     async entry =>
@@ -113,7 +114,7 @@ namespace ApplicationCore.Features.Documents.Queries
                             })
                             .Take(request.PageSize)
                             .Skip(skip)
-                            .ToArrayAsync(cancellationToken);                        
+                            .ToListAsync(cancellationToken);                        
 
                         return new PaginatedResult<GetPaginatedDocumentsQueryResponse>(
                             true,
@@ -123,6 +124,7 @@ namespace ApplicationCore.Features.Documents.Queries
                             request.PageNumber,
                             request.PageSize);
                     });
+#pragma warning restore CS8603 // Possible null reference return.
             }
             catch (Exception ex)
             {
@@ -149,9 +151,9 @@ namespace ApplicationCore.Features.Documents.Queries
         public string ContentType { get; set; } = string.Empty;
     }
 
-    public class GetAllDocumentsQueryProfile : Profile
+    public class GetPaginatedDocumentsQueryProfile : Profile
     {
-        public GetAllDocumentsQueryProfile()
+        public GetPaginatedDocumentsQueryProfile()
         {
             CreateMap<Document, GetPaginatedDocumentsQueryResponse>();
         }

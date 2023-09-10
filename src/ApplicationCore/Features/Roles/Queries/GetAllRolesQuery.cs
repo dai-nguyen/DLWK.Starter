@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Data;
+﻿using ApplicationCore.Constants;
+using ApplicationCore.Data;
 using ApplicationCore.Helpers;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Models;
@@ -57,11 +58,12 @@ namespace ApplicationCore.Features.Roles.Queries
         {
             try
             {
-                var permission = _userSession.Claims.GetPermission(Constants.ClaimNames.roles);
+                var permission = _userSession.Claims.GetPermission(Const.ClaimNames.roles);
 
                 if (!permission.can_read)
-                    return Result<IEnumerable<GetAllRolesQueryResponse>>.Fail(_localizer[Constants.Messages.PermissionDenied]);
+                    return Result<IEnumerable<GetAllRolesQueryResponse>>.Fail(_localizer[Const.Messages.PermissionDenied]);
 
+#pragma warning disable CS8603 // Possible null reference return.
                 return await _cache.GetOrCreateAsync(
                     $"GetAllRolesQuery:{JsonSerializer.Serialize(request)}",
                     async entry => 
@@ -82,6 +84,7 @@ namespace ApplicationCore.Features.Roles.Queries
 
                         return Result<IEnumerable<GetAllRolesQueryResponse>>.Success(roles);
                     });
+#pragma warning restore CS8603 // Possible null reference return.
             }
             catch (Exception ex)
             {
@@ -89,7 +92,7 @@ namespace ApplicationCore.Features.Roles.Queries
                     request, _userSession.UserId);
             }
 
-            return Result<IEnumerable<GetAllRolesQueryResponse>>.Fail(_localizer[Constants.Messages.InternalError]);
+            return Result<IEnumerable<GetAllRolesQueryResponse>>.Fail(_localizer[Const.Messages.InternalError]);
         }
     }
 

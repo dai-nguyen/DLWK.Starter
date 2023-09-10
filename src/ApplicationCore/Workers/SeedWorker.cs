@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Data;
+﻿using ApplicationCore.Constants;
+using ApplicationCore.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -33,10 +34,10 @@ namespace ApplicationCore.Workers
                     await roleManager.CreateAsync(role);
                     await roleManager.AddClaimAsync(
                         role,
-                        new Claim(Constants.ClaimNames.roles, "read edit create delete"));
+                        new Claim(Const.ClaimNames.roles, "read edit create delete"));
                     await roleManager.AddClaimAsync(
                         role,
-                        new Claim(Constants.ClaimNames.users, "read edit create delete"));
+                        new Claim(Const.ClaimNames.users, "read edit create delete"));
                 }
             }
 

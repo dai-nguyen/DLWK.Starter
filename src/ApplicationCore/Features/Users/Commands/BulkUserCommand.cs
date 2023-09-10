@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Data;
+﻿using ApplicationCore.Constants;
+using ApplicationCore.Data;
 using ApplicationCore.Helpers;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Models;
@@ -63,10 +64,10 @@ namespace ApplicationCore.Features.Users.Commands
 
             try
             {
-                var permission = _userSession.Claims.GetPermission(Constants.ClaimNames.users);
+                var permission = _userSession.Claims.GetPermission(Const.ClaimNames.users);
 
                 if (!permission.can_bulk)
-                    return Result<BulkResponseBase>.Fail(_localizer[Constants.Messages.PermissionDenied]);
+                    return Result<BulkResponseBase>.Fail(_localizer[Const.Messages.PermissionDenied]);
 
                 foreach (var r in request.Users)
                 {

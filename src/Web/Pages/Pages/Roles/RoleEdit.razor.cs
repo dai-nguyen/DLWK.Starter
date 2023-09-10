@@ -1,4 +1,4 @@
-﻿using ApplicationCore;
+﻿using ApplicationCore.Constants;
 using ApplicationCore.Features.Roles.Commands;
 using ApplicationCore.Features.Roles.Queries;
 using ApplicationCore.Helpers;
@@ -28,7 +28,7 @@ namespace Web.Pages.Pages.Roles
 
             if (state.User.Identity.IsAuthenticated)
             {
-                var permission = state.User.Claims.GetPermission(Constants.ClaimNames.roles);
+                var permission = state.User.Claims.GetPermission(Const.ClaimNames.roles);
 
                 if (permission != null)
                 {                    

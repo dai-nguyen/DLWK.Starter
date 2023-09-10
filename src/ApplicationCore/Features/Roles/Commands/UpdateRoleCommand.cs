@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Data;
+﻿using ApplicationCore.Constants;
+using ApplicationCore.Data;
 using ApplicationCore.Helpers;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Models;
@@ -47,10 +48,10 @@ namespace ApplicationCore.Features.Roles.Commands
         {
             try
             {
-                var permission = _userSession.Claims.GetPermission(Constants.ClaimNames.roles);
+                var permission = _userSession.Claims.GetPermission(Const.ClaimNames.roles);
 
                 if (!permission.can_edit)
-                    return Result<string>.Fail(_localizer[Constants.Messages.PermissionDenied]);
+                    return Result<string>.Fail(_localizer[Const.Messages.PermissionDenied]);
 
                 var entity = await _roleManager.FindByIdAsync(request.Id);
 

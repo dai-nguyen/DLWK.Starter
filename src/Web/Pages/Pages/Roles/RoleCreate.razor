@@ -1,9 +1,10 @@
 ﻿@page "/pages/roles/create"
 @using ApplicationCore.Features.Roles.Commands
 @using ApplicationCore;
+@using ApplicationCore.Constants;
 
 <MudPaper Class="pa-4">
-    <AuthorizeView Policy="@Constants.ClaimNames.roles">
+    <AuthorizeView Policy="@Const.ClaimNames.roles">
         <Authorized>
              <EditForm Model="@_command" OnValidSubmit="SubmitAsync" Context="eContext">    
                 <MudGrid>

@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Models;
+﻿using ApplicationCore.Constants;
+using ApplicationCore.Models;
 using System.Reflection;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -108,20 +109,20 @@ namespace ApplicationCore.Helpers
             var values = new List<string>();
 
             if (permission.can_read)
-                values.Add(Constants.Permissions.read);
+                values.Add(Const.Permissions.read);
             if (permission.can_edit)
-                values.Add(Constants.Permissions.edit);
+                values.Add(Const.Permissions.edit);
             if (permission.can_create)
-                values.Add(Constants.Permissions.create);
+                values.Add(Const.Permissions.create);
             if (permission.can_delete)
-                values.Add(Constants.Permissions.delete);
+                values.Add(Const.Permissions.delete);
 
             switch (permission.name)
             {
-                case Constants.ClaimNames.roles:
-                    return new Claim(Constants.ClaimNames.users, string.Join(" ", values));                    
-                case Constants.ClaimNames.users:
-                    return new Claim(Constants.ClaimNames.roles, string.Join(" ", values));                    
+                case Const.ClaimNames.roles:
+                    return new Claim(Const.ClaimNames.users, string.Join(" ", values));                    
+                case Const.ClaimNames.users:
+                    return new Claim(Const.ClaimNames.roles, string.Join(" ", values));                    
             }
 
             return null;
@@ -130,7 +131,7 @@ namespace ApplicationCore.Helpers
         public static IEnumerable<RolePermission> ToRolePermissions(
             this IEnumerable<Claim> claims)
         {
-            var permissions = Constants.PermissionCheckList;
+            var permissions = Const.PermissionCheckList;
 
             foreach (var claim in claims)
             {
@@ -140,15 +141,15 @@ namespace ApplicationCore.Helpers
 
                 var values = claim.Value.Split(" ");
 
-                if (values.Contains(Constants.Permissions.read))
+                if (values.Contains(Const.Permissions.read))
                     found.can_read = true;
-                if (values.Contains(Constants.Permissions.edit))
+                if (values.Contains(Const.Permissions.edit))
                     found.can_edit = true;
-                if (values.Contains(Constants.Permissions.create))
+                if (values.Contains(Const.Permissions.create))
                     found.can_create = true;
-                if (values.Contains(Constants.Permissions.delete))
+                if (values.Contains(Const.Permissions.delete))
                     found.can_delete = true;
-                if (values.Contains(Constants.Permissions.bulk))
+                if (values.Contains(Const.Permissions.bulk))
                     found.can_bulk = true;
             }
 

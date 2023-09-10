@@ -1,4 +1,4 @@
-﻿using ApplicationCore;
+﻿using ApplicationCore.Constants;
 using ApplicationCore.Features.Roles.Queries;
 using ApplicationCore.Features.Users.Commands;
 using ApplicationCore.Helpers;
@@ -30,7 +30,7 @@ namespace Web.Pages.Pages.Users
 
             if (state.User.Identity.IsAuthenticated)
             {
-                var permission = state.User.Claims.GetPermission(Constants.ClaimNames.users);
+                var permission = state.User.Claims.GetPermission(Const.ClaimNames.users);
 
                 if (permission != null)
                 {

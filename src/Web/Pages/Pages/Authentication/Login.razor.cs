@@ -1,4 +1,4 @@
-﻿using ApplicationCore;
+﻿using ApplicationCore.Constants;
 using ApplicationCore.Data;
 using ApplicationCore.States;
 using Microsoft.AspNetCore.Components;
@@ -109,9 +109,9 @@ namespace Web.Pages.Pages.Authentication
                         _profileState.FullName = fullName;
                         _profileState.Title = user.Title;
 
-                        await _protectedLocalStore.SetAsync(Constants.LocalStorageKeys.ProfilePicture, user.ProfilePicture);
-                        await _protectedLocalStore.SetAsync(Constants.LocalStorageKeys.ProfileFullName, fullName);
-                        await _protectedLocalStore.SetAsync(Constants.LocalStorageKeys.ProfileTitle, user.Title);
+                        await _protectedLocalStore.SetAsync(Const.LocalStorageKeys.ProfilePicture, user.ProfilePicture);
+                        await _protectedLocalStore.SetAsync(Const.LocalStorageKeys.ProfileFullName, fullName);
+                        await _protectedLocalStore.SetAsync(Const.LocalStorageKeys.ProfileTitle, user.Title);
 
                         _navigationManager.NavigateTo($"/login?key={key}", true);                        
                     }

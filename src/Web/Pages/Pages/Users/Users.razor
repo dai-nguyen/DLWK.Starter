@@ -1,8 +1,9 @@
 ﻿@page "/pages/users"
 @using ApplicationCore.Features.Users.Queries
 @using ApplicationCore;
+@using ApplicationCore.Constants;
 
-<AuthorizeView Policy="@Constants.ClaimNames.users">
+<AuthorizeView Policy="@Const.ClaimNames.users">
     <Authorized>
         <MudTable ServerData="@(new Func<TableState, Task<TableData<GetPaginatedUsersQueryResponse>>>(ReloadData))"
                   Dense="true" Hover="true" @ref="_table" Context="uContext">

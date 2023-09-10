@@ -1,4 +1,4 @@
-﻿using ApplicationCore;
+﻿using ApplicationCore.Constants;
 using ApplicationCore.Features.Users.Commands;
 using ApplicationCore.Features.Users.Queries;
 using ApplicationCore.States;
@@ -64,7 +64,7 @@ namespace Web.Pages.Personal
 
             if (string.IsNullOrEmpty(_profileState.ProfilePicture))
             {
-                var res = await _protectedLocalStore.GetAsync<string>(Constants.LocalStorageKeys.ProfilePicture);
+                var res = await _protectedLocalStore.GetAsync<string>(Const.LocalStorageKeys.ProfilePicture);
 
                 if (res.Success)
                 {
@@ -88,7 +88,7 @@ namespace Web.Pages.Personal
 
             if (res.Succeeded)
             {
-                await _protectedLocalStore.DeleteAsync(Constants.LocalStorageKeys.ProfilePicture);                
+                await _protectedLocalStore.DeleteAsync(Const.LocalStorageKeys.ProfilePicture);                
                 _profileState.ProfilePicture = String.Empty;
             }
 
@@ -144,7 +144,7 @@ namespace Web.Pages.Personal
 
             if (res.Succeeded)
             {
-                await _protectedLocalStore.SetAsync(Constants.LocalStorageKeys.ProfilePicture, data);
+                await _protectedLocalStore.SetAsync(Const.LocalStorageKeys.ProfilePicture, data);
                 _profileState.ProfilePicture = data;                                
             }
 
@@ -167,8 +167,8 @@ namespace Web.Pages.Personal
                 var fullName = $"{_profileCommand.FirstName} {_profileCommand.LastName}";
                 _profileState.FullName = fullName;
                 _profileState.Title = _profileCommand.Title;
-                await _protectedLocalStore.SetAsync(Constants.LocalStorageKeys.ProfileFullName, fullName);
-                await _protectedLocalStore.SetAsync(Constants.LocalStorageKeys.ProfileTitle, _profileCommand.Title);
+                await _protectedLocalStore.SetAsync(Const.LocalStorageKeys.ProfileFullName, fullName);
+                await _protectedLocalStore.SetAsync(Const.LocalStorageKeys.ProfileTitle, _profileCommand.Title);
 
                 foreach (var msg in result.Messages)
                 {

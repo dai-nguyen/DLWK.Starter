@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Data;
+﻿using ApplicationCore.Constants;
+using ApplicationCore.Data;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Models;
 using AutoMapper;
@@ -50,8 +51,9 @@ namespace ApplicationCore.Features.Users.Queries
                 var userName = _userSession.UserName;
 
                 if (userName != request.UserName)
-                    return Result<GetUserProfileByUserNameQueryResponse>.Fail(Constants.Messages.PermissionDenied);
+                    return Result<GetUserProfileByUserNameQueryResponse>.Fail(Const.Messages.PermissionDenied);
 
+#pragma warning disable CS8603 // Possible null reference return.
                 return await _cache.GetOrCreateAsync(
                     $"GetUserProfileByUserNameQuery:{request.UserName}",
                     async entry =>
@@ -74,6 +76,7 @@ namespace ApplicationCore.Features.Users.Queries
 
                         return Result<GetUserProfileByUserNameQueryResponse>.Success(dto);
                     });
+#pragma warning restore CS8603 // Possible null reference return.
             }
             catch (Exception ex)
             {
@@ -81,7 +84,7 @@ namespace ApplicationCore.Features.Users.Queries
                    request, _userSession.UserId);
             }
 
-            return Result<GetUserProfileByUserNameQueryResponse>.Fail(_localizer[Constants.Messages.InternalError]);
+            return Result<GetUserProfileByUserNameQueryResponse>.Fail(_localizer[Const.Messages.InternalError]);
         }
     }
 

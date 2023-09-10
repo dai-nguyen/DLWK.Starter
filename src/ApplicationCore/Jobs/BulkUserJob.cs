@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Text.Json;
 using ApplicationCore.Features.Users.Commands;
 using ApplicationCore.Features.BulkJobs.Commands;
+using ApplicationCore.Constants;
 
 namespace ApplicationCore.Jobs
 {
@@ -43,7 +44,7 @@ namespace ApplicationCore.Jobs
                 var updateBulkJobCommand = new UpdateBulkJobCommand()
                 {
                     Id = id,
-                    Status = Constants.BulkJobStatus.Completed,
+                    Status = Const.BulkJobStatus.Completed,
                     Messages = res.Data.Messages,
                     Processed = res.Data.Processed,
                     Failed = res.Data.Failed

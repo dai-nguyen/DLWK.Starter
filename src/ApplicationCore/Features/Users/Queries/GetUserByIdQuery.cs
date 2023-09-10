@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Data;
+﻿using ApplicationCore.Constants;
+using ApplicationCore.Data;
 using ApplicationCore.Helpers;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Models;
@@ -48,11 +49,12 @@ namespace ApplicationCore.Features.Users.Queries
         {
             try
             {
-                var permission = _userSession.Claims.GetPermission(Constants.ClaimNames.users);
+                var permission = _userSession.Claims.GetPermission(Const.ClaimNames.users);
 
                 if (!permission.can_read)
-                    return Result<GetUserByIdQueryResponse>.Fail(_localizer[Constants.Messages.PermissionDenied]);
+                    return Result<GetUserByIdQueryResponse>.Fail(_localizer[Const.Messages.PermissionDenied]);
 
+#pragma warning disable CS8603 // Possible null reference return.
                 return await _cache.GetOrCreateAsync(
                     $"GetUserByIdQuery:{request.Id}",
                     async entry =>
@@ -82,6 +84,7 @@ namespace ApplicationCore.Features.Users.Queries
 
                         return Result<GetUserByIdQueryResponse>.Success(dto);
                     });
+#pragma warning restore CS8603 // Possible null reference return.
             }
             catch (Exception ex)
             {
@@ -89,7 +92,7 @@ namespace ApplicationCore.Features.Users.Queries
                    request, _userSession.UserId);
             }
 
-            return Result<GetUserByIdQueryResponse>.Fail(_localizer[Constants.Messages.InternalError]);
+            return Result<GetUserByIdQueryResponse>.Fail(_localizer[Const.Messages.InternalError]);
         }
     }
 

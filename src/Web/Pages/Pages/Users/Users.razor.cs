@@ -1,4 +1,4 @@
-﻿using ApplicationCore;
+﻿using ApplicationCore.Constants;
 using ApplicationCore.Features.Users.Queries;
 using ApplicationCore.Helpers;
 using Microsoft.AspNetCore.Components;
@@ -24,7 +24,7 @@ namespace Web.Pages.Pages.Users
 
             if (state.User.Identity.IsAuthenticated)
             {
-                var permission = state.User.Claims.GetPermission(Constants.ClaimNames.users);
+                var permission = state.User.Claims.GetPermission(Const.ClaimNames.users);
 
                 if (permission != null)
                 {

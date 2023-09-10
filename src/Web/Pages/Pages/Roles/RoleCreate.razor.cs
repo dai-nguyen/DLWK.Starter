@@ -1,4 +1,4 @@
-﻿using ApplicationCore;
+﻿using ApplicationCore.Constants;
 using ApplicationCore.Features.Roles.Commands;
 using ApplicationCore.Helpers;
 using ApplicationCore.Models;
@@ -12,7 +12,7 @@ namespace Web.Pages.Pages.Roles
         CreateRoleCommand _command = new();
         
         IEnumerable<RolePermission> Permissions { get; set; } 
-            = Constants.PermissionCheckList;
+            = Const.PermissionCheckList;
 
         [CascadingParameter]
         private Task<AuthenticationState> authenticationStateTask { get; set; }
@@ -25,7 +25,7 @@ namespace Web.Pages.Pages.Roles
 
             if (state.User.Identity.IsAuthenticated)
             {
-                var permission = state.User.Claims.GetPermission(Constants.ClaimNames.roles);
+                var permission = state.User.Claims.GetPermission(Const.ClaimNames.roles);
 
                 if (permission != null)
                 {

@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Data;
+﻿using ApplicationCore.Constants;
+using ApplicationCore.Data;
 using ApplicationCore.Helpers;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Models;
@@ -41,10 +42,10 @@ namespace ApplicationCore.Features.Users.Commands
         {
             try
             {
-                var permission = _userSession.Claims.GetPermission(Constants.ClaimNames.users);
+                var permission = _userSession.Claims.GetPermission(Const.ClaimNames.users);
 
                 if (!permission.can_delete)
-                    return Result<string>.Fail(_localizer[Constants.Messages.PermissionDenied]);
+                    return Result<string>.Fail(_localizer[Const.Messages.PermissionDenied]);
 
                 var user = await _userManager.FindByIdAsync(command.Id);
 

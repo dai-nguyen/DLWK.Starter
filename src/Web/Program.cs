@@ -1,4 +1,5 @@
 using ApplicationCore;
+using ApplicationCore.Constants;
 using ApplicationCore.Data;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Jobs;
@@ -212,11 +213,11 @@ builder.Services.AddSwaggerGen(c =>
 
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy(Constants.ClaimNames.roles,
-        policy => policy.RequireClaim(Constants.ClaimNames.roles));
+    options.AddPolicy(Const.ClaimNames.roles,
+        policy => policy.RequireClaim(Const.ClaimNames.roles));
 
-    options.AddPolicy(Constants.ClaimNames.users,
-        policy => policy.RequireClaim(Constants.ClaimNames.users));
+    options.AddPolicy(Const.ClaimNames.users,
+        policy => policy.RequireClaim(Const.ClaimNames.users));
 });
 
 

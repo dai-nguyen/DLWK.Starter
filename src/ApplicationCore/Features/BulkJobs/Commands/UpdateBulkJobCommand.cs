@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Data;
+﻿using ApplicationCore.Constants;
+using ApplicationCore.Data;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Models;
 using MediatR;
@@ -63,7 +64,7 @@ namespace ApplicationCore.Features.BulkJobs.Commands
                     request, _userSession.UserId);
             }
 
-            return Result<string>.Fail(_localizer[Constants.Messages.InternalError]);
+            return Result<string>.Fail(_localizer[Const.Messages.InternalError]);
         }
     }
 }

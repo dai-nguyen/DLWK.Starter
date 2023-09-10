@@ -1,4 +1,4 @@
-﻿using ApplicationCore;
+﻿using ApplicationCore.Constants;
 using ApplicationCore.Features.BulkJobs.Commands;
 using ApplicationCore.Features.Users.Commands;
 using ApplicationCore.Features.Users.Queries;
@@ -79,7 +79,7 @@ namespace Web.Api
             {
                 var jobCommand = new CreateBulkJobCommand()
                 {
-                    EntityName = Constants.ClaimNames.users
+                    EntityName = Const.ClaimNames.users
                 };
 
                 var jobRes = await _mediator.Send(jobCommand);
@@ -97,7 +97,7 @@ namespace Web.Api
                 data.Add("id", id);
                 data.Add("data", System.Text.Json.JsonSerializer.Serialize(command));
                 JobDataMap jobData = new JobDataMap(data);
-                var jobKey = new JobKey(Constants.ClaimNames.users);
+                var jobKey = new JobKey(Const.ClaimNames.users);
                 await scheduler.TriggerJob(jobKey, jobData);
 
                 return Result<string>.Success(id);

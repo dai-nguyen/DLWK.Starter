@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Data;
+﻿using ApplicationCore.Constants;
+using ApplicationCore.Data;
 using ApplicationCore.Entities;
 using ApplicationCore.Helpers;
 using ApplicationCore.Interfaces;
@@ -40,13 +41,13 @@ namespace ApplicationCore.Features.BulkJobs.Commands
             var permission = _userSession.Claims.GetPermission(request.EntityName);
 
             if (permission == null || (permission != null && !permission.can_bulk))
-                return Result<string>.Fail(_localizer[Constants.Messages.PermissionDenied]);
+                return Result<string>.Fail(_localizer[Const.Messages.PermissionDenied]);
 
             try
             {
                 var entity = new BulkJob();
                 entity.Id = Guid.NewGuid().ToString();
-                entity.Status = Constants.BulkJobStatus.Pending;
+                entity.Status = Const.BulkJobStatus.Pending;
                 entity.Processed = 0;
                 entity.Failed = 0;
 
@@ -62,7 +63,7 @@ namespace ApplicationCore.Features.BulkJobs.Commands
                     request, _userSession.UserId);
             }
             
-            return Result<string>.Fail(_localizer[Constants.Messages.InternalError]);
+            return Result<string>.Fail(_localizer[Const.Messages.InternalError]);
         }
     }
 }

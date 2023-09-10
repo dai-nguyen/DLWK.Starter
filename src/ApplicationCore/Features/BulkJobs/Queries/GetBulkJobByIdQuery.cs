@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Data;
+﻿using ApplicationCore.Constants;
+using ApplicationCore.Data;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Models;
 using MediatR;
@@ -43,7 +44,7 @@ namespace ApplicationCore.Features.BulkJobs.Queries
                 .FindAsync(request.Id, cancellationToken);
 
             if (entity == null)            
-                return Result<GetBulkJobByIdQueryResponse>.Fail(_localizer[Constants.Messages.NotFound]);
+                return Result<GetBulkJobByIdQueryResponse>.Fail(_localizer[Const.Messages.NotFound]);
 
             var dto = new GetBulkJobByIdQueryResponse()
             {

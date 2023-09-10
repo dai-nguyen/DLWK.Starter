@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Data;
+﻿using ApplicationCore.Constants;
+using ApplicationCore.Data;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Models;
 using MediatR;
@@ -53,7 +54,7 @@ namespace ApplicationCore.Features.BulkJobs.Commands
                 _logger.LogError(ex, "Error deleting BulkJob {@0) {UserId}",
                     request, _userSession.UserId);
             }
-            return Result<string>.Fail(_localizer[Constants.Messages.InternalError]);
+            return Result<string>.Fail(_localizer[Const.Messages.InternalError]);
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Data;
+﻿using ApplicationCore.Constants;
+using ApplicationCore.Data;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Models;
 using MediatR;
@@ -44,8 +45,9 @@ namespace ApplicationCore.Features.Users.Queries
             try
             {
                 if (_userSession.UserName != request.UserName)
-                    return Result<string>.Fail(Constants.Messages.PermissionDenied);
+                    return Result<string>.Fail(Const.Messages.PermissionDenied);
 
+#pragma warning disable CS8603 // Possible null reference return.
                 return await _cache.GetOrCreateAsync(
                     $"GetUserProfilePictureQuery:{request.UserName}",
                     async entry =>
@@ -57,6 +59,7 @@ namespace ApplicationCore.Features.Users.Queries
 
                         return Result<string>.Success(data, String.Empty);
                     });
+#pragma warning restore CS8603 // Possible null reference return.
             }
             catch (Exception ex)
             {
@@ -64,7 +67,7 @@ namespace ApplicationCore.Features.Users.Queries
                     request, _userSession.UserId);
             }
 
-            return Result<string>.Fail(_localizer[Constants.Messages.InternalError]);
+            return Result<string>.Fail(_localizer[Const.Messages.InternalError]);
         }
 
     }

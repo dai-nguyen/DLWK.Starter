@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using ApplicationCore.Constants;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ApplicationCore.Policies
 {
@@ -6,10 +7,10 @@ namespace ApplicationCore.Policies
     {
         List<string> _values = new List<string>()
         {
-            Constants.Permissions.read,
-            Constants.Permissions.edit,
-            Constants.Permissions.create,
-            Constants.Permissions.delete,
+            Const.Permissions.read,
+            Const.Permissions.edit,
+            Const.Permissions.create,
+            Const.Permissions.delete,
         };
 
         protected override Task HandleRequirementAsync(

@@ -1,4 +1,5 @@
-﻿ using ApplicationCore.Data;
+﻿using ApplicationCore.Constants;
+using ApplicationCore.Data;
 using ApplicationCore.Entities;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Models;
@@ -10,8 +11,7 @@ using Microsoft.Extensions.Logging;
 namespace ApplicationCore.Features.Documents.Commands
 {
     public partial class CreateDocumentCommand : IRequest<Result<string>>
-    {
-        public string Id { get; set; } = Guid.NewGuid().ToString();        
+    {        
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public string Data { get; set; } = string.Empty;
@@ -57,7 +57,7 @@ namespace ApplicationCore.Features.Documents.Commands
                 _dbContext.Documents.Add(entity);
                 await _dbContext.SaveChangesAsync(cancellationToken);
 
-                return Result<string>.Success(entity.Id, _localizer[Constants.Messages.Saved]);
+                return Result<string>.Success(entity.Id, _localizer[Const.Messages.Saved]);
             }
             catch (Exception ex)
             {
@@ -65,7 +65,7 @@ namespace ApplicationCore.Features.Documents.Commands
                     command, _userSession.UserId);
             }
 
-            return Result<string>.Fail(_localizer[Constants.Messages.InternalError]);
+            return Result<string>.Fail(_localizer[Const.Messages.InternalError]);
         }
     }    
 

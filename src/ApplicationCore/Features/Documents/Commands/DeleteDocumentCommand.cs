@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Data;
+﻿using ApplicationCore.Constants;
+using ApplicationCore.Data;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Models;
 using MediatR;
@@ -40,12 +41,12 @@ namespace ApplicationCore.Features.Documents.Commands
                 var entity = await _dbContext.Documents.FindAsync(command.Id, cancellationToken);
 
                 if (entity == null)
-                    return Result<string>.Fail(_localizer[Constants.Messages.NotFound]);
+                    return Result<string>.Fail(_localizer[Const.Messages.NotFound]);
                 
                 _dbContext.Documents.Remove(entity);
                 await _dbContext.SaveChangesAsync(cancellationToken);
                
-                return Result<string>.Success(_localizer[Constants.Messages.Deleted]);
+                return Result<string>.Success(_localizer[Const.Messages.Deleted]);
             }
             catch (Exception ex)
             {
@@ -53,7 +54,7 @@ namespace ApplicationCore.Features.Documents.Commands
                     command.Id, _userSession.UserId);
             }
 
-            return Result<string>.Fail(_localizer[Constants.Messages.InternalError]);
+            return Result<string>.Fail(_localizer[Const.Messages.InternalError]);
         }
     }
 }

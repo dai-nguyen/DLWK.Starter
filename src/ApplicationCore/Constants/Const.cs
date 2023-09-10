@@ -1,13 +1,13 @@
 ﻿using ApplicationCore.Models;
 
-namespace ApplicationCore
+namespace ApplicationCore.Constants
 {
-    public static class Constants
+    public static class Const
     {
         public static class ClaimNames
         {
             public const string users = "users";
-            public const string roles = "roles";            
+            public const string roles = "roles";
         }
 
         public static class Permissions
