@@ -1,11 +1,14 @@
-﻿using ApplicationCore.Data;
+﻿using ApplicationCore.Constants;
+using ApplicationCore.Data;
 using ApplicationCore.Entities;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Models;
 using AutoMapper;
 using MediatR;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using System.Text.Json;
 
 namespace ApplicationCore.Features.Contacts.Queries
 {
@@ -21,21 +24,23 @@ namespace ApplicationCore.Features.Contacts.Queries
         readonly IUserSessionService _userSession;
         readonly IStringLocalizer _localizer;
         readonly AppDbContext _dbContext;
-
         readonly IMapper _mapper;
+        readonly IMemoryCache _cache;
 
         public GetContactByIdQueryHandler(
             ILogger<GetContactByIdQueryHandler> logger,
             IUserSessionService userSession,
             IStringLocalizer<GetContactByIdQueryHandler> localizer,
             AppDbContext dbContext,
-            IMapper mapper)
+            IMapper mapper,
+            IMemoryCache cache)
         {
             _logger = logger;
             _userSession = userSession;
             _localizer = localizer;
             _dbContext = dbContext;
             _mapper = mapper;
+            _cache = cache;
         }
 
         public async Task<Result<GetContactByIdQueryResponse>> Handle(
@@ -44,15 +49,24 @@ namespace ApplicationCore.Features.Contacts.Queries
         {
             try
             {
-                var entity = await _dbContext.Contacts.FindAsync(request.Id, cancellationToken);
+#pragma warning disable CS8603 // Possible null reference return.
+                return await _cache.GetOrCreateAsync(
+                    $"GetContactByIdQuery:{JsonSerializer.Serialize(request)}",
+                    async entry =>
+                    {
+                        entry.SlidingExpiration = TimeSpan.FromSeconds(3);
+                        entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(20);
 
-                if (entity == null)
-                {
-                    return Result<GetContactByIdQueryResponse>.Fail(_localizer["Contact Not Found"]);
-                }
+                        var entity = await _dbContext.Contacts.FindAsync(request.Id, cancellationToken);
 
-                return Result<GetContactByIdQueryResponse>.Success(_mapper.Map<GetContactByIdQueryResponse>(entity));
+                        if (entity == null)
+                        {
+                            return Result<GetContactByIdQueryResponse>.Fail(_localizer[Const.Messages.NotFound]);
+                        }
 
+                        return Result<GetContactByIdQueryResponse>.Success(_mapper.Map<GetContactByIdQueryResponse>(entity));
+                    });
+#pragma warning restore CS8603 // Possible null reference return.
             }
             catch (Exception ex)
             {

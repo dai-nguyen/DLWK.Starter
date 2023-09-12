@@ -6,6 +6,7 @@ using ApplicationCore.Models;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -187,14 +188,16 @@ namespace ApplicationCore.Features.Users.Commands
                 if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(email))
                     return false;
 
-                email = email.Trim();
+                email = email.Trim().ToLower();
 
                 return _cache.GetOrCreate(
-                    $"IsUniqueUserEmail:{email.Trim().ToLower()}",
+                    $"IsUniqueUserEmail:{email.Trim()}",
                     entry =>
                     {
                         entry.SlidingExpiration = TimeSpan.FromSeconds(5);
-                        return _appDbContext.Users.Any(_ => _.Email == email) == false;
+                        return _appDbContext.Users
+                            .Where(_ => _.Email != null)
+                            .Any(_ => EF.Functions.ILike(_.Email, email)) == false;
                     });
 
             }

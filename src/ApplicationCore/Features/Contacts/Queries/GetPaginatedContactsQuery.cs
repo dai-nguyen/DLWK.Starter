@@ -9,8 +9,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using System.Collections.Immutable;
-using System.Collections.ObjectModel;
 using System.Linq.Dynamic.Core;
 using System.Text.Json;
 
@@ -25,11 +23,13 @@ namespace ApplicationCore.Features.Contacts.Queries
             int pageNumber,
             int pageSize,
             string orderBy,
+            string customerId,
             string searchString)
         {
             PageNumber = pageNumber;
             PageSize = pageSize;
             OrderBy = orderBy;
+            CustomerId = customerId;
             SearchString = searchString;
         }
     }
@@ -86,6 +86,7 @@ namespace ApplicationCore.Features.Contacts.Queries
 
                         var query = _dbContext.Contacts
                             .AsNoTracking()
+                            .Where(_ => _.CustomerId == request.CustomerId)
                             .AsQueryable();
 
                         if (!string.IsNullOrEmpty(request.SearchString)
@@ -121,7 +122,7 @@ namespace ApplicationCore.Features.Contacts.Queries
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error getting paginated contacts {@0} {UserId}",
+                _logger.LogError(ex, "Error getting paginated {@0} {UserId}",
                     request, _userSession.UserId);
             }
 

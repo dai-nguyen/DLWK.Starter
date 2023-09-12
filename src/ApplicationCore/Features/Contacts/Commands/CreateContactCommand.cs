@@ -9,7 +9,6 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using Quartz.Logging;
 
 namespace ApplicationCore.Features.Contacts.Commands
 {
@@ -83,19 +82,13 @@ namespace ApplicationCore.Features.Contacts.Commands
     }
 
     public class CreateContactCommandValidator : AbstractValidator<CreateContactCommand>
-    {
-        readonly ILogger _logger;
-        readonly IStringLocalizer _localizer;
-        readonly AppDbContext _appDbContext;
+    {        
+        readonly IStringLocalizer _localizer;        
 
-        public CreateContactCommandValidator(
-            ILogger<CreateContactCommandValidator> logger,
-            IStringLocalizer<CreateContactCommandValidator> localizer, 
-            AppDbContext appDbContext)
-        {
-            _logger = logger;
-            _localizer = localizer;
-            _appDbContext = appDbContext;
+        public CreateContactCommandValidator(            
+            IStringLocalizer<CreateContactCommandValidator> localizer)
+        {            
+            _localizer = localizer;            
 
             RuleFor(_ => _.FirstName)
                 .NotEmpty().WithMessage(_localizer["FirstName is required"])
