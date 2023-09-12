@@ -69,7 +69,8 @@ namespace ApplicationCore.Features.Contacts.Commands
                 _dbContext.Contacts.Add(entity);
                 await _dbContext.SaveChangesAsync(cancellationToken);
 
-                return Result<string>.Success(entity.Id, _localizer[Const.Messages.Saved]);
+                return Result<string>.Success(entity.Id, 
+                    _localizer[Const.Messages.Saved]);
             }
             catch (Exception ex)
             {
