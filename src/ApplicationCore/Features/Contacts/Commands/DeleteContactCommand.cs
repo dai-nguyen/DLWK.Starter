@@ -3,6 +3,7 @@ using ApplicationCore.Data;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Models;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
@@ -46,15 +47,23 @@ namespace ApplicationCore.Features.Contacts.Commands
                     return Result<string>.Fail(_localizer[Const.Messages.NotFound]);
                 }
 
-                _dbContext.Contacts.Remove(entity);
-                await _dbContext.SaveChangesAsync(cancellationToken);
+                using (var transaction = _dbContext.Database.BeginTransaction())
+                {
+                    // unlink projects
+                    await _dbContext.Projects
+                        .Where(_ => _.ContactId == command.Id)
+                        .ExecuteUpdateAsync(setters => setters.SetProperty(_ => _.ContactId, (string?)null));
+
+                    _dbContext.Contacts.Remove(entity);
+                    await _dbContext.SaveChangesAsync(cancellationToken);
+                }
 
                 return Result<string>.Success(entity.Id,
                     _localizer[Const.Messages.Deleted]);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error deleting Contact {@0} {UserId}",
+                _logger.LogError(ex, "Error deleting {@0} {UserId}",
                     command, _userSession.UserId);
             }
             return Result<string>.Fail(_localizer[Const.Messages.InternalError]);

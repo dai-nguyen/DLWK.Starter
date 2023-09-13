@@ -17,7 +17,7 @@ namespace ApplicationCore.Data
         public DbSet<Document> Documents { get; set; }
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Contact> Contacts { get; set; }
-
+        public DbSet<Project> Projects { get; set; }
 
         public AppDbContext(
             DbContextOptions options,

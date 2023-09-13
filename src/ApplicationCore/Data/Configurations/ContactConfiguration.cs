@@ -27,7 +27,8 @@ namespace ApplicationCore.Data.Configurations
 
             builder.HasOne(_ => _.Customer)
                 .WithMany(_ => _.Contacts)
-                .HasForeignKey(_ => _.CustomerId);
+                .HasForeignKey(_ => _.CustomerId)
+                .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }
