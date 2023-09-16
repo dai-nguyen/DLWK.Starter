@@ -1,9 +1,11 @@
-﻿using ApplicationCore.Data;
+﻿using ApplicationCore.Constants;
+using ApplicationCore.Data;
 using ApplicationCore.Entities;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Models;
 using ApplicationCore.Requests;
 using AutoMapper;
+using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -19,18 +21,22 @@ namespace ApplicationCore.Features.Contacts.Queries
         public string CustomerId { get; set; }
         public string SearchString { get; set; }
 
+        public string ExternalId { get; set; }
+
         public GetPaginatedContactsQuery(
             int pageNumber,
             int pageSize,
             string orderBy,
             string customerId,
-            string searchString)
+            string searchString,
+            string externalId)
         {
             PageNumber = pageNumber;
             PageSize = pageSize;
             OrderBy = orderBy;
             CustomerId = customerId;
             SearchString = searchString;
+            ExternalId = externalId;
         }
     }
 
@@ -66,6 +72,14 @@ namespace ApplicationCore.Features.Contacts.Queries
         {
             try
             {
+                var validator = new GetPaginatedContactsQueryValidator(_localizer);
+
+                var valResult = validator.Validate(request);
+
+                if (!valResult.IsValid)
+                    return (PaginatedResult<GetPaginatedContactsQueryResponse>)Result.Fail(valResult.Errors.Select(_ => _.ErrorMessage));
+
+
 #pragma warning disable CS8603 // Possible null reference return.
                 return await _cache.GetOrCreateAsync(
                     $"GetPaginatedContactsQuery:{JsonSerializer.Serialize(request)}",
@@ -86,14 +100,28 @@ namespace ApplicationCore.Features.Contacts.Queries
 
                         var query = _dbContext.Contacts
                             .AsNoTracking()
-                            .Where(_ => _.CustomerId == request.CustomerId)
+                            //.Where(_ => _.CustomerId == request.CustomerId)
                             .AsQueryable();
+
+                        if (!string.IsNullOrEmpty(request.CustomerId)
+                            && !string.IsNullOrWhiteSpace(request.CustomerId))
+                        {
+                            query = query
+                                .Where(_ => _.CustomerId ==  request.CustomerId);
+                        }
 
                         if (!string.IsNullOrEmpty(request.SearchString)
                             && !string.IsNullOrWhiteSpace(request.SearchString))
                         {
                             query = query
                                 .Where(_ => _.SearchVector.Matches(request.SearchString));
+                        }
+
+                        if (!string.IsNullOrEmpty(request.ExternalId)
+                            && !string.IsNullOrWhiteSpace(request.ExternalId))
+                        {
+                            query = query
+                                .Where(_ => _.ExternalId == request.ExternalId);
                         }
 
                         query = query.OrderBy($"{request.OrderBy} {sortDir}");
@@ -150,6 +178,27 @@ namespace ApplicationCore.Features.Contacts.Queries
         public GetPaginatedContactsQueryProfile()
         {
             CreateMap<Contact, GetPaginatedContactsQueryResponse>();
+        }
+    }
+
+    public class GetPaginatedContactsQueryValidator : AbstractValidator<GetPaginatedContactsQuery>
+    {
+        readonly IStringLocalizer _localizer;
+
+        public GetPaginatedContactsQueryValidator(
+            IStringLocalizer localizer)
+        {
+            _localizer = localizer;
+
+            //RuleFor(_ => _.CustomerId)
+            //    .NotEmpty().WithMessage(_localizer["CustomerId is required"]);
+
+            RuleFor(_ => _.PageNumber)
+                .GreaterThan(0)
+                .WithMessage(_localizer[Const.Messages.PageNumberGreaterThanZero]);
+            RuleFor(_ => _.PageSize)
+                .InclusiveBetween(1, 100)
+                .WithMessage(_localizer[Const.Messages.PageSizeBetweenOneAndOneHundred]);
         }
     }
 }

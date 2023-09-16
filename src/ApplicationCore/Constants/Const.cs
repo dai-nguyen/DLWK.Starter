@@ -39,6 +39,8 @@ namespace ApplicationCore.Constants
             public const string NotFound = "NotFound";
             public const string Saved = "Saved";
             public const string Deleted = "Deleted";
+            public const string PageNumberGreaterThanZero = "PageNumer must be greater than zero";
+            public const string PageSizeBetweenOneAndOneHundred = "PageSize must be between 1 and 100";
         }
 
         public static class BulkJobStatus

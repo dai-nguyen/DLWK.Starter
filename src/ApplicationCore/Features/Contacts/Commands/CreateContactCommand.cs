@@ -73,7 +73,7 @@ namespace ApplicationCore.Features.Contacts.Commands
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error adding Contact {@0} {UserId}",
+                _logger.LogError(ex, "Error adding {@0} {UserId}",
                     command, _userSession.UserId);
             }
 

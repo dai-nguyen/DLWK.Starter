@@ -64,7 +64,7 @@ namespace ApplicationCore.Features.Contacts.Commands
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error updating Contact {@0} {UserId}",
+                _logger.LogError(ex, "Error updating {@0} {UserId}",
                     command, _userSession.UserId);
             }
             return Result<string>.Fail(_localizer[Const.Messages.InternalError]);

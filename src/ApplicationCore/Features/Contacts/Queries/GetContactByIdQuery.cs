@@ -70,7 +70,7 @@ namespace ApplicationCore.Features.Contacts.Queries
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error getting contact {@0} {UserId}",
+                _logger.LogError(ex, "Error getting {@0} {UserId}",
                     request, _userSession.UserId);
             }
 

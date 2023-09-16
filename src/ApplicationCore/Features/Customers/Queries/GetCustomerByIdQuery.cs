@@ -1,5 +1,7 @@
 ﻿using ApplicationCore.Constants;
 using ApplicationCore.Data;
+using ApplicationCore.Entities;
+using ApplicationCore.Features.Contacts.Queries;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Models;
 using AutoMapper;
@@ -69,16 +71,39 @@ namespace ApplicationCore.Features.Customers.Queries
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error getting contact {@0} {UserId}",
+                _logger.LogError(ex, "Error getting {@0} {UserId}",
                     request, _userSession.UserId);
             }
 
-            return Result<GetCustomerByIdQueryResponse>.Fail(new string[] { _localizer["Internal Error"] });
+            return Result<GetCustomerByIdQueryResponse>.Fail(new string[] { _localizer[Const.Messages.InternalError] });
         }
     }
 
     public class GetCustomerByIdQueryResponse
     {
+        public string Id { get; set; }
+        public DateTime DateCreated { get; set; }
+        public DateTime DateUpdated { get; set; }
+        public string CreatedBy { get; set; }
+        public string UpdatedBy { get; set; }
+        public string ExternalId { get; set; }
 
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public string[] Industries { get; set; }
+        public string Address1 { get; set; }
+        public string Address2 { get; set; }
+        public string City { get; set; }
+        public string State { get; set; }
+        public string Zip { get; set; }
+        public string Country { get; set; }
+    }
+
+    public class GetCustomerByIdQueryProfile : Profile
+    {
+        public GetCustomerByIdQueryProfile()
+        {
+            CreateMap<Customer, GetContactByIdQueryResponse>();
+        }
     }
 }

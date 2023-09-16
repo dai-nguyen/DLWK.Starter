@@ -50,25 +50,33 @@ namespace ApplicationCore.Features.Customers.Commands
             CreateCustomerCommand request, 
             CancellationToken cancellationToken)
         {
-            var entity = new Customer()
+            try
             {
-                Id = Guid.NewGuid().ToString(),
-                Description = request.Description,
-                Industries = request.Industries,
-                Name = request.Name,
-                Address1 = request.Address1,
-                Address2 = request.Address2,
-                City = request.City,
-                State = request.State,
-                Zip = request.Zip,
-                Country = request.Country,
-            };
+                var entity = new Customer()
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Description = request.Description,
+                    Industries = request.Industries,
+                    Name = request.Name,
+                    Address1 = request.Address1,
+                    Address2 = request.Address2,
+                    City = request.City,
+                    State = request.State,
+                    Zip = request.Zip,
+                    Country = request.Country,
+                };
 
-            _dbContext.Customers.Add(entity);
-            await _dbContext.SaveChangesAsync();
+                _dbContext.Customers.Add(entity);
+                await _dbContext.SaveChangesAsync();
 
-            return Result<string>.Success(entity.Id,
-                _localizer[Const.Messages.Saved]);
+                return Result<string>.Success(entity.Id,
+                    _localizer[Const.Messages.Saved]);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating {@0} {UserName}", request, _userSession.UserName);
+            }
+            return Result<string>.Fail(_localizer[Const.Messages.InternalError]);
         }
     }
 
@@ -138,7 +146,7 @@ namespace ApplicationCore.Features.Customers.Commands
                     async entry =>
                     {
                         entry.SlidingExpiration = TimeSpan.FromSeconds(5);
-                        return await _appDbContext.Customers.AnyAsync(_ => EF.Functions.ILike(_.Name, name)) == false;
+                        return (await _appDbContext.Customers.AnyAsync(_ => EF.Functions.ILike(_.Name, name))) == false;
                     });
             }
             catch (Exception ex)
