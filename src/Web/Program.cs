@@ -12,6 +12,7 @@ using Microsoft.OpenApi.Models;
 using MudBlazor.Services;
 using NpgsqlTypes;
 using Quartz;
+using Quartz.AspNetCore;
 using Serilog;
 using Serilog.Sinks.PostgreSQL;
 using Serilog.Sinks.PostgreSQL.ColumnWriters;
@@ -121,6 +122,11 @@ builder.Services.AddQuartz(options =>
     options.UseMicrosoftDependencyInjectionJobFactory();
     options.UseSimpleTypeLoader();
     options.UseInMemoryStore();
+    options.UseDefaultThreadPool(tp =>
+    {
+        tp.MaxConcurrency = 10;
+    });
+
     //options.UsePersistentStore(s =>
     //{
     //    s.UseProperties = true;
@@ -138,10 +144,21 @@ builder.Services.AddQuartz(options =>
     options.AddJob<TestJob>(_ =>
         _.StoreDurably()
         .WithIdentity("test_job"));
+
+    options.ScheduleJob<WebhookJob>(trigger => trigger
+        .WithIdentity("Webhook Job")
+        .StartAt(DateBuilder.EvenSecondDate(DateTimeOffset.UtcNow.AddSeconds(5)))
+        .WithDailyTimeIntervalSchedule(x => x.WithInterval(10, IntervalUnit.Second))
+        .WithDescription("my awesome trigger configured for a job with single call"));
+});
+
+builder.Services.AddQuartzServer(options =>
+{
+    options.WaitForJobsToComplete = true;
 });
 
 // Register the Quartz.NET service and configure it to block shutdown until jobs are complete.
-builder.Services.AddQuartzHostedService(options => options.WaitForJobsToComplete = true);
+//builder.Services.AddQuartzHostedService(options => options.WaitForJobsToComplete = true);
 
 builder.Services.AddOpenIddict()
     .AddCore(options =>
