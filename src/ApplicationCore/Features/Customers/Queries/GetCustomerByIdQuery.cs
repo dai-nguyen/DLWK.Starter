@@ -79,15 +79,8 @@ namespace ApplicationCore.Features.Customers.Queries
         }
     }
 
-    public class GetCustomerByIdQueryResponse
-    {
-        public string Id { get; set; }
-        public DateTime DateCreated { get; set; }
-        public DateTime DateUpdated { get; set; }
-        public string CreatedBy { get; set; }
-        public string UpdatedBy { get; set; }
-        public string ExternalId { get; set; }
-
+    public class GetCustomerByIdQueryResponse : BaseResponse
+    {        
         public string Name { get; set; }
         public string Description { get; set; }
         public string[] Industries { get; set; }
@@ -103,7 +96,7 @@ namespace ApplicationCore.Features.Customers.Queries
     {
         public GetCustomerByIdQueryProfile()
         {
-            CreateMap<Customer, GetContactByIdQueryResponse>();
+            CreateMap<Customer, GetCustomerByIdQueryResponse>();
         }
     }
 }

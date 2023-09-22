@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Data;
+﻿using ApplicationCore.Constants;
+using ApplicationCore.Data;
 using ApplicationCore.Entities;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Models;
@@ -122,19 +123,13 @@ namespace ApplicationCore.Features.Customers.Queries
                     request, _userSession.UserId);
             }
 
-            return PaginatedResult<GetPaginatedCustomersQueryResponse>.Failure(_localizer["Internal Error"]);
+            return PaginatedResult<GetPaginatedCustomersQueryResponse>
+                .Failure(_localizer[Const.Messages.InternalError]);
         }
     }
 
-    public class GetPaginatedCustomersQueryResponse
-    {
-        public string Id { get; set; } = string.Empty;
-        public DateTime DateCreated { get; set; }
-        public DateTime DateUpdated { get; set; }
-        public string CreatedBy { get; set; } = string.Empty;
-        public string UpdatedBy { get; set; } = string.Empty;
-        public string ExternalId { get; set; } = string.Empty;
-
+    public class GetPaginatedCustomersQueryResponse : BaseResponse
+    {       
         public string Name { get; set; }
         public string Description { get; set; }
         public string[] Industries { get; set; }
@@ -144,5 +139,13 @@ namespace ApplicationCore.Features.Customers.Queries
         public string State { get; set; }
         public string Zip { get; set; }
         public string Country { get; set; }
+    }
+
+    public class GetPaginatedCustomerQueryProfile : Profile
+    {
+        public GetPaginatedCustomerQueryProfile() 
+        { 
+            CreateMap<Customer, GetPaginatedCustomersQueryResponse>();
+        }
     }
 }

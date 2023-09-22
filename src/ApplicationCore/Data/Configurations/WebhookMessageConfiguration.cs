@@ -12,9 +12,7 @@ namespace ApplicationCore.Data.Configurations
             builder.HasKey(_ => _.Id);
             builder.Property(_ => _.Id).HasMaxLength(37);
 
-            builder.Property(_ => _.EntityId).IsRequired().HasMaxLength(WebhookMessageConst.EntityIdMaxLength);
-            builder.Property(_ => _.FailedCount);
-            builder.Property(_ => _.LastTryDate);
+            builder.Property(_ => _.EntityId).IsRequired().HasMaxLength(WebhookMessageConst.EntityIdMaxLength);            
             builder.Property(_ => _.IsOkResponse);
 
             builder.HasOne(_ => _.Subscriber)

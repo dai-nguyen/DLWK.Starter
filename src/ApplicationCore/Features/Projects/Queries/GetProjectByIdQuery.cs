@@ -1,5 +1,6 @@
 ﻿using ApplicationCore.Constants;
 using ApplicationCore.Data;
+using ApplicationCore.Entities;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Models;
 using AutoMapper;
@@ -77,8 +78,20 @@ namespace ApplicationCore.Features.Projects.Queries
         }
     }
 
-    public class GetProjectByIdQueryResponse
-    {
+    public class GetProjectByIdQueryResponse : BaseResponse
+    {        
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public string Status { get; set; }
+        public DateTime? DateStart { get; set; }
+        public DateTime? DateDue { get; set; }
+    }
 
+    public class GetProjectByIdQueryProfile : Profile
+    {
+        protected GetProjectByIdQueryProfile()
+        {
+            CreateMap<Project, GetProjectByIdQueryResponse>();
+        }
     }
 }

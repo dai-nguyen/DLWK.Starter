@@ -2,9 +2,7 @@
 {
     public class WebhookMessage : AuditableEntity<string>
     {        
-        public string EntityId { get; set; }        
-        public int FailedCount { get; set; }
-        public DateTime? LastTryDate { get; set; }
+        public string EntityId { get; set; }                        
         public bool? IsOkResponse { get; set; }
 
         public string SubscriberId { get; set; }

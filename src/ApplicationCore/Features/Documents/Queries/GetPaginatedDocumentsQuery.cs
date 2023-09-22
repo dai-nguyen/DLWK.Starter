@@ -136,15 +136,8 @@ namespace ApplicationCore.Features.Documents.Queries
         }
     }
 
-    public class GetPaginatedDocumentsQueryResponse
-    {
-        public string Id { get; set; } = string.Empty;
-        public DateTime DateCreated { get; set; }
-        public DateTime DateUpdated { get; set; }
-        public string CreatedBy { get; set; } = string.Empty;
-        public string UpdatedBy { get; set; } = string.Empty;
-        public string ExternalId { get; set; } = string.Empty;
-
+    public class GetPaginatedDocumentsQueryResponse : BaseResponse
+    {        
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public long Size { get; set; }

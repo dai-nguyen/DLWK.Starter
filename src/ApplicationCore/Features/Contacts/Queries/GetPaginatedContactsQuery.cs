@@ -158,15 +158,8 @@ namespace ApplicationCore.Features.Contacts.Queries
         }
     }
 
-    public class GetPaginatedContactsQueryResponse
-    {
-        public string Id { get; set; } = string.Empty;
-        public DateTime DateCreated { get; set; }
-        public DateTime DateUpdated { get; set; }
-        public string CreatedBy { get; set; } = string.Empty;
-        public string UpdatedBy { get; set; } = string.Empty;
-        public string ExternalId { get; set; } = string.Empty;
-
+    public class GetPaginatedContactsQueryResponse : BaseResponse
+    {        
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Email { get; set; }
