@@ -9,4 +9,6 @@
         public string UpdatedBy { get; set; }
         public string ExternalId { get; set; }
     }
+
+    
 }

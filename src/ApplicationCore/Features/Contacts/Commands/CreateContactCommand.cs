@@ -4,6 +4,7 @@ using ApplicationCore.Data;
 using ApplicationCore.Entities;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Models;
+using AutoMapper;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -12,7 +13,7 @@ using Microsoft.Extensions.Logging;
 
 namespace ApplicationCore.Features.Contacts.Commands
 {
-    public class CreateContactCommand : IRequest<Result<string>>
+    public class CreateContactCommand : BaseCreateRequest, IRequest<Result<string>>
     {        
         public string FirstName { get; set; }
         public string LastName { get; set; }
@@ -29,17 +30,20 @@ namespace ApplicationCore.Features.Contacts.Commands
         readonly IUserSessionService _userSession;
         readonly IStringLocalizer _localizer;
         readonly AppDbContext _dbContext;
+        readonly IMapper _mapper;
 
         public CreateContactCommandHandler(
             ILogger<CreateContactCommandHandler> logger,
             IUserSessionService userSession,
             IStringLocalizer<CreateContactCommandHandler> localizer,
-            AppDbContext dbContext)
+            AppDbContext dbContext,
+            IMapper mapper)
         {
             _logger = logger;
             _userSession = userSession;
             _localizer = localizer;
             _dbContext = dbContext;
+            _mapper = mapper;
         }
 
         public async Task<Result<string>> Handle(
@@ -55,16 +59,8 @@ namespace ApplicationCore.Features.Contacts.Commands
                     return Result<string>.Fail(_localizer["Invalid Customer ID"]);
                 }
 
-                var entity = new Contact()
-                {
-                    Id = Guid.NewGuid().ToString(),
-                    FirstName = command.FirstName,
-                    LastName = command.LastName,
-                    Email = command.Email,
-                    Phone = command.Phone,
-                    CustomerId = command.CustomerId
-                };
-
+                var entity = _mapper.Map<Contact>(command);
+                
                 _dbContext.Contacts.Add(entity);
                 await _dbContext.SaveChangesAsync(cancellationToken);
 
@@ -112,6 +108,20 @@ namespace ApplicationCore.Features.Contacts.Commands
             RuleFor(_ => _.CustomerId)
                 .NotEmpty().WithMessage(_localizer["CustomerId is required"]);
             
+        }
+    }
+
+    public class CreateContactCommandProfile : Profile
+    {
+        public CreateContactCommandProfile()
+        {
+            CreateMap<CreateContactCommand, Contact>()
+                .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.FirstName))
+                .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.LastName))
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
+                .ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.Phone))
+                .ForMember(dest => dest.CustomerId, opt => opt.MapFrom(src => src.CustomerId))
+                .IncludeBase<BaseCreateRequest, AuditableEntity<string>>();
         }
     }
 }

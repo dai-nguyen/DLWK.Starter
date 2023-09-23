@@ -1,8 +1,10 @@
 ﻿using ApplicationCore.Constants;
 using ApplicationCore.Constants.Constants;
 using ApplicationCore.Data;
+using ApplicationCore.Entities;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Models;
+using AutoMapper;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.Localization;
@@ -10,9 +12,8 @@ using Microsoft.Extensions.Logging;
 
 namespace ApplicationCore.Features.Contacts.Commands
 {
-    public class UpdateContactCommand : IRequest<Result<string>>
-    {
-        public string Id { get; set; }
+    public class UpdateContactCommand : BaseUpdateRequest, IRequest<Result<string>>
+    {        
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Email { get; set; }
@@ -26,17 +27,20 @@ namespace ApplicationCore.Features.Contacts.Commands
         readonly IUserSessionService _userSession;
         readonly IStringLocalizer _localizer;
         readonly AppDbContext _dbContext;
+        readonly IMapper _mapper;
 
         public UpdateContactCommandHandler(
             ILogger<UpdateContactCommandHandler> logger,
             IUserSessionService userSession,
             IStringLocalizer<UpdateContactCommandHandler> localizer,
-            AppDbContext dbContext)
+            AppDbContext dbContext,
+            IMapper mapper)
         {
             _logger = logger;
             _userSession = userSession;
             _localizer = localizer;
             _dbContext = dbContext;
+            _mapper = mapper;
         }
 
         public async Task<Result<string>> Handle(
@@ -52,10 +56,7 @@ namespace ApplicationCore.Features.Contacts.Commands
                     return Result<string>.Fail(_localizer[Const.Messages.NotFound]);
                 }
 
-                entity.FirstName = command.FirstName;
-                entity.LastName = command.LastName;
-                entity.Email = command.Email;
-                entity.Phone = command.Phone;
+                _mapper.Map(command, entity);
 
                 await _dbContext.SaveChangesAsync(cancellationToken);
 
@@ -101,6 +102,21 @@ namespace ApplicationCore.Features.Contacts.Commands
 
             RuleFor(_ => _.Id)
                 .NotEmpty().WithMessage(_localizer["Contact is required"]);
+        }
+    }
+
+    public class UpdateContactCommandProfile : Profile
+    {
+        public UpdateContactCommandProfile()
+        {
+            CreateMap<UpdateContactCommand, Contact>()
+                .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.FirstName))
+                .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.LastName))
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
+                .ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.Phone))
+                .ForMember(dest => dest.CustomerId, opt => opt.Ignore())
+                .ForMember(dest => dest.Customer, opt => opt.Ignore())
+                .IncludeBase<BaseUpdateRequest, AuditableEntity<string>>();
         }
     }
 }

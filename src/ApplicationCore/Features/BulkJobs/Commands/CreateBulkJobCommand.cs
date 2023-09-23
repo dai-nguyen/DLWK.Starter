@@ -66,4 +66,6 @@ namespace ApplicationCore.Features.BulkJobs.Commands
             return Result<string>.Fail(_localizer[Const.Messages.InternalError]);
         }
     }
+
+
 }

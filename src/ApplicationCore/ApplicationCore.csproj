@@ -35,7 +35,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Mappers\" />
     <Folder Include="Migrations\" />
     <Folder Include="Resources\Features\Users\Queries\" />
   </ItemGroup>

@@ -4,6 +4,7 @@ using ApplicationCore.Data;
 using ApplicationCore.Entities;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Models;
+using AutoMapper;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -13,7 +14,7 @@ using Microsoft.Extensions.Logging;
 
 namespace ApplicationCore.Features.Customers.Commands
 {
-    public class CreateCustomerCommand : IRequest<Result<string>>
+    public class CreateCustomerCommand : BaseCreateRequest, IRequest<Result<string>>
     {
         public string Name { get; set; }
         public string Description { get; set; }
@@ -155,5 +156,15 @@ namespace ApplicationCore.Features.Customers.Commands
             }
             return false;
         }
+    }
+
+    public class CreateCustomerCommandProfile : Profile
+    {
+        public CreateCustomerCommandProfile() 
+        {
+            CreateMap<CreateCustomerCommand, Customer>()
+                .IncludeBase<BaseCreateRequest, AuditableEntity<string>>();
+        }
+
     }
 }

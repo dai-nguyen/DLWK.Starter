@@ -1,8 +1,10 @@
 ﻿using ApplicationCore.Constants;
 using ApplicationCore.Constants.Constants;
 using ApplicationCore.Data;
+using ApplicationCore.Entities;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Models;
+using AutoMapper;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -13,9 +15,8 @@ using Microsoft.Extensions.Logging;
 
 namespace ApplicationCore.Features.Customers.Commands
 {
-    public class UpdateCustomerCommand : IRequest<Result<string>>
-    {
-        public string Id { get; set; }
+    public class UpdateCustomerCommand : BaseUpdateRequest, IRequest<Result<string>>
+    {        
         public string Name { get; set; }
         public string Description { get; set; }
         public string[] Industries { get; set; }
@@ -142,6 +143,15 @@ namespace ApplicationCore.Features.Customers.Commands
             RuleFor(_ => _.Country)
                 .MaximumLength(CustomerConst.CountryMaxLength)
                 .WithMessage(_localizer[$"Country cannot be longer than {CustomerConst.CountryMaxLength}"]);
+        }
+    }
+
+    public class UpdateCustomerCommandProfile : Profile
+    {
+        public UpdateCustomerCommandProfile()
+        {
+            CreateMap<UpdateCustomerCommand, Customer>()
+                .IncludeBase<BaseUpdateRequest, AuditableEntity<string>>();
         }
     }
 }
