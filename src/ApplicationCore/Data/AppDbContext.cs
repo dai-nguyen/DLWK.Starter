@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using NodaTime;
 
 namespace ApplicationCore.Data
 {
@@ -40,14 +41,14 @@ namespace ApplicationCore.Data
                 switch (entry.State)
                 {
                     case EntityState.Added:                        
-                        entry.Entity.DateCreated = DateTime.UtcNow;                        
+                        entry.Entity.DateCreated = SystemClock.Instance.GetCurrentInstant();                        
                         entry.Entity.CreatedBy = _userSession.UserId;
-                        entry.Entity.DateUpdated = DateTime.UtcNow;
+                        entry.Entity.DateUpdated = SystemClock.Instance.GetCurrentInstant();
                         entry.Entity.UpdatedBy = _userSession.UserId;
                         break;
 
                     case EntityState.Modified:
-                        entry.Entity.DateUpdated = DateTime.UtcNow;
+                        entry.Entity.DateUpdated = SystemClock.Instance.GetCurrentInstant();
                         entry.Entity.UpdatedBy = _userSession.UserId;
                         break;
                 }
@@ -81,6 +82,9 @@ namespace ApplicationCore.Data
             builder.ApplyConfiguration(new DocumentConfiguration());            
             builder.ApplyConfiguration(new CustomerConfiguration());
             builder.ApplyConfiguration(new ContactConfiguration());
+            builder.ApplyConfiguration(new ProjectConfiguration());
+            builder.ApplyConfiguration(new WebhookSubscriberConfiguration());
+            builder.ApplyConfiguration(new WebhookMessageConfiguration());
 
             base.OnModelCreating(builder);
         }

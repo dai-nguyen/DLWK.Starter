@@ -85,7 +85,7 @@ namespace ApplicationCore.Features.Contacts.Queries
         public string Email { get; set; }
         public string Phone { get; set; }
 
-        public string CustomerId { get; set; }
+        public string CustomerId { get; set; }        
     }
 
     public class GetContactByIdQueryProfile : Profile

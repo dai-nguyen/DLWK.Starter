@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ApplicationCore.Features.Projects.Commands
 {
-    internal class CreateProjectCommand
+    public class CreateProjectCommand
     {
     }
 }

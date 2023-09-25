@@ -1,4 +1,5 @@
-﻿using NpgsqlTypes;
+﻿using NodaTime;
+using NpgsqlTypes;
 
 namespace ApplicationCore.Entities
 {
@@ -7,12 +8,15 @@ namespace ApplicationCore.Entities
         public string Name { get; set; }
         public string Description { get; set; }
         public string Status { get; set; }
-        public DateTime? DateStart { get; set; }
-        public DateTime? DateDue { get; set; }
+        public Instant DateStart { get; set; } = SystemClock.Instance.GetCurrentInstant();
+        public Instant DateDue { get; set; } = SystemClock.Instance.GetCurrentInstant();
 
         public NpgsqlTsVector SearchVector { get; set; }
 
         public string CustomerId { get; set; }
+        public virtual Customer Customer { get; set; }
+
         public string ContactId { get; set; }
+        public virtual Contact Contact { get; set; }
     }
 }

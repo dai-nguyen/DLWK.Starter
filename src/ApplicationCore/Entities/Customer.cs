@@ -16,6 +16,7 @@ namespace ApplicationCore.Entities
 
         public NpgsqlTsVector SearchVector { get; set; }
 
-        public IEnumerable<Contact> Contacts { get; set; }
+        public virtual IEnumerable<Contact> Contacts { get; set; }
+        public virtual IEnumerable<Project> Projects { get; set; }
     }
 }

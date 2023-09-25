@@ -116,6 +116,7 @@ namespace ApplicationCore.Features.Contacts.Commands
                 .ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.Phone))
                 .ForMember(dest => dest.CustomerId, opt => opt.Ignore())
                 .ForMember(dest => dest.Customer, opt => opt.Ignore())
+                .ForMember(dest => dest.SearchVector, opt => opt.Ignore())
                 .IncludeBase<BaseUpdateRequest, AuditableEntity<string>>();
         }
     }

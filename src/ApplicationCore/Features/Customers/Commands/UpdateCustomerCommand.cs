@@ -35,17 +35,20 @@ namespace ApplicationCore.Features.Customers.Commands
         readonly IUserSessionService _userSession;
         readonly IStringLocalizer _localizer;
         readonly AppDbContext _dbContext;
+        readonly IMapper _mapper;
 
         public UpdateCustomerCommandHandler(
             ILogger<UpdateCustomerCommandHandler> logger,
             IUserSessionService userSession,
             IStringLocalizer<UpdateCustomerCommandHandler> localizer,
-            AppDbContext dbContext)
+            AppDbContext dbContext,
+            IMapper mapper)
         {
             _logger = logger;
             _userSession = userSession;
             _localizer = localizer;
             _dbContext = dbContext;
+            _mapper = mapper;
         }
 
         public async Task<Result<string>> Handle(
@@ -73,15 +76,7 @@ namespace ApplicationCore.Features.Customers.Commands
                     }
                 }
 
-                entity.Name = command.Name;
-                entity.Description = command.Description;
-                entity.Industries = command.Industries;
-                entity.Address1 = command.Address1;
-                entity.Address2 = command.Address2;
-                entity.City = command.City;
-                entity.State = command.State;
-                entity.Zip = command.Zip;
-                entity.Country = command.Country;
+                _mapper.Map(command, entity);
 
                 await _dbContext.SaveChangesAsync(cancellationToken);
 
@@ -151,7 +146,9 @@ namespace ApplicationCore.Features.Customers.Commands
         public UpdateCustomerCommandProfile()
         {
             CreateMap<UpdateCustomerCommand, Customer>()
-                .IncludeBase<BaseUpdateRequest, AuditableEntity<string>>();
+                .IncludeBase<BaseUpdateRequest, AuditableEntity<string>>()
+                .ForMember(dest => dest.SearchVector, opt => opt.Ignore())
+                .ForMember(dest => dest.Contacts, opt => opt.Ignore());
         }
     }
 }

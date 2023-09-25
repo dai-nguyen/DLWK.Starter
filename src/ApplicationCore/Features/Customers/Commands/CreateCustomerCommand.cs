@@ -34,17 +34,20 @@ namespace ApplicationCore.Features.Customers.Commands
         readonly IUserSessionService _userSession;
         readonly IStringLocalizer _localizer;
         readonly AppDbContext _dbContext;
+        readonly IMapper _mapper;
 
         public CreateCustomerCommandHandler(
             ILogger<CreateCustomerCommandHandler> logger,
             IUserSessionService userSession,
             IStringLocalizer<CreateCustomerCommandHandler> localizer,
-            AppDbContext dbContext)
+            AppDbContext dbContext,
+            IMapper mapper)
         {
             _logger = logger;
             _userSession = userSession;
             _localizer = localizer;
             _dbContext = dbContext;
+            _mapper = mapper;
         }
 
         public async Task<Result<string>> Handle(
@@ -53,19 +56,7 @@ namespace ApplicationCore.Features.Customers.Commands
         {
             try
             {
-                var entity = new Customer()
-                {
-                    Id = Guid.NewGuid().ToString(),
-                    Description = request.Description,
-                    Industries = request.Industries,
-                    Name = request.Name,
-                    Address1 = request.Address1,
-                    Address2 = request.Address2,
-                    City = request.City,
-                    State = request.State,
-                    Zip = request.Zip,
-                    Country = request.Country,
-                };
+                var entity = _mapper.Map<Customer>(request);
 
                 _dbContext.Customers.Add(entity);
                 await _dbContext.SaveChangesAsync();

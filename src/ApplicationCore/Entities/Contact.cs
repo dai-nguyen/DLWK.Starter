@@ -12,6 +12,8 @@ namespace ApplicationCore.Entities
         public NpgsqlTsVector SearchVector { get; set; }
 
         public string CustomerId { get; set; }
-        public Customer Customer { get; set; }
+        public virtual Customer Customer { get; set; }
+
+        public virtual IEnumerable<Project> Projects { get; set; }
     }
 }
