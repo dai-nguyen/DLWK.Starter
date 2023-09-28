@@ -92,7 +92,8 @@ namespace ApplicationCore.Features.Contacts.Queries
     {
         public GetContactByIdQueryProfile() 
         {
-            CreateMap<Contact, GetContactByIdQueryResponse>();
+            CreateMap<Contact, GetContactByIdQueryResponse>()
+                .IncludeBase<AuditableEntity<string>, BaseResponse>();
         }
     }
 }

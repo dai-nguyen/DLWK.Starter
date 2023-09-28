@@ -16,7 +16,8 @@ using System.Text.Json;
 
 namespace ApplicationCore.Features.Contacts.Queries
 {
-    public class GetPaginatedContactsQuery : PaginateRequest, IRequest<PaginatedResult<GetPaginatedContactsQueryResponse>>
+    public class GetPaginatedContactsQuery : PaginateRequest, 
+        IRequest<PaginatedResult<GetPaginatedContactsQueryResponse>>
     {
         public string CustomerId { get; set; }
         public string SearchString { get; set; }
@@ -170,7 +171,8 @@ namespace ApplicationCore.Features.Contacts.Queries
     {
         public GetPaginatedContactsQueryProfile()
         {
-            CreateMap<Contact, GetPaginatedContactsQueryResponse>();
+            CreateMap<Contact, GetPaginatedContactsQueryResponse>()
+                .IncludeBase<AuditableEntity<string>, BaseResponse>();
         }
     }
 

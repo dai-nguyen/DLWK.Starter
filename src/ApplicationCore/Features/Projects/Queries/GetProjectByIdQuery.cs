@@ -91,7 +91,8 @@ namespace ApplicationCore.Features.Projects.Queries
     {
         protected GetProjectByIdQueryProfile()
         {
-            CreateMap<Project, GetProjectByIdQueryResponse>();
+            CreateMap<Project, GetProjectByIdQueryResponse>()
+                .IncludeBase<AuditableEntity<string>, BaseResponse>();
         }
     }
 }
