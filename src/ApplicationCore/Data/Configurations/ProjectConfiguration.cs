@@ -15,8 +15,8 @@ namespace ApplicationCore.Data.Configurations
             builder.Property(_ => _.Name).IsRequired().HasMaxLength(ProjectConst.NameMaxLength);
             builder.Property(_ => _.Description).IsRequired().HasMaxLength(ProjectConst.DescriptionMaxLength);
             builder.Property(_ => _.Status).IsRequired().HasMaxLength(ProjectConst.StatusMaxLength);
-            builder.Property(_ => _.DateStart);
-            builder.Property(_ => _.DateDue);
+            builder.Property(_ => _.DateStart).IsRequired();
+            builder.Property(_ => _.DateDue).IsRequired();
 
             builder.HasOne(_ => _.Customer)
                 .WithMany(_ => _.Projects)

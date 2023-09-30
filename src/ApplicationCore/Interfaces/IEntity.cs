@@ -31,7 +31,7 @@ namespace ApplicationCore.Interfaces
 
     public interface IAuditableCustomAttributeEntity : IAuditableEntity
     {
-        IEnumerable<CustomAttribute> CustomAttributes { get; set; }
+        //IEnumerable<CustomAttribute> CustomAttributes { get; set; }
     }
 
     public interface IAuditableCustomAttributeEntity<TId> : IAuditableCustomAttributeEntity, IEntity<TId>

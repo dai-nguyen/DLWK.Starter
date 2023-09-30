@@ -1,4 +1,5 @@
-﻿using NodaTime;
+﻿using ApplicationCore.Enums;
+using NodaTime;
 using NpgsqlTypes;
 
 namespace ApplicationCore.Entities
@@ -7,7 +8,7 @@ namespace ApplicationCore.Entities
     {
         public string Name { get; set; }
         public string Description { get; set; }
-        public string Status { get; set; }
+        public ProjectStatus Status { get; set; }
         public Instant DateStart { get; set; } = SystemClock.Instance.GetCurrentInstant();
         public Instant DateDue { get; set; } = SystemClock.Instance.GetCurrentInstant();
 

@@ -110,12 +110,12 @@ namespace ApplicationCore.Features.Contacts.Commands
         public UpdateContactCommandProfile()
         {
             CreateMap<UpdateContactCommand, Contact>()
-                .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.FirstName))
-                .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.LastName))
-                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
-                .ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.Phone))
+                //.ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.FirstName))
+                //.ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.LastName))
+                //.ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
+                //.ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.Phone))
                 .ForMember(dest => dest.CustomerId, opt => opt.Ignore())
-                .ForMember(dest => dest.Customer, opt => opt.Ignore())
+                .ForMember(dest => dest.Customer, opt => opt.Ignore())                
                 .ForMember(dest => dest.SearchVector, opt => opt.Ignore())
                 .IncludeBase<BaseUpdateRequest, AuditableEntity<string>>();
         }

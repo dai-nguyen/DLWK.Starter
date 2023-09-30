@@ -1,7 +1,6 @@
 ﻿using ApplicationCore.Constants;
 using ApplicationCore.Data;
 using ApplicationCore.Entities;
-using ApplicationCore.Features.Contacts.Queries;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Models;
 using ApplicationCore.Requests;
@@ -13,13 +12,8 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using NodaTime;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
 using System.Linq.Dynamic.Core;
+using System.Text.Json;
 
 namespace ApplicationCore.Features.Projects.Queries
 {
@@ -205,9 +199,6 @@ namespace ApplicationCore.Features.Projects.Queries
             IStringLocalizer localizer)
         {
             _localizer = localizer;
-
-            //RuleFor(_ => _.CustomerId)
-            //    .NotEmpty().WithMessage(_localizer["CustomerId is required"]);
 
             RuleFor(_ => _.PageNumber)
                 .GreaterThan(0)

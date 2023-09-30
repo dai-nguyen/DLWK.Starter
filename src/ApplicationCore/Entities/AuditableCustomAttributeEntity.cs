@@ -12,6 +12,6 @@ namespace ApplicationCore.Entities
         public string UpdatedBy { get; set; }
         public string ExternalId { get; set; }        
 
-        public IEnumerable<CustomAttribute> CustomAttributes { get; set; } = Enumerable.Empty<CustomAttribute>();
+        //public IEnumerable<CustomAttribute> CustomAttributes { get; set; } = Enumerable.Empty<CustomAttribute>();
     }
 }
