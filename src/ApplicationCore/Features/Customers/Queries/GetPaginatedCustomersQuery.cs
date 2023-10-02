@@ -132,7 +132,7 @@ namespace ApplicationCore.Features.Customers.Queries
     {       
         public string Name { get; set; }
         public string Description { get; set; }
-        public string[] Industries { get; set; }
+        public string Industries { get; set; }
         public string Address1 { get; set; }
         public string Address2 { get; set; }
         public string City { get; set; }
@@ -145,7 +145,8 @@ namespace ApplicationCore.Features.Customers.Queries
     {
         public GetPaginatedCustomerQueryProfile() 
         { 
-            CreateMap<Customer, GetPaginatedCustomersQueryResponse>();
+            CreateMap<Customer, GetPaginatedCustomersQueryResponse>()
+                .ForMember(dest => dest.Industries, opt => opt.MapFrom(src => string.Join(',', src.Industries)));
         }
     }
 }

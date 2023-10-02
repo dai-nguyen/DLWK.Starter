@@ -1,27 +1,21 @@
 ﻿using ApplicationCore.Constants;
-using ApplicationCore.Features.Roles.Queries;
-using ApplicationCore.Features.Users.Commands;
-using ApplicationCore.Features.Users.Queries;
+using ApplicationCore.Features.Customers.Commands;
+using ApplicationCore.Features.Customers.Queries;
 using ApplicationCore.Helpers;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor;
-using Web.Shared;
 
-namespace Web.Pages.Pages.Users
+namespace Web.Pages.Pages.Customers
 {
-    public partial class UserEdit
+    public partial class CustomerEdit
     {
         [Parameter]
         public string id { get; set; }
 
-        UpdateUserCommand _command = new();
+        UpdateCustomerCommand _command = new();
 
-        bool PasswordVisibility;
-        InputType PasswordInput = InputType.Password;
-        string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
-
-        List<GetAllRolesQueryResponse> Roles { get; set; } = new List<GetAllRolesQueryResponse>();
+        List<string> Industries { get; set; } = new List<string>();
 
         [CascadingParameter]
         private Task<AuthenticationState> authenticationStateTask { get; set; }
@@ -29,15 +23,13 @@ namespace Web.Pages.Pages.Users
         bool _canEdit = false;
         bool _canDelete = false;
 
-        string _profilePicture = string.Empty;
-
         protected override async Task OnInitializedAsync()
         {
             var state = await authenticationStateTask;
 
             if (state.User.Identity.IsAuthenticated)
             {
-                var permission = state.User.Claims.GetPermission(Const.ClaimNames.users);
+                var permission = state.User.Claims.GetPermission(Const.ClaimNames.customers);
 
                 if (permission != null)
                 {
@@ -48,48 +40,19 @@ namespace Web.Pages.Pages.Users
 
             if (!string.IsNullOrEmpty(id))
             {
-                var request = new GetUserByIdQuery() { Id = id };
+                var request = new GetCustomerByIdQuery() { Id = id };
 
                 var res = await _mediator.Send(request);
 
                 if (res.Succeeded)
                 {
-                    var user = res.Data;
-                    _command.Id = user.Id;
-                    _command.UserName = user.UserName;
-                    _command.Title = user.Title;
-                    _command.Email = user.Email;
-                    _command.FirstName = user.FirstName;
-                    _command.LastName = user.LastName;
-                    _command.ExternalId = user.ExternalId;
-                    _command.Roles = user.Roles;
-
-                    _profilePicture = user.ProfilePicture;
+                    var data = res.Data;
+                    _command.Id = data.Id;
+                    _command.Name = data.Name;
                 }
             }
 
-            var rolesRes = await _mediator.Send(new GetAllRolesQuery());
-
-            if (rolesRes.Succeeded && rolesRes.Data.Any())
-            {
-                Roles.AddRange(rolesRes.Data);
-            }
-        }
-
-        void TogglePasswordVisibility()
-        {
-            if (PasswordVisibility)
-            {
-                PasswordVisibility = false;
-                PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
-                PasswordInput = InputType.Password;
-            }
-            else
-            {
-                PasswordVisibility = true;
-                PasswordInputIcon = Icons.Material.Filled.Visibility;
-                PasswordInput = InputType.Text;
-            }
+            Industries = new List<string> { "Aerospace", "Agricultural", "Automotive", "Basic metal", "Chemical" };
         }
 
         async Task SubmitAsync()
@@ -110,19 +73,19 @@ namespace Web.Pages.Pages.Users
                     _snackBar.Add(msg, MudBlazor.Severity.Success);
                 }
 
-                _navigationManager.NavigateTo("/pages/users");
+                _navigationManager.NavigateTo("/pages/customers");
             }
         }
 
         void GoBack()
         {
-            _navigationManager.NavigateTo("/pages/users");
+            _navigationManager.NavigateTo("/pages/customers");
         }
 
         async Task Delete()
         {
             var p = new DialogParameters();
-            p.Add("ContentText", $"Do you really want to delete user '{_command.UserName}'?");
+            p.Add("ContentText", $"Do you really want to delete '{_command.Name}'?");
             p.Add("ButtonText", "Delete");
             p.Add("Color", MudBlazor.Color.Error);
 
@@ -137,7 +100,7 @@ namespace Web.Pages.Pages.Users
 
             if (!result.Cancelled)
             {
-                var request = new DeleteUserCommand()
+                var request = new DeleteCustomerCommand()
                 {
                     Id = _command.Id
                 };
@@ -156,7 +119,7 @@ namespace Web.Pages.Pages.Users
                     if (res.Messages.Any())
                         _snackBar.Add(res.Messages.First(), MudBlazor.Severity.Success);
 
-                    _navigationManager.NavigateTo("/pages/users");
+                    _navigationManager.NavigateTo("/pages/customers");
                 }
             }
         }

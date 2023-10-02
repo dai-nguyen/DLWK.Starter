@@ -10,7 +10,6 @@ namespace Web.Pages.Pages.Users
 {
     public partial class UserCreate
     {        
-
         CreateUserCommand _command = new();
 
         bool PasswordVisibility;

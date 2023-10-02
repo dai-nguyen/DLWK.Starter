@@ -1,0 +1,95 @@
+﻿@page "/pages/customers/create"
+@using ApplicationCore.Features.Customers.Commands
+@using ApplicationCore;
+@using ApplicationCore.Constants;
+
+<MudPaper Class="pa-4">
+    <AuthorizeView Policy="@Const.ClaimNames.customers">
+        <Authorized>
+            <EditForm Model="@_command" OnValidSubmit="SubmitAsync" Context="iContext">
+                <MudGrid>
+                    <MudItem xs="12" md="12">
+                        <FluentValidationValidator />
+                    </MudItem>
+
+                    <MudItem xs="12" md="6">
+                        <MudTextField T="string"
+                        @bind-Value="_command.Name"
+                                      Label="Name"
+                                      For="@(() => _command.Name)"
+                                      Variant="Variant.Outlined" />
+                    </MudItem>
+
+                    <MudItem xs="12" md="6">
+                        <MudTextField T="string"
+                        @bind-Value="_command.Description"
+                                      Label="Description"
+                                      For="@(() => _command.Description)"
+                                      Variant="Variant.Outlined" />
+                    </MudItem>
+
+                    <MudItem xs="12" md="6">
+                        <MudSelect T="string"
+                                   Label="Industries"
+                                   Variant="Variant.Text"
+                                   MultiSelection="true"
+                        @bind-SelectedValues="_command.Industries">
+                            @foreach (var role in Roles)
+                            {
+                                <MudSelectItem T="string" Value="role.Name">@role.Name</MudSelectItem>
+                            }
+                        </MudSelect>
+                    </MudItem>
+
+                    <MudItem xs="12" md="6">
+                        <MudTextField T="string"
+                        @bind-Value="_command.Title"
+                                      Label="Title"
+                                      For="@(() => _command.Title)"
+                                      Variant="Variant.Outlined"></MudTextField>
+                    </MudItem>
+
+                    <MudItem xs="12" md="6">
+                        <MudTextField T="string"
+                        @bind-Value="_command.Email"
+                                      Label="E-mail"
+                                      For="@(() => _command.Email)"
+                                      Variant="Variant.Outlined" />
+                    </MudItem>                  
+
+                    <MudItem xs="12" md="6">
+                        <MudTextField T="string"
+                        @bind-Value="_command.ExternalId"
+                                      Label="External ID"
+                                      For="@(() => _command.ExternalId)"
+                                      Variant="Variant.Outlined" />
+                    </MudItem>
+
+                    <MudItem xs="4" md="2">
+                        <MudButton Variant="Variant.Filled"
+                                   Color="Color.Primary"
+                                   ButtonType="ButtonType.Submit"
+                                   Size="Size.Large"
+                                   FullWidth="true"
+                                   Disabled="!_canCreate">Add Customer</MudButton>
+                    </MudItem>
+                    <MudItem xs="4" md="2">
+                        <MudButton Variant="Variant.Filled"
+                                   Color="Color.Default"
+                                   Size="Size.Large"
+                                   OnClick="GoBack"
+                                   FullWidth="true">Back</MudButton>
+                    </MudItem>
+
+                </MudGrid>
+            </EditForm>
+        </Authorized>
+        <NotAuthorized>
+
+        </NotAuthorized>
+    </AuthorizeView>
+</MudPaper>
+
+
+
+

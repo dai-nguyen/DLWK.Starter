@@ -8,6 +8,7 @@ namespace ApplicationCore.Constants
         {
             public const string users = "users";
             public const string roles = "roles";
+            public const string customers = "customers";
         }
 
         public static class Permissions
@@ -23,6 +24,7 @@ namespace ApplicationCore.Constants
         {
             new RolePermission(ClaimNames.roles, "Roles"),
             new RolePermission(ClaimNames.users, "Users"),
+            new RolePermission(ClaimNames.customers, "Customers"),
         };
 
         public static class LocalStorageKeys

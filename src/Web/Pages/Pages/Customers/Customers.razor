@@ -1,0 +1,48 @@
+﻿@page "/pages/customers"
+@using ApplicationCore.Features.Customers.Queries
+@using ApplicationCore;
+@using ApplicationCore.Constants
+
+<AuthorizeView Policy="@Const.ClaimNames.customers">
+    <Authorized>
+        <MudTable ServerData="@(new Func<TableState, Task<TableData<GetPaginatedCustomersQueryResponse>>>(ReloadData))"
+                  Dense="true" Hover="true" @ref="_table" Context="iContext">
+            <ToolBarContent>
+                <MudButton Variant="Variant.Filled" OnClick="NagivateToCreatePage" Disabled="!_canCreate">Add Customer</MudButton>
+                <MudSpacer />
+                <MudTextField T="string" ValueChanged="@(s=>OnSearch(s))" Placeholder="Search" Adornment="Adornment.Start"
+                              AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+            </ToolBarContent>
+            <HeaderContent>
+                <MudTh></MudTh>
+                <MudTh><MudTableSortLabel SortLabel="Name" T="GetPaginatedCustomersQueryResponse">Name</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortLabel="Industries" T="GetPaginatedCustomersQueryResponse">Industries</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortLabel="City" T="GetPaginatedCustomersQueryResponse">City</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortLabel="State" T="GetPaginatedCustomersQueryResponse">State</MudTableSortLabel></MudTh>
+                <MudTh></MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd></MudTd>
+                <MudTd DataLabel="Name">@iContext.Name</MudTd>
+                <MudTd DataLabel="Industries">@iContext.Industries</MudTd>
+                <MudTd DataLabel="City">@iContext.City</MudTd>
+                <MudTd DataLabel="State">@iContext.State</MudTd>
+                <MudTd>
+                    <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="(() => NavigateToEditPage(iContext.Id))">View</MudButton>
+                </MudTd>
+            </RowTemplate>
+            <NoRecordsContent>
+                <MudText>No matching records found</MudText>
+            </NoRecordsContent>
+            <LoadingContent>
+                <MudText>Loading...</MudText>
+            </LoadingContent>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </Authorized>
+    <NotAuthorized>
+        <p>You are not authorized to see this page.</p>
+    </NotAuthorized>
+</AuthorizeView>
