@@ -14,11 +14,11 @@ using Microsoft.Extensions.Logging;
 
 namespace ApplicationCore.Features.Customers.Commands
 {
-    public class CreateCustomerCommand : BaseCreateRequest, IRequest<Result<string>>
+    public class CreateCustomerCommand : CreateRequestBase, IRequest<Result<string>>
     {
         public string Name { get; set; }
         public string Description { get; set; }
-        public string[] Industries { get; set; }
+        public IEnumerable<string> Industries { get; set; }
         public string Address1 { get; set; }
         public string Address2 { get; set; }
         public string City { get; set; }
@@ -154,7 +154,8 @@ namespace ApplicationCore.Features.Customers.Commands
         public CreateCustomerCommandProfile() 
         {
             CreateMap<CreateCustomerCommand, Customer>()
-                .IncludeBase<BaseCreateRequest, AuditableEntity<string>>();
+                .ForMember(_ => _.SearchVector, opt => opt.Ignore())
+                .IncludeBase<CreateRequestBase, AuditableEntity<string>>();
         }
 
     }

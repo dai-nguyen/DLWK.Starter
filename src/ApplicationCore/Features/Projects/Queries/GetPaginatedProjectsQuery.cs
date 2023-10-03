@@ -170,7 +170,7 @@ namespace ApplicationCore.Features.Projects.Queries
         }
     }
 
-    public class GetPaginatedProjectsQueryResponse : BaseResponse
+    public class GetPaginatedProjectsQueryResponse : ResponseBase
     {
         public string Name { get; set; }
         public string Description { get; set; }
@@ -187,7 +187,7 @@ namespace ApplicationCore.Features.Projects.Queries
         {
             CreateMap<Project, GetPaginatedProjectsQueryResponse>()
                 .ForMember(dest => dest.CustomerName, opt => opt.MapFrom(src => src.Customer.Name))
-                .IncludeBase<AuditableEntity<string>, BaseResponse>();
+                .IncludeBase<AuditableEntity<string>, ResponseBase>();
         }
     }
 

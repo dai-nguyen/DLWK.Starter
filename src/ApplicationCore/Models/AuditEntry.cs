@@ -2,6 +2,7 @@
 using ApplicationCore.Enums;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Newtonsoft.Json;
+using NodaTime;
 
 namespace ApplicationCore.Models
 {
@@ -30,11 +31,11 @@ namespace ApplicationCore.Models
                 UserId = UserId,
                 Type = AuditType.ToString(),
                 TableName = TableName,
-                DateTime = DateTime.UtcNow,
+                DateTime = SystemClock.Instance.GetCurrentInstant(),
                 PrimaryKey = JsonConvert.SerializeObject(KeyValues),
-                OldValues = OldValues.Count == 0 ? null : JsonConvert.SerializeObject(OldValues),
-                NewValues = NewValues.Count == 0 ? null : JsonConvert.SerializeObject(NewValues),
-                AffectedColumns = ChangedColumns.Count == 0 ? null : JsonConvert.SerializeObject(ChangedColumns)
+                OldValues = OldValues.Count == 0 ? "" : JsonConvert.SerializeObject(OldValues),
+                NewValues = NewValues.Count == 0 ? "" : JsonConvert.SerializeObject(NewValues),
+                AffectedColumns = ChangedColumns.Count == 0 ? "" : JsonConvert.SerializeObject(ChangedColumns)
             };
             return audit;
         }

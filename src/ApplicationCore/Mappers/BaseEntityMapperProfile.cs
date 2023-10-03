@@ -1,6 +1,7 @@
 ﻿using ApplicationCore.Entities;
 using ApplicationCore.Models;
 using AutoMapper;
+using NodaTime;
 
 namespace ApplicationCore.Mappers
 {
@@ -8,23 +9,23 @@ namespace ApplicationCore.Mappers
     {
         public BaseEntityMapperProfile() 
         {
-            CreateMap<BaseCreateRequest, AuditableEntity<string>>()
+            CreateMap<CreateRequestBase, AuditableEntity<string>>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => Guid.NewGuid().ToString()))
-                .ForMember(dest => dest.DateCreated, opt => opt.MapFrom(src => DateTime.UtcNow))
-                .ForMember(dest => dest.DateUpdated, opt => opt.MapFrom(src => DateTime.UtcNow))
+                .ForMember(dest => dest.DateCreated, opt => opt.MapFrom(src => SystemClock.Instance.GetCurrentInstant()))
+                .ForMember(dest => dest.DateUpdated, opt => opt.MapFrom(src => SystemClock.Instance.GetCurrentInstant()))
                 .ForMember(dest => dest.CreatedBy, opt => opt.MapFrom(src => "?"))
                 .ForMember(dest => dest.UpdatedBy, opt => opt.MapFrom(src => "?"))
                 .ForMember(dest => dest.ExternalId, opt => opt.MapFrom(src => src.ExternalId ?? ""));
 
-            CreateMap<BaseUpdateRequest, AuditableEntity<string>>()
+            CreateMap<UpdateRequestBase, AuditableEntity<string>>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore())
                 .ForMember(dest => dest.DateCreated, opt => opt.Ignore())
-                .ForMember(dest => dest.DateUpdated, opt => opt.MapFrom(src => DateTime.UtcNow))
+                .ForMember(dest => dest.DateUpdated, opt => opt.MapFrom(src => SystemClock.Instance.GetCurrentInstant()))
                 .ForMember(dest => dest.CreatedBy, opt => opt.Ignore())
                 .ForMember(dest => dest.UpdatedBy, opt => opt.MapFrom(src => "?"))
                 .ForMember(dest => dest.ExternalId, opt => opt.MapFrom(src => src.ExternalId ?? ""));
 
-            CreateMap<AuditableEntity<string>, BaseResponse>()
+            CreateMap<AuditableEntity<string>, ResponseBase>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.DateCreated, opt => opt.MapFrom(src => src.DateCreated))
                 .ForMember(dest => dest.CreatedBy, opt => opt.MapFrom(src => src.DateUpdated))

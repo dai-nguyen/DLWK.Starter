@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using NodaTime;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using NpgsqlTypes;
 
@@ -15,7 +16,7 @@ using NpgsqlTypes;
 namespace ApplicationCore.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230906034109_initial")]
+    [Migration("20231003045916_initial")]
     partial class initial
     {
         /// <inheritdoc />
@@ -23,7 +24,7 @@ namespace ApplicationCore.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.10")
+                .HasAnnotation("ProductVersion", "7.0.11")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -41,10 +42,10 @@ namespace ApplicationCore.Migrations
                         .IsRequired()
                         .HasColumnType("varchar(128)");
 
-                    b.Property<DateTime>("DateCreated")
+                    b.Property<Instant>("DateCreated")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime>("DateUpdated")
+                    b.Property<Instant>("DateUpdated")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
@@ -108,10 +109,10 @@ namespace ApplicationCore.Migrations
                         .IsRequired()
                         .HasColumnType("jsonb");
 
-                    b.Property<DateTime>("DateCreated")
+                    b.Property<Instant>("DateCreated")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime>("DateUpdated")
+                    b.Property<Instant>("DateUpdated")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Email")
@@ -306,10 +307,10 @@ namespace ApplicationCore.Migrations
                         .IsRequired()
                         .HasColumnType("varchar(128)");
 
-                    b.Property<DateTime>("DateCreated")
+                    b.Property<Instant>("DateCreated")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime>("DateUpdated")
+                    b.Property<Instant>("DateUpdated")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Error")
@@ -340,6 +341,159 @@ namespace ApplicationCore.Migrations
                     b.ToTable("BulkJobs");
                 });
 
+            modelBuilder.Entity("ApplicationCore.Entities.Contact", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasMaxLength(37)
+                        .HasColumnType("character varying(37)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("varchar(128)");
+
+                    b.Property<string>("CustomerId")
+                        .IsRequired()
+                        .HasColumnType("character varying(37)");
+
+                    b.Property<Instant>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Instant>("DateUpdated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<string>("ExternalId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<NpgsqlTsVector>("SearchVector")
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("tsvector")
+                        .HasAnnotation("Npgsql:TsVectorConfig", "english")
+                        .HasAnnotation("Npgsql:TsVectorProperties", new[] { "FirstName", "LastName", "Email", "Phone", "ExternalId" });
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasColumnType("varchar(128)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
+
+                    b.HasIndex("SearchVector");
+
+                    NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("SearchVector"), "GIN");
+
+                    b.ToTable("Contacts");
+                });
+
+            modelBuilder.Entity("ApplicationCore.Entities.Customer", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasMaxLength(37)
+                        .HasColumnType("character varying(37)");
+
+                    b.Property<string>("Address1")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<string>("Address2")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<string>("Country")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("varchar(128)");
+
+                    b.Property<Instant>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Instant>("DateUpdated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<string>("ExternalId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string[]>("Industries")
+                        .IsRequired()
+                        .HasColumnType("text[]");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<NpgsqlTsVector>("SearchVector")
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("tsvector")
+                        .HasAnnotation("Npgsql:TsVectorConfig", "english")
+                        .HasAnnotation("Npgsql:TsVectorProperties", new[] { "Name", "Description" });
+
+                    b.Property<string>("State")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasColumnType("varchar(128)");
+
+                    b.Property<string>("Zip")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.HasIndex("SearchVector");
+
+                    NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("SearchVector"), "GIN");
+
+                    b.ToTable("Customers");
+                });
+
             modelBuilder.Entity("ApplicationCore.Entities.Document", b =>
                 {
                     b.Property<string>("Id")
@@ -359,10 +513,10 @@ namespace ApplicationCore.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("DateCreated")
+                    b.Property<Instant>("DateCreated")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime>("DateUpdated")
+                    b.Property<Instant>("DateUpdated")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
@@ -400,6 +554,208 @@ namespace ApplicationCore.Migrations
                     NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("SearchVector"), "GIN");
 
                     b.ToTable("Documents");
+                });
+
+            modelBuilder.Entity("ApplicationCore.Entities.Industry", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasMaxLength(37)
+                        .HasColumnType("character varying(37)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("varchar(128)");
+
+                    b.Property<Instant>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Instant>("DateUpdated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ExternalId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasColumnType("varchar(128)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Industries");
+                });
+
+            modelBuilder.Entity("ApplicationCore.Entities.Project", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasMaxLength(37)
+                        .HasColumnType("character varying(37)");
+
+                    b.Property<string>("ContactId")
+                        .IsRequired()
+                        .HasColumnType("character varying(37)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("varchar(128)");
+
+                    b.Property<string>("CustomerId")
+                        .IsRequired()
+                        .HasColumnType("character varying(37)");
+
+                    b.Property<Instant>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Instant>("DateDue")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Instant>("DateStart")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Instant>("DateUpdated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<string>("ExternalId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<NpgsqlTsVector>("SearchVector")
+                        .IsRequired()
+                        .HasColumnType("tsvector");
+
+                    b.Property<byte>("Status")
+                        .HasMaxLength(128)
+                        .HasColumnType("smallint");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasColumnType("varchar(128)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ContactId");
+
+                    b.HasIndex("CustomerId");
+
+                    b.ToTable("Projects");
+                });
+
+            modelBuilder.Entity("ApplicationCore.Entities.WebhookMessage", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasMaxLength(37)
+                        .HasColumnType("character varying(37)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("varchar(128)");
+
+                    b.Property<Instant>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Instant>("DateUpdated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("EntityId")
+                        .IsRequired()
+                        .HasMaxLength(37)
+                        .HasColumnType("character varying(37)");
+
+                    b.Property<string>("ExternalId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool?>("IsOkResponse")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("SubscriberId")
+                        .IsRequired()
+                        .HasColumnType("character varying(37)");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasColumnType("varchar(128)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SubscriberId");
+
+                    b.ToTable("WebhookMessages");
+                });
+
+            modelBuilder.Entity("ApplicationCore.Entities.WebhookSubscriber", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasMaxLength(37)
+                        .HasColumnType("character varying(37)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("varchar(128)");
+
+                    b.Property<Instant>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Instant>("DateUpdated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("EntityName")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<string>("ExternalId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("FailedCount")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsEnabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Operation")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasColumnType("varchar(128)");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EntityName");
+
+                    NpgsqlIndexBuilderExtensions.IncludeProperties(b.HasIndex("EntityName"), new[] { "IsEnabled" });
+
+                    b.HasIndex("EntityName", "Operation", "Url")
+                        .IsUnique();
+
+                    b.ToTable("WebhookSubsribers");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -706,6 +1062,47 @@ namespace ApplicationCore.Migrations
                     b.ToTable("OpenIddictTokens", (string)null);
                 });
 
+            modelBuilder.Entity("ApplicationCore.Entities.Contact", b =>
+                {
+                    b.HasOne("ApplicationCore.Entities.Customer", "Customer")
+                        .WithMany("Contacts")
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
+                });
+
+            modelBuilder.Entity("ApplicationCore.Entities.Project", b =>
+                {
+                    b.HasOne("ApplicationCore.Entities.Contact", "Contact")
+                        .WithMany("Projects")
+                        .HasForeignKey("ContactId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .IsRequired();
+
+                    b.HasOne("ApplicationCore.Entities.Customer", "Customer")
+                        .WithMany("Projects")
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .IsRequired();
+
+                    b.Navigation("Contact");
+
+                    b.Navigation("Customer");
+                });
+
+            modelBuilder.Entity("ApplicationCore.Entities.WebhookMessage", b =>
+                {
+                    b.HasOne("ApplicationCore.Entities.WebhookSubscriber", "Subscriber")
+                        .WithMany("Messages")
+                        .HasForeignKey("SubscriberId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Subscriber");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("ApplicationCore.Data.AppRole", null)
@@ -779,6 +1176,23 @@ namespace ApplicationCore.Migrations
                     b.Navigation("Application");
 
                     b.Navigation("Authorization");
+                });
+
+            modelBuilder.Entity("ApplicationCore.Entities.Contact", b =>
+                {
+                    b.Navigation("Projects");
+                });
+
+            modelBuilder.Entity("ApplicationCore.Entities.Customer", b =>
+                {
+                    b.Navigation("Contacts");
+
+                    b.Navigation("Projects");
+                });
+
+            modelBuilder.Entity("ApplicationCore.Entities.WebhookSubscriber", b =>
+                {
+                    b.Navigation("Messages");
                 });
 
             modelBuilder.Entity("OpenIddict.EntityFrameworkCore.Models.OpenIddictEntityFrameworkCoreApplication", b =>

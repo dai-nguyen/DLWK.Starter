@@ -78,7 +78,7 @@ namespace ApplicationCore.Features.Projects.Queries
         }
     }
 
-    public class GetProjectByIdQueryResponse : BaseResponse
+    public class GetProjectByIdQueryResponse : ResponseBase
     {        
         public string Name { get; set; }
         public string Description { get; set; }
@@ -89,10 +89,10 @@ namespace ApplicationCore.Features.Projects.Queries
 
     public class GetProjectByIdQueryProfile : Profile
     {
-        protected GetProjectByIdQueryProfile()
+        public GetProjectByIdQueryProfile()
         {
             CreateMap<Project, GetProjectByIdQueryResponse>()
-                .IncludeBase<AuditableEntity<string>, BaseResponse>();
+                .IncludeBase<AuditableEntity<string>, ResponseBase>();
         }
     }
 }

@@ -30,32 +30,64 @@
 
                     <MudItem xs="12" md="6">
                         <MudSelect T="string"
-                                   Label="Industries"
+                                   Label="Industries"                                   
                                    Variant="Variant.Text"
                                    MultiSelection="true"
-                        @bind-SelectedValues="_command.Industries">
-                            @foreach (var role in Roles)
+                                   @bind-SelectedValues="_command.Industries">
+                            @foreach (var industry in Industries)
                             {
-                                <MudSelectItem T="string" Value="role.Name">@role.Name</MudSelectItem>
+                                <MudSelectItem T="string" Value="industry">@industry</MudSelectItem>
                             }
                         </MudSelect>
                     </MudItem>
 
                     <MudItem xs="12" md="6">
                         <MudTextField T="string"
-                        @bind-Value="_command.Title"
-                                      Label="Title"
-                                      For="@(() => _command.Title)"
+                        @bind-Value="_command.Address1"
+                                      Label="Address 1"
+                                      For="@(() => _command.Address1)"
                                       Variant="Variant.Outlined"></MudTextField>
                     </MudItem>
 
                     <MudItem xs="12" md="6">
                         <MudTextField T="string"
-                        @bind-Value="_command.Email"
-                                      Label="E-mail"
-                                      For="@(() => _command.Email)"
+                        @bind-Value="_command.Address2"
+                                      Label="Address 2"
+                                      For="@(() => _command.Address2)"
                                       Variant="Variant.Outlined" />
                     </MudItem>                  
+
+                    <MudItem xs="12" md="6">
+                        <MudTextField T="string"
+                        @bind-Value="_command.City"
+                                      Label="City"
+                                      For="@(() => _command.City)"
+                                      Variant="Variant.Outlined" />
+                    </MudItem>
+
+                    <MudItem xs="12" md="6">
+                        <MudTextField T="string"
+                        @bind-Value="_command.State"
+                                      Label="State"
+                                      For="@(() => _command.State)"
+                                      Variant="Variant.Outlined" />
+                    </MudItem>
+
+                    <MudItem xs="12" md="6">
+                        <MudTextField T="string"
+                        @bind-Value="_command.Zip"
+                                      Label="Zip"
+                                      For="@(() => _command.Zip)"
+                                      Variant="Variant.Outlined" />
+                    </MudItem>
+
+                    <MudItem xs="12" md="6">
+                        <MudTextField T="string"
+                        @bind-Value="_command.Country"
+                                      Label="Country"
+                                      For="@(() => _command.Country)"
+                                      Variant="Variant.Outlined" />
+                    </MudItem>
 
                     <MudItem xs="12" md="6">
                         <MudTextField T="string"

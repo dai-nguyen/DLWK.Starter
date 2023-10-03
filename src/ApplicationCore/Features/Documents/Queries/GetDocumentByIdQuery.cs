@@ -64,7 +64,7 @@ namespace ApplicationCore.Features.Documents.Queries
         }
     }
 
-    public class GetDocumentByIdQueryResponse : BaseResponse
+    public class GetDocumentByIdQueryResponse : ResponseBase
     {        
         public string Title { get; set; }
         public string Description { get; set; }

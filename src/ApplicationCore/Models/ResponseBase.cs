@@ -2,7 +2,7 @@
 
 namespace ApplicationCore.Models
 {
-    public class BaseResponse
+    public class ResponseBase
     {
         public string Id { get; set; }
         public Instant DateCreated { get; set; }

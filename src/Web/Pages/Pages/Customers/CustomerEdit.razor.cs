@@ -5,6 +5,7 @@ using ApplicationCore.Helpers;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor;
+using Web.Shared;
 
 namespace Web.Pages.Pages.Customers
 {
@@ -49,6 +50,14 @@ namespace Web.Pages.Pages.Customers
                     var data = res.Data;
                     _command.Id = data.Id;
                     _command.Name = data.Name;
+                    _command.Description = data.Description;
+                    _command.Industries = data.Industries;
+                    _command.Address1 = data.Address1;
+                    _command.Address2 = data.Address2;
+                    _command.City = data.City;
+                    _command.State = data.State;
+                    _command.Zip = data.Zip;
+                    _command.Country = data.Country;
                 }
             }
 
@@ -84,10 +93,12 @@ namespace Web.Pages.Pages.Customers
 
         async Task Delete()
         {
-            var p = new DialogParameters();
-            p.Add("ContentText", $"Do you really want to delete '{_command.Name}'?");
-            p.Add("ButtonText", "Delete");
-            p.Add("Color", MudBlazor.Color.Error);
+            var p = new DialogParameters
+            {
+                { "ContentText", $"Do you really want to delete '{_command.Name}'?" },
+                { "ButtonText", "Delete" },
+                { "Color", MudBlazor.Color.Error }
+            };
 
             var options = new DialogOptions()
             {

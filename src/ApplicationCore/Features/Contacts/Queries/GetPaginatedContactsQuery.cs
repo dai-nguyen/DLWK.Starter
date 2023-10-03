@@ -159,7 +159,7 @@ namespace ApplicationCore.Features.Contacts.Queries
         }
     }
 
-    public class GetPaginatedContactsQueryResponse : BaseResponse
+    public class GetPaginatedContactsQueryResponse : ResponseBase
     {        
         public string FirstName { get; set; }
         public string LastName { get; set; }
@@ -172,7 +172,7 @@ namespace ApplicationCore.Features.Contacts.Queries
         public GetPaginatedContactsQueryProfile()
         {
             CreateMap<Contact, GetPaginatedContactsQueryResponse>()
-                .IncludeBase<AuditableEntity<string>, BaseResponse>();
+                .IncludeBase<AuditableEntity<string>, ResponseBase>();
         }
     }
 

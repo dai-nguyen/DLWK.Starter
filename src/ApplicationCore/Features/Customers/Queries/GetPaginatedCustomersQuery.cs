@@ -128,7 +128,7 @@ namespace ApplicationCore.Features.Customers.Queries
         }
     }
 
-    public class GetPaginatedCustomersQueryResponse : BaseResponse
+    public class GetPaginatedCustomersQueryResponse : ResponseBase
     {       
         public string Name { get; set; }
         public string Description { get; set; }

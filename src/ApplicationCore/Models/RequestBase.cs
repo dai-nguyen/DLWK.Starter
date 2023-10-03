@@ -1,11 +1,11 @@
 ﻿namespace ApplicationCore.Models
 {
-    public class BaseCreateRequest
+    public class CreateRequestBase
     {
         public string ExternalId { get; set; }
     }
 
-    public class BaseUpdateRequest : BaseCreateRequest
+    public class UpdateRequestBase : CreateRequestBase
     {
         public string Id { get; set; }        
     }

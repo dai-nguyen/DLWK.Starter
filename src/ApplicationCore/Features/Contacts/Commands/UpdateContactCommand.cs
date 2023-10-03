@@ -12,7 +12,7 @@ using Microsoft.Extensions.Logging;
 
 namespace ApplicationCore.Features.Contacts.Commands
 {
-    public class UpdateContactCommand : BaseUpdateRequest, IRequest<Result<string>>
+    public class UpdateContactCommand : UpdateRequestBase, IRequest<Result<string>>
     {        
         public string FirstName { get; set; }
         public string LastName { get; set; }
@@ -117,7 +117,7 @@ namespace ApplicationCore.Features.Contacts.Commands
                 .ForMember(dest => dest.CustomerId, opt => opt.Ignore())
                 .ForMember(dest => dest.Customer, opt => opt.Ignore())                
                 .ForMember(dest => dest.SearchVector, opt => opt.Ignore())
-                .IncludeBase<BaseUpdateRequest, AuditableEntity<string>>();
+                .IncludeBase<UpdateRequestBase, AuditableEntity<string>>();
         }
     }
 }

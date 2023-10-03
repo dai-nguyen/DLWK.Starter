@@ -14,7 +14,7 @@ using NodaTime;
 
 namespace ApplicationCore.Features.Projects.Commands
 {
-    public class CreateProjectCommand : BaseCreateRequest, IRequest<Result<string>>
+    public class CreateProjectCommand : CreateRequestBase, IRequest<Result<string>>
     {
         public string Name { get; set; }
         public string Description { get; set; }
@@ -125,7 +125,7 @@ namespace ApplicationCore.Features.Projects.Commands
                 .ForMember(dest => dest.SearchVector, opt => opt.Ignore())
                 .ForMember(dest => dest.Customer, opt => opt.Ignore())
                 .ForMember(dest => dest.Status, opt => opt.Ignore())
-                .IncludeBase<BaseCreateRequest, AuditableEntity<string>>();
+                .IncludeBase<CreateRequestBase, AuditableEntity<string>>();
         }
     }
 }

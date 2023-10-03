@@ -78,7 +78,7 @@ namespace ApplicationCore.Features.Contacts.Queries
         }
     }
 
-    public class GetContactByIdQueryResponse : BaseResponse
+    public class GetContactByIdQueryResponse : ResponseBase
     {        
         public string FirstName { get; set; }
         public string LastName { get; set; }
@@ -93,7 +93,7 @@ namespace ApplicationCore.Features.Contacts.Queries
         public GetContactByIdQueryProfile() 
         {
             CreateMap<Contact, GetContactByIdQueryResponse>()
-                .IncludeBase<AuditableEntity<string>, BaseResponse>();
+                .IncludeBase<AuditableEntity<string>, ResponseBase>();
         }
     }
 }

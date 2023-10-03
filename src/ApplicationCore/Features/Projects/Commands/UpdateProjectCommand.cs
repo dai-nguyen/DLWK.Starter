@@ -13,7 +13,7 @@ using NodaTime;
 
 namespace ApplicationCore.Features.Projects.Commands
 {
-    public class UpdateProjectCommand : BaseUpdateRequest, IRequest<Result<string>>
+    public class UpdateProjectCommand : UpdateRequestBase, IRequest<Result<string>>
     {
         public string Name { get; set; }
         public string Description { get; set; }
@@ -115,7 +115,7 @@ namespace ApplicationCore.Features.Projects.Commands
                 .ForMember(dest => dest.ContactId, opt => opt.Ignore())
                 .ForMember(dest => dest.Contact, opt => opt.Ignore())
                 .ForMember(dest => dest.SearchVector, opt => opt.Ignore())
-                .IncludeBase<BaseUpdateRequest, AuditableEntity<string>>();
+                .IncludeBase<UpdateRequestBase, AuditableEntity<string>>();
         }
     }
 }

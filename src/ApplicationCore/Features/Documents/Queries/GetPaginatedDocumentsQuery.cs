@@ -136,7 +136,7 @@ namespace ApplicationCore.Features.Documents.Queries
         }
     }
 
-    public class GetPaginatedDocumentsQueryResponse : BaseResponse
+    public class GetPaginatedDocumentsQueryResponse : ResponseBase
     {        
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;

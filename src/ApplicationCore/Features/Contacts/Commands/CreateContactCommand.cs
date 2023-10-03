@@ -13,7 +13,7 @@ using Microsoft.Extensions.Logging;
 
 namespace ApplicationCore.Features.Contacts.Commands
 {
-    public class CreateContactCommand : BaseCreateRequest, IRequest<Result<string>>
+    public class CreateContactCommand : CreateRequestBase, IRequest<Result<string>>
     {        
         public string FirstName { get; set; }
         public string LastName { get; set; }
@@ -123,7 +123,7 @@ namespace ApplicationCore.Features.Contacts.Commands
                 //.ForMember(dest => dest.CustomerId, opt => opt.MapFrom(src => src.CustomerId))
                 .ForMember(dest => dest.SearchVector, opt => opt.Ignore())
                 .ForMember(dest => dest.Customer, opt => opt.Ignore())
-                .IncludeBase<BaseCreateRequest, AuditableEntity<string>>();
+                .IncludeBase<CreateRequestBase, AuditableEntity<string>>();
         }
     }
 }

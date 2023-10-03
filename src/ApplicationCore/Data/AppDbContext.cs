@@ -19,8 +19,10 @@ namespace ApplicationCore.Data
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Contact> Contacts { get; set; }
         public DbSet<Project> Projects { get; set; }
+        public DbSet<Industry> Industries { get; set; }
         public DbSet<WebhookSubscriber> WebhookSubsribers { get; set; }
         public DbSet<WebhookMessage> WebhookMessages { get; set; }
+
 
         public AppDbContext(
             DbContextOptions options,
@@ -83,6 +85,7 @@ namespace ApplicationCore.Data
             builder.ApplyConfiguration(new CustomerConfiguration());
             builder.ApplyConfiguration(new ContactConfiguration());
             builder.ApplyConfiguration(new ProjectConfiguration());
+            builder.ApplyConfiguration(new IndustryConfiguration());
             builder.ApplyConfiguration(new WebhookSubscriberConfiguration());
             builder.ApplyConfiguration(new WebhookMessageConfiguration());
 

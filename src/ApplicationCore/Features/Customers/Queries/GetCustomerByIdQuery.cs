@@ -79,7 +79,7 @@ namespace ApplicationCore.Features.Customers.Queries
         }
     }
 
-    public class GetCustomerByIdQueryResponse : BaseResponse
+    public class GetCustomerByIdQueryResponse : ResponseBase
     {        
         public string Name { get; set; }
         public string Description { get; set; }

@@ -1,4 +1,5 @@
 ﻿using ApplicationCore.Interfaces;
+using NodaTime;
 
 namespace ApplicationCore.Entities
 {
@@ -8,7 +9,7 @@ namespace ApplicationCore.Entities
         public string UserId { get; set; } = "";
         public string Type { get; set; } = "";
         public string TableName { get; set; } = "";
-        public DateTime DateTime { get; set; } = DateTime.UtcNow;
+        public Instant DateTime { get; set; } = SystemClock.Instance.GetCurrentInstant();
         public string OldValues { get; set; } = "";
         public string NewValues { get; set; } = "";
         public string AffectedColumns { get; set; } = "";

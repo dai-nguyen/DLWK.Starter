@@ -235,6 +235,9 @@ builder.Services.AddAuthorization(options =>
 
     options.AddPolicy(Const.ClaimNames.users,
         policy => policy.RequireClaim(Const.ClaimNames.users));
+
+    options.AddPolicy(Const.ClaimNames.customers,
+        policy => policy.RequireClaim(Const.ClaimNames.customers));
 });
 
 

@@ -120,7 +120,7 @@ namespace ApplicationCore.Features.Webhook.Queries
         }
     }
 
-    public class GetPaginatedWebhookSubscribersQueryResponse : BaseResponse
+    public class GetPaginatedWebhookSubscribersQueryResponse : ResponseBase
     {        
         public string EntityName { get; set; }
         public string Operation { get; set; }

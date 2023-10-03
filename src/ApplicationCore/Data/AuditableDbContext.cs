@@ -73,11 +73,13 @@ namespace ApplicationCore.Data
                         case EntityState.Added:
                             auditEntry.AuditType = AuditType.Create;
                             auditEntry.NewValues[propertyName] = property.CurrentValue ?? "";
+                            auditEntry.OldValues[propertyName] = "";
                             break;
 
                         case EntityState.Deleted:
                             auditEntry.AuditType = AuditType.Delete;
                             auditEntry.OldValues[propertyName] = property.OriginalValue ?? "";
+                            auditEntry.NewValues[propertyName] = "";
                             break;
 
                         case EntityState.Modified:
@@ -85,7 +87,7 @@ namespace ApplicationCore.Data
                             {
                                 auditEntry.ChangedColumns.Add(propertyName);
                                 auditEntry.AuditType = AuditType.Update;
-                                auditEntry.OldValues[propertyName] = property.OriginalValue;
+                                auditEntry.OldValues[propertyName] = property.OriginalValue ?? "";
                                 auditEntry.NewValues[propertyName] = property.CurrentValue ?? "";
                             }
                             break;
