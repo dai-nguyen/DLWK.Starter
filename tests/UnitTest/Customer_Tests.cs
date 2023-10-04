@@ -1,9 +1,6 @@
 ﻿using ApplicationCore.Features.Customers.Commands;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace UnitTest
@@ -23,7 +20,7 @@ namespace UnitTest
             var command = new CreateCustomerCommand()
             {
                 Name = "Test",
-                Description = "Test",
+                //Description = "Test",
                 Address1 = "123 Street",
                 Address2 = "",
                 City = "City",
@@ -31,6 +28,7 @@ namespace UnitTest
                 Zip = "12345",
                 Country = "US",
             };
+
             try
             {
                 var res = await _mediator.Send(command);

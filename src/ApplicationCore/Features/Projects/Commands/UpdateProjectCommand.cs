@@ -30,19 +30,22 @@ namespace ApplicationCore.Features.Projects.Commands
         readonly IStringLocalizer _localizer;
         readonly AppDbContext _dbContext;
         readonly IMapper _mapper;
+        readonly IValidator<UpdateProjectCommand> _validator;
 
         public UpdateProjectCommandHandler(
             ILogger<UpdateProjectCommandHandler> logger,
             IUserSessionService userSession,
             IStringLocalizer<UpdateProjectCommandHandler> localizer,
             AppDbContext dbContext,
-            IMapper mapper)
+            IMapper mapper,
+            IValidator<UpdateProjectCommand> validator)
         {
             _logger = logger;
             _userSession = userSession;
             _localizer = localizer;
             _dbContext = dbContext;
             _mapper = mapper;
+            _validator = validator;
         }
 
         public async Task<Result<string>> Handle(
@@ -51,6 +54,13 @@ namespace ApplicationCore.Features.Projects.Commands
         {
             try
             {
+                var validationResult = await _validator.ValidateAsync(command, cancellationToken);
+
+                if (!validationResult.IsValid)
+                {
+                    return Result<string>.Fail(validationResult.Errors.Select(_ => _.ErrorMessage).ToArray());
+                }
+
                 var entity = await _dbContext.Projects.FindAsync(command.Id);
 
                 if (entity == null)

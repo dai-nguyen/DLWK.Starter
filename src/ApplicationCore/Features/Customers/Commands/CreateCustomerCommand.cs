@@ -35,28 +35,38 @@ namespace ApplicationCore.Features.Customers.Commands
         readonly IStringLocalizer _localizer;
         readonly AppDbContext _dbContext;
         readonly IMapper _mapper;
+        readonly IValidator<CreateCustomerCommand> _validator;
 
         public CreateCustomerCommandHandler(
             ILogger<CreateCustomerCommandHandler> logger,
             IUserSessionService userSession,
             IStringLocalizer<CreateCustomerCommandHandler> localizer,
             AppDbContext dbContext,
-            IMapper mapper)
+            IMapper mapper,
+            IValidator<CreateCustomerCommand> validator)
         {
             _logger = logger;
             _userSession = userSession;
             _localizer = localizer;
             _dbContext = dbContext;
             _mapper = mapper;
+            _validator = validator;
         }
 
         public async Task<Result<string>> Handle(
-            CreateCustomerCommand request, 
+            CreateCustomerCommand command, 
             CancellationToken cancellationToken)
         {
             try
             {
-                var entity = _mapper.Map<Customer>(request);
+                var validationResult = await _validator.ValidateAsync(command, cancellationToken);
+
+                if (!validationResult.IsValid)
+                {
+                    return Result<string>.Fail(validationResult.Errors.Select(_ => _.ErrorMessage).ToArray());
+                }
+
+                var entity = _mapper.Map<Customer>(command);
 
                 _dbContext.Customers.Add(entity);
                 await _dbContext.SaveChangesAsync();
@@ -66,7 +76,7 @@ namespace ApplicationCore.Features.Customers.Commands
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error creating {@0} {UserName}", request, _userSession.UserName);
+                _logger.LogError(ex, "Error creating {@0} {UserName}", command, _userSession.UserName);
             }
             return Result<string>.Fail(_localizer[Const.Messages.InternalError]);
         }

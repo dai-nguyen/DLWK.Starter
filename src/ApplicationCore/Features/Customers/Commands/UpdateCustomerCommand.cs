@@ -36,19 +36,22 @@ namespace ApplicationCore.Features.Customers.Commands
         readonly IStringLocalizer _localizer;
         readonly AppDbContext _dbContext;
         readonly IMapper _mapper;
+        readonly IValidator<UpdateCustomerCommand> _validator;
 
         public UpdateCustomerCommandHandler(
             ILogger<UpdateCustomerCommandHandler> logger,
             IUserSessionService userSession,
             IStringLocalizer<UpdateCustomerCommandHandler> localizer,
             AppDbContext dbContext,
-            IMapper mapper)
+            IMapper mapper,
+            IValidator<UpdateCustomerCommand> validator)
         {
             _logger = logger;
             _userSession = userSession;
             _localizer = localizer;
             _dbContext = dbContext;
             _mapper = mapper;
+            _validator = validator;
         }
 
         public async Task<Result<string>> Handle(
@@ -57,6 +60,13 @@ namespace ApplicationCore.Features.Customers.Commands
         {
             try
             {
+                var validationResult = await _validator.ValidateAsync(command, cancellationToken);
+
+                if (!validationResult.IsValid)
+                {
+                    return Result<string>.Fail(validationResult.Errors.Select(_ => _.ErrorMessage).ToArray());
+                }
+
                 var entity = await _dbContext.Customers.FindAsync(command.Id);
 
                 if (entity == null)

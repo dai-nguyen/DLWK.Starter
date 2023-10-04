@@ -1,5 +1,8 @@
 ﻿using ApplicationCore.Configurations;
 using ApplicationCore.Data;
+using ApplicationCore.Features.Contacts.Commands;
+using ApplicationCore.Features.Customers.Commands;
+using ApplicationCore.Features.Projects.Commands;
 using ApplicationCore.Features.Users.Commands;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Services;
@@ -111,10 +114,19 @@ namespace ApplicationCore
 
         internal static IServiceCollection AddValidations(this IServiceCollection services)
         {
-            services.AddTransient<IValidator<RegisterUserCommand>, RegisterUserCommandValidator>();
-            services.AddTransient<IValidator<CreateUserCommand>, CreateUserCommandValidator>();
-            services.AddTransient<IValidator<UpdateUserCommand>, UpdateUserCommandValidator>();
-            services.AddTransient<IValidator<UpdateUserProfileCommand>, UpdateUserProfileCommandValidator>();
+            services.AddScoped<IValidator<RegisterUserCommand>, RegisterUserCommandValidator>();
+            services.AddScoped<IValidator<CreateUserCommand>, CreateUserCommandValidator>();
+            services.AddScoped<IValidator<UpdateUserCommand>, UpdateUserCommandValidator>();
+            services.AddScoped<IValidator<UpdateUserProfileCommand>, UpdateUserProfileCommandValidator>();
+
+            services.AddScoped<IValidator<CreateCustomerCommand>, CreateCustomerCommandValidator>();
+            services.AddScoped<IValidator<UpdateCustomerCommand>, UpdateCustomerCommandValidator>();
+            
+            services.AddScoped<IValidator<CreateContactCommand>, CreateContactCommandValidator>();
+            services.AddScoped<IValidator<UpdateContactCommand>, UpdateContactCommandValidator>();
+
+            services.AddScoped<IValidator<CreateProjectCommand>, CreateProjectCommandValidator>();
+            services.AddScoped<IValidator<UpdateProjectCommand>, UpdateProjectCommandValidator>();
 
             return services;
         }

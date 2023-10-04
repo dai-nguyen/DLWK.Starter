@@ -8,6 +8,7 @@ using AutoMapper;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using NodaTime;
@@ -33,19 +34,22 @@ namespace ApplicationCore.Features.Projects.Commands
         readonly IStringLocalizer _localizer;
         readonly AppDbContext _dbContext;
         readonly IMapper _mapper;
+        readonly IValidator<CreateProjectCommand> _validator;
 
         public CreateProjectCommandHandler(
             ILogger<CreateProjectCommandHandler> logger,
             IUserSessionService userSession,
             IStringLocalizer<CreateProjectCommandHandler> localizer,
             AppDbContext dbContext,
-            IMapper mapper)
+            IMapper mapper,
+            IValidator<CreateProjectCommand> validator)
         {
             _logger = logger;
             _userSession = userSession;
             _localizer = localizer;
             _dbContext = dbContext;
             _mapper = mapper;
+            _validator = validator;
         }
 
         public async Task<Result<string>> Handle(
@@ -54,6 +58,13 @@ namespace ApplicationCore.Features.Projects.Commands
         {
             try
             {
+                var validationResult = await _validator.ValidateAsync(command, cancellationToken);
+
+                if (!validationResult.IsValid)
+                {
+                    return Result<string>.Fail(validationResult.Errors.Select(_ => _.ErrorMessage).ToArray());
+                }
+
                 var isValidContact = await _dbContext
                     .Contacts                    
                     .AnyAsync(_ => _.Id == command.ContactId && _.CustomerId == command.CustomerId);
@@ -83,12 +94,21 @@ namespace ApplicationCore.Features.Projects.Commands
 
     public class CreateProjectCommandValidator : AbstractValidator<CreateProjectCommand>
     {
+        readonly ILogger _logger;
         readonly IStringLocalizer _localizer;
+        readonly AppDbContext _appDbContext;
+        readonly IMemoryCache _cache;
 
         public CreateProjectCommandValidator(
-            IStringLocalizer<CreateProjectCommandValidator> localizer)
+            ILogger<CreateProjectCommandValidator> logger,
+            IStringLocalizer<CreateProjectCommandValidator> localizer,
+            AppDbContext appDbContext,
+            IMemoryCache cache)
         {
+            _logger = logger;
             _localizer = localizer;
+            _appDbContext = appDbContext;
+            _cache = cache;
 
             RuleFor(_ => _.Name)
                 .NotEmpty().WithMessage(_localizer["Name is required"])
@@ -110,10 +130,60 @@ namespace ApplicationCore.Features.Projects.Commands
                 .NotEmpty().WithMessage(_localizer["DateDue is required"]);
 
             RuleFor(_ => _.CustomerId)
-                .NotEmpty().WithMessage(_localizer["CustomerId is required"]);
+                .NotEmpty().WithMessage(_localizer["CustomerId is required"])
+                .MustAsync((customerId, cancellation) => IsValidCustomerIdAsync(customerId))
+                .WithMessage(_localizer["CustomerId must be valid"])
+                .When(_ => !string.IsNullOrEmpty(_.CustomerId));
 
             RuleFor(_ => _.ContactId)
-                .NotEmpty().WithMessage(_localizer["ContactId is required"]);
+                .NotEmpty().WithMessage(_localizer["ContactId is required"])
+                .MustAsync((contactId, cancellation) => IsValidContactIdAsync(contactId))
+                .WithMessage(_localizer["ContactId must be valid"])
+                .When(_ => !string.IsNullOrEmpty(_.ContactId));
+        }
+
+        private async Task<bool> IsValidCustomerIdAsync(string customerId)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(customerId) || string.IsNullOrWhiteSpace(customerId))
+                    return false;
+
+                return await _cache.GetOrCreateAsync(
+                    $"IsValidCustomerIdAsync:{customerId}",
+                    async entry =>
+                    {
+                        entry.SlidingExpiration = TimeSpan.FromSeconds(5);
+                        return (await _appDbContext.Customers.AnyAsync(_ => _.Id == customerId)) == true;
+                    });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error checking for customer id");
+            }
+            return false;
+        }
+
+        private async Task<bool> IsValidContactIdAsync(string contactId)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(contactId) || string.IsNullOrWhiteSpace(contactId))
+                    return false;
+
+                return await _cache.GetOrCreateAsync(
+                    $"IsValidContactIdAsync:{contactId}",
+                    async entry =>
+                    {
+                        entry.SlidingExpiration = TimeSpan.FromSeconds(5);
+                        return (await _appDbContext.Contacts.AnyAsync(_ => _.Id == contactId)) == true;
+                    });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error checking for contact id");
+            }
+            return false;
         }
     }
 

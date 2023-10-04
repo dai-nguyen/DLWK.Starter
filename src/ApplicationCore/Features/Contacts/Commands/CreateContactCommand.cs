@@ -8,6 +8,7 @@ using AutoMapper;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
@@ -31,19 +32,22 @@ namespace ApplicationCore.Features.Contacts.Commands
         readonly IStringLocalizer _localizer;
         readonly AppDbContext _dbContext;
         readonly IMapper _mapper;
+        readonly IValidator<CreateContactCommand> _validator;
 
         public CreateContactCommandHandler(
             ILogger<CreateContactCommandHandler> logger,
             IUserSessionService userSession,
             IStringLocalizer<CreateContactCommandHandler> localizer,
             AppDbContext dbContext,
-            IMapper mapper)
+            IMapper mapper,
+            IValidator<CreateContactCommand> validator)
         {
             _logger = logger;
             _userSession = userSession;
             _localizer = localizer;
             _dbContext = dbContext;
             _mapper = mapper;
+            _validator = validator;
         }
 
         public async Task<Result<string>> Handle(
@@ -52,13 +56,13 @@ namespace ApplicationCore.Features.Contacts.Commands
         {
             try
             {
-                var isValidCustomer = await _dbContext.Customers.AnyAsync(_ => _.Id == command.CustomerId);
+                var validationResult = await _validator.ValidateAsync(command, cancellationToken);
 
-                if (!isValidCustomer)
+                if (!validationResult.IsValid)
                 {
-                    return Result<string>.Fail(_localizer["Invalid Customer ID"]);
+                    return Result<string>.Fail(validationResult.Errors.Select(_ => _.ErrorMessage).ToArray());
                 }
-
+                
                 var entity = _mapper.Map<Contact>(command);
                 
                 _dbContext.Contacts.Add(entity);
@@ -78,13 +82,22 @@ namespace ApplicationCore.Features.Contacts.Commands
     }
 
     public class CreateContactCommandValidator : AbstractValidator<CreateContactCommand>
-    {        
-        readonly IStringLocalizer _localizer;        
+    {
+        readonly ILogger _logger;
+        readonly IStringLocalizer _localizer;
+        readonly AppDbContext _appDbContext;
+        readonly IMemoryCache _cache;
 
-        public CreateContactCommandValidator(            
-            IStringLocalizer<CreateContactCommandValidator> localizer)
+        public CreateContactCommandValidator(
+            ILogger<CreateContactCommandValidator> logger,
+            IStringLocalizer<CreateContactCommandValidator> localizer,
+            AppDbContext appDbContext,
+            IMemoryCache cache)
         {            
+            _logger = logger;
             _localizer = localizer;            
+            _appDbContext = appDbContext;
+            _cache = cache;
 
             RuleFor(_ => _.FirstName)
                 .NotEmpty().WithMessage(_localizer["FirstName is required"])
@@ -106,8 +119,33 @@ namespace ApplicationCore.Features.Contacts.Commands
                 .WithMessage(_localizer[$"Phone cannot be longer than {ContactConst.PhoneMaxLength}"]);
 
             RuleFor(_ => _.CustomerId)
-                .NotEmpty().WithMessage(_localizer["CustomerId is required"]);
-            
+                .NotEmpty()
+                .WithMessage(_localizer["CustomerId is required"])
+                .MustAsync((customerId, cancellation) => IsValidCustomerIdAsync(customerId))
+                .WithMessage(_localizer["CustomerId must be valid"])
+                .When(_ => !string.IsNullOrEmpty(_.CustomerId));            
+        }
+
+        private async Task<bool> IsValidCustomerIdAsync(string customerId)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(customerId) || string.IsNullOrWhiteSpace(customerId))
+                    return false;
+                
+                return await _cache.GetOrCreateAsync(
+                    $"IsValidCustomerIdAsync:{customerId}",
+                    async entry =>
+                    {
+                        entry.SlidingExpiration = TimeSpan.FromSeconds(5);
+                        return (await _appDbContext.Customers.AnyAsync(_ => _.Id == customerId)) == true;
+                    });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error checking for customer id");
+            }
+            return false;
         }
     }
 
@@ -115,12 +153,7 @@ namespace ApplicationCore.Features.Contacts.Commands
     {
         public CreateContactCommandProfile()
         {
-            CreateMap<CreateContactCommand, Contact>()
-                //.ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.FirstName))
-                //.ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.LastName))
-                //.ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
-                //.ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.Phone))
-                //.ForMember(dest => dest.CustomerId, opt => opt.MapFrom(src => src.CustomerId))
+            CreateMap<CreateContactCommand, Contact>()                
                 .ForMember(dest => dest.SearchVector, opt => opt.Ignore())
                 .ForMember(dest => dest.Customer, opt => opt.Ignore())
                 .IncludeBase<CreateRequestBase, AuditableEntity<string>>();

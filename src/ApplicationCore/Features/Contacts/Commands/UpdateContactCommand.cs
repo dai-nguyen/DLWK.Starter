@@ -28,19 +28,22 @@ namespace ApplicationCore.Features.Contacts.Commands
         readonly IStringLocalizer _localizer;
         readonly AppDbContext _dbContext;
         readonly IMapper _mapper;
+        readonly IValidator<UpdateContactCommand> _validator;
 
         public UpdateContactCommandHandler(
             ILogger<UpdateContactCommandHandler> logger,
             IUserSessionService userSession,
             IStringLocalizer<UpdateContactCommandHandler> localizer,
             AppDbContext dbContext,
-            IMapper mapper)
+            IMapper mapper,
+            IValidator<UpdateContactCommand> validator)
         {
             _logger = logger;
             _userSession = userSession;
             _localizer = localizer;
             _dbContext = dbContext;
             _mapper = mapper;
+            _validator = validator;
         }
 
         public async Task<Result<string>> Handle(
@@ -49,6 +52,13 @@ namespace ApplicationCore.Features.Contacts.Commands
         {
             try
             {
+                var validationResult = await _validator.ValidateAsync(command, cancellationToken);
+
+                if (!validationResult.IsValid)
+                {
+                    return Result<string>.Fail(validationResult.Errors.Select(_ => _.ErrorMessage).ToArray());
+                }
+
                 var entity = await _dbContext.Contacts.FindAsync(command.Id);
 
                 if (entity == null)
@@ -109,11 +119,7 @@ namespace ApplicationCore.Features.Contacts.Commands
     {
         public UpdateContactCommandProfile()
         {
-            CreateMap<UpdateContactCommand, Contact>()
-                //.ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.FirstName))
-                //.ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.LastName))
-                //.ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
-                //.ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.Phone))
+            CreateMap<UpdateContactCommand, Contact>()                
                 .ForMember(dest => dest.CustomerId, opt => opt.Ignore())
                 .ForMember(dest => dest.Customer, opt => opt.Ignore())                
                 .ForMember(dest => dest.SearchVector, opt => opt.Ignore())

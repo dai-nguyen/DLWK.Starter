@@ -28,8 +28,7 @@ namespace UnitTest
         {
             _host = Host.CreateDefaultBuilder()
                 .ConfigureAppConfiguration(cfg =>
-                {
-                    //cfg.SetBasePath(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location))
+                {                    
                     cfg.AddJsonFile("appsettings.json");
                     cfg.AddUserSecrets<TestBase>();                    
                 })
