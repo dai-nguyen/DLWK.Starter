@@ -34,7 +34,7 @@ namespace ApplicationCore
             });
             services.AddValidations();
 
-            services.AddTransient<IFileService, FileService>();
+            services.AddTransient<IFileService, FileService>();            
 
             return services;
         }

@@ -18,6 +18,7 @@ using Serilog.Sinks.PostgreSQL;
 using Serilog.Sinks.PostgreSQL.ColumnWriters;
 using System.Security.Cryptography.X509Certificates;
 using System.Text.Json.Serialization;
+using System.Threading.RateLimiting;
 using Web;
 using Web.Data;
 using Web.Middleware;
@@ -114,6 +115,22 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<AppUser>>();
 builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddMudServices();
+
+builder.Services.AddRateLimiter(options =>
+{
+    options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: httpContext.User.Identity?.Name ?? httpContext.Request.Headers.Host.ToString(),
+            factory: partition => new FixedWindowRateLimiterOptions()
+            {
+                AutoReplenishment = true,
+                PermitLimit = httpContext.User.Identity?.IsAuthenticated == true ? 
+                    builder.Configuration.GetValue<int>("RateLimiter:AuthPermitLimit") : builder.Configuration.GetValue<int>("RateLimiter:NonAuthPermitLimit"),
+                Window = TimeSpan.FromSeconds(httpContext.User.Identity?.IsAuthenticated == true ? 
+                    builder.Configuration.GetValue<int>("RateLimiter:AuthWindowInSeconds") : builder.Configuration.GetValue<int>("RateLimiter:NonAuthWindowInSecond")),
+            }));
+});
+
 
 builder.Services.UseApplicationCore(builder.Configuration);
 
@@ -269,6 +286,8 @@ app.UseAuthorization();
 
 app.UseMiddleware<LoginMiddleware>();
 app.UseMiddleware<LogoutMiddleware>();
+
+app.UseRateLimiter();
 
 //app.MapBlazorHub();
 //app.MapFallbackToPage("/_Host");
