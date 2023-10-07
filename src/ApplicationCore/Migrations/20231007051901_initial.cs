@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using ApplicationCore.Models;
 using Microsoft.EntityFrameworkCore.Migrations;
 using NodaTime;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -21,8 +19,8 @@ namespace ApplicationCore.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
-                    DateCreated = table.Column<Instant>(type: "timestamp with time zone", nullable: false),
-                    DateUpdated = table.Column<Instant>(type: "timestamp with time zone", nullable: false),
+                    DateCreated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    DateUpdated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     CreatedBy = table.Column<string>(type: "varchar(128)", nullable: false),
                     UpdatedBy = table.Column<string>(type: "varchar(128)", nullable: false),
                     ExternalId = table.Column<string>(type: "text", nullable: false),
@@ -44,8 +42,8 @@ namespace ApplicationCore.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
-                    DateCreated = table.Column<Instant>(type: "timestamp with time zone", nullable: false),
-                    DateUpdated = table.Column<Instant>(type: "timestamp with time zone", nullable: false),
+                    DateCreated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    DateUpdated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     CreatedBy = table.Column<string>(type: "varchar(128)", nullable: false),
                     UpdatedBy = table.Column<string>(type: "varchar(128)", nullable: false),
                     ExternalId = table.Column<string>(type: "text", nullable: false),
@@ -57,7 +55,6 @@ namespace ApplicationCore.Migrations
                     SearchVector = table.Column<NpgsqlTsVector>(type: "tsvector", nullable: false)
                         .Annotation("Npgsql:TsVectorConfig", "english")
                         .Annotation("Npgsql:TsVectorProperties", new[] { "UserName", "FirstName", "LastName", "Email", "Title" }),
-                    CustomAttributes = table.Column<IEnumerable<CustomAttribute>>(type: "jsonb", nullable: false),
                     UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
@@ -86,7 +83,7 @@ namespace ApplicationCore.Migrations
                     UserId = table.Column<string>(type: "text", nullable: false),
                     Type = table.Column<string>(type: "text", nullable: false),
                     TableName = table.Column<string>(type: "text", nullable: false),
-                    DateTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    DateTime = table.Column<Instant>(type: "timestamp with time zone", nullable: false),
                     OldValues = table.Column<string>(type: "text", nullable: false),
                     NewValues = table.Column<string>(type: "text", nullable: false),
                     AffectedColumns = table.Column<string>(type: "text", nullable: false),

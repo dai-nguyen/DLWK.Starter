@@ -302,8 +302,6 @@ app.UseEndpoints(options =>
 });
 
 
-
-
 app.Run();
 
 public static class HostConfig

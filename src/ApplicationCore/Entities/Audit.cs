@@ -5,7 +5,7 @@ namespace ApplicationCore.Entities
 {
     public class Audit : IEntity<string>
     {
-        public string Id { get; set; } = new Guid().ToString();
+        public string Id { get; set; } = Guid.NewGuid().ToString();
         public string UserId { get; set; } = "";
         public string Type { get; set; } = "";
         public string TableName { get; set; } = "";

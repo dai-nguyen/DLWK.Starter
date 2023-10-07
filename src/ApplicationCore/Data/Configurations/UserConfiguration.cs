@@ -20,8 +20,8 @@ namespace ApplicationCore.Data.Configurations
                 .HasIndex(_ => _.SearchVector)
                 .HasMethod("GIN");
 
-            builder.Property(_ => _.CustomAttributes)
-                .HasColumnType("jsonb");            
+            //builder.Property(_ => _.CustomAttributes)
+            //    .HasColumnType("jsonb");            
         }
     }
 }

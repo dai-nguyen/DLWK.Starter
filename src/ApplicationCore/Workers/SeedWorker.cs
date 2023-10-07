@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using System.Security.Claims;
 
 namespace ApplicationCore.Workers
@@ -11,9 +12,15 @@ namespace ApplicationCore.Workers
     public class SeedWorker : IHostedService
     {
         private readonly IServiceProvider _serviceProvider;
+        readonly ILogger _logger;
 
-        public SeedWorker(IServiceProvider serviceProvider)
-            => _serviceProvider = serviceProvider;
+        public SeedWorker(
+            IServiceProvider serviceProvider,
+            ILogger<SeedWorker> logger)
+        {
+            _serviceProvider = serviceProvider;
+            _logger = logger;
+        }
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
@@ -26,36 +33,43 @@ namespace ApplicationCore.Workers
             var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AppUser>>();
             var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<AppRole>>();
 
-
-            if (!await dbContext.Roles.AnyAsync())
+            try
             {
-                foreach (var role in GetPreconfiguredRoles())
+                if (!await dbContext.Roles.AnyAsync())
                 {
-                    await roleManager.CreateAsync(role);
-                    await roleManager.AddClaimAsync(
-                        role,
-                        new Claim(Const.ClaimNames.roles, "read edit create delete"));
-                    await roleManager.AddClaimAsync(
-                        role,
-                        new Claim(Const.ClaimNames.users, "read edit create delete"));
+                    foreach (var role in GetPreconfiguredRoles())
+                    {
+                        await roleManager.CreateAsync(role);
+                        await roleManager.AddClaimAsync(
+                            role,
+                            new Claim(Const.ClaimNames.roles, "read edit create delete"));
+                        await roleManager.AddClaimAsync(
+                            role,
+                            new Claim(Const.ClaimNames.users, "read edit create delete"));
+                    }
+                }
+
+                if (!await dbContext.Users.AnyAsync())
+                {
+                    var defaultUser = new AppUser()
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        FirstName = "Admin",
+                        LastName = "User",
+                        Title = "Administrator",
+                        UserName = "admin",
+                        Email = "admin@starter.com",
+                        SecurityCode = "RavenCave",
+                    };
+                    await userManager.CreateAsync(defaultUser, "Pa$$w0rd");
+                    await userManager.AddToRoleAsync(defaultUser, "Admin");
                 }
             }
-
-            if (!await dbContext.Users.AnyAsync())
+            catch (Exception ex)
             {
-                var defaultUser = new AppUser()
-                {
-                    Id = Guid.NewGuid().ToString(),
-                    FirstName = "Admin",
-                    LastName = "User",
-                    Title = "Administrator",
-                    UserName = "admin",
-                    Email = "admin@starter.com",
-                    SecurityCode = "RavenCave",
-                };
-                await userManager.CreateAsync(defaultUser, "Pa$$w0rd");
-                await userManager.AddToRoleAsync(defaultUser, "Admin");
+                _logger.LogError(ex, ex.Message);
             }
+            
         }
 
         public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
