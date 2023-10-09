@@ -31,7 +31,7 @@ namespace ApplicationCore.Models
                 UserId = UserId,
                 Type = AuditType.ToString(),
                 TableName = TableName,
-                DateTime = SystemClock.Instance.GetCurrentInstant(),
+                DateTime = DateTime.UtcNow,
                 PrimaryKey = JsonConvert.SerializeObject(KeyValues),
                 OldValues = OldValues.Count == 0 ? "" : JsonConvert.SerializeObject(OldValues),
                 NewValues = NewValues.Count == 0 ? "" : JsonConvert.SerializeObject(NewValues),

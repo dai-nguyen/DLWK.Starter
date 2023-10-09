@@ -104,7 +104,7 @@ namespace ApplicationCore.Features.Customers.Commands
                 .NotEmpty().WithMessage(_localizer["Name is required"])
                 .MaximumLength(CustomerConst.NameMaxLength)
                 .WithMessage(_localizer[$"Name cannot be longer than {CustomerConst.NameMaxLength}"])
-                .MustAsync((name, cancellation) => IsUniqueNameAsync(name))
+                .Must(IsUniqueName)
                 .WithMessage(_localizer["Name must be unique"])
                 .When(_ => !string.IsNullOrEmpty(_.Name));
 
@@ -149,6 +149,30 @@ namespace ApplicationCore.Features.Customers.Commands
                     {
                         entry.SlidingExpiration = TimeSpan.FromSeconds(5);
                         return (await _appDbContext.Customers.AnyAsync(_ => EF.Functions.ILike(_.Name, name))) == false;
+                    });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error checking for unique customer name");
+            }
+            return false;
+        }
+
+        private bool IsUniqueName(string name)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(name))
+                    return false;
+
+                name = name.Trim().ToLower();
+
+                return _cache.GetOrCreate(
+                    $"IsUniqueCustomerName:{name.Trim().ToLower()}",
+                    entry =>
+                    {
+                        entry.SlidingExpiration = TimeSpan.FromSeconds(5);
+                        return _appDbContext.Customers.Any(_ => EF.Functions.ILike(_.Name, name)) == false;
                     });
             }
             catch (Exception ex)

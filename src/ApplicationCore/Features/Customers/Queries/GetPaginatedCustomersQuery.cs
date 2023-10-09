@@ -146,7 +146,8 @@ namespace ApplicationCore.Features.Customers.Queries
         public GetPaginatedCustomerQueryProfile() 
         { 
             CreateMap<Customer, GetPaginatedCustomersQueryResponse>()
-                .ForMember(dest => dest.Industries, opt => opt.MapFrom(src => string.Join(',', src.Industries)));
+                .ForMember(dest => dest.Industries, opt => opt.MapFrom(src => string.Join(',', src.Industries)))
+                .IncludeBase<AuditableEntity<string>, ResponseBase>();
         }
     }
 }

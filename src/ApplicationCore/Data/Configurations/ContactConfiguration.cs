@@ -15,7 +15,7 @@ namespace ApplicationCore.Data.Configurations
             builder.Property(_ => _.FirstName).IsRequired().HasMaxLength(ContactConst.FirstNameMaxLength);
             builder.Property(_ => _.LastName).IsRequired().HasMaxLength(ContactConst.LastNameMaxLength);
             builder.Property(_ => _.Email).IsRequired().HasMaxLength(ContactConst.EmailMaxLength);
-            builder.Property(_ => _.Phone).HasMaxLength(ContactConst.PhoneMaxLength);
+            builder.Property(_ => _.Phone).IsRequired(false).HasMaxLength(ContactConst.PhoneMaxLength);
 
             // full index
             builder.HasGeneratedTsVectorColumn(_ =>

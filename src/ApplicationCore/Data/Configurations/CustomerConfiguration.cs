@@ -15,9 +15,9 @@ namespace ApplicationCore.Data.Configurations
             builder.Property(_ => _.Name).IsRequired().HasMaxLength(CustomerConst.NameMaxLength);
             builder.HasIndex(_ => _.Name).IsUnique();
             builder.Property(_ => _.Description).HasMaxLength(CustomerConst.DescriptionMaxLength);
-            builder.Property(_ => _.Industries);
+            builder.Property(_ => _.Industries).IsRequired();
             builder.Property(_ => _.Address1).HasMaxLength(CustomerConst.AddressMaxLength);
-            builder.Property(_ => _.Address2).HasMaxLength(CustomerConst.AddressMaxLength);
+            builder.Property(_ => _.Address2).IsRequired(false).HasMaxLength(CustomerConst.AddressMaxLength);
             builder.Property(_ => _.City).HasMaxLength(CustomerConst.CityMaxLength);
             builder.Property(_ => _.State).HasMaxLength(CustomerConst.StateMaxLength);
             builder.Property(_ => _.Zip).HasMaxLength(CustomerConst.ZipMaxLength);
@@ -27,7 +27,7 @@ namespace ApplicationCore.Data.Configurations
             builder.HasGeneratedTsVectorColumn(_ =>
                 _.SearchVector,
                 "english",
-                _ => new { _.Name, _.Description })
+                _ => new { _.Name, _.Description }
                 .HasIndex(_ => _.SearchVector)
                 .HasMethod("GIN");
         }

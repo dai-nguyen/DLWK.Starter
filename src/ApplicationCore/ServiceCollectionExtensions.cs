@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Npgsql;
 using System.Reflection;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 
@@ -60,6 +61,8 @@ namespace ApplicationCore
                 sql => sql.MigrationsAssembly(migrationsAssembly.Name).UseNodaTime());
 
             builder.UseOpenIddict();
+
+            NpgsqlConnection.GlobalTypeMapper.UseNodaTime();
         }        
 
         internal static IServiceCollection AddIdentity(this IServiceCollection services)

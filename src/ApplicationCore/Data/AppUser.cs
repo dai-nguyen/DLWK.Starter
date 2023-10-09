@@ -6,7 +6,7 @@ using NpgsqlTypes;
 
 namespace ApplicationCore.Data
 {
-    public class AppUser : IdentityUser<string> //, IAuditableCustomAttributeEntity<string>
+    public class AppUser : IdentityUser<string>, IAuditableCustomAttributeEntity<string>
     {
         public virtual DateTime DateCreated { get; set; } = DateTime.UtcNow;
         public virtual DateTime DateUpdated { get; set; } = DateTime.UtcNow;

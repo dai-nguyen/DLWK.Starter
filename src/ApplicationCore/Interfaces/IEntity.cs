@@ -1,7 +1,4 @@
-﻿using ApplicationCore.Models;
-using NodaTime;
-
-namespace ApplicationCore.Interfaces
+﻿namespace ApplicationCore.Interfaces
 {
     public interface IEntity
     {
@@ -17,8 +14,8 @@ namespace ApplicationCore.Interfaces
 
     public interface IAuditableEntity : IEntity
     {
-        Instant DateCreated { get; set; }
-        Instant DateUpdated { get; set; }
+        DateTime DateCreated { get; set; }
+        DateTime DateUpdated { get; set; }
         string CreatedBy { get; set; }
         string UpdatedBy { get; set; }
         string ExternalId { get; set; }

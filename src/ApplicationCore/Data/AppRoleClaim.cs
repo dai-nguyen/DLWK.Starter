@@ -6,8 +6,8 @@ namespace ApplicationCore.Data
 {
     public class AppRoleClaim : IdentityRoleClaim<string>, IAuditableEntity<int>
     {
-        public virtual Instant DateCreated { get; set; } = SystemClock.Instance.GetCurrentInstant();
-        public virtual Instant DateUpdated { get; set; } = SystemClock.Instance.GetCurrentInstant();
+        public virtual DateTime DateCreated { get; set; } = DateTime.UtcNow;
+        public virtual DateTime DateUpdated { get; set; } = DateTime.UtcNow;
         public virtual string CreatedBy { get; set; } = "?";
         public virtual string UpdatedBy { get; set; } = "?";
         public virtual string ExternalId { get; set; } = "";

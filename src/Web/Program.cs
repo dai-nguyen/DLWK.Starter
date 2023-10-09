@@ -49,7 +49,7 @@ Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Information)
     .Enrich.FromLogContext()
     .Enrich.WithMachineName()
-    .WriteTo.File("Logs/log.txt")
+    .WriteTo.File("Logs/log.txt", rollingInterval: RollingInterval.Day)
     .WriteTo.Console()
     .WriteTo.PostgreSQL(
         connStr,

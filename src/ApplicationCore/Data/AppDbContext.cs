@@ -42,16 +42,16 @@ namespace ApplicationCore.Data
             {
                 switch (entry.State)
                 {
-                    case EntityState.Added:                        
-                        entry.Entity.DateCreated = SystemClock.Instance.GetCurrentInstant();                        
-                        entry.Entity.CreatedBy = _userSession.UserId;
-                        entry.Entity.DateUpdated = SystemClock.Instance.GetCurrentInstant();
-                        entry.Entity.UpdatedBy = _userSession.UserId;
+                    case EntityState.Added:
+                        entry.Entity.DateCreated = DateTime.UtcNow;
+                        entry.Entity.CreatedBy = _userSession.UserId ?? "?";
+                        entry.Entity.DateUpdated = DateTime.UtcNow;
+                        entry.Entity.UpdatedBy = _userSession.UserId ?? "?";
                         break;
 
                     case EntityState.Modified:
-                        entry.Entity.DateUpdated = SystemClock.Instance.GetCurrentInstant();
-                        entry.Entity.UpdatedBy = _userSession.UserId;
+                        entry.Entity.DateUpdated = DateTime.UtcNow;
+                        entry.Entity.UpdatedBy = _userSession.UserId ?? "?";
                         break;
                 }
             }
