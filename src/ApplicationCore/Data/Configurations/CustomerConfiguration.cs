@@ -27,7 +27,7 @@ namespace ApplicationCore.Data.Configurations
             builder.HasGeneratedTsVectorColumn(_ =>
                 _.SearchVector,
                 "english",
-                _ => new { _.Name, _.Description }
+                _ => new { _.Name, _.Description })
                 .HasIndex(_ => _.SearchVector)
                 .HasMethod("GIN");
         }

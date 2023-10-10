@@ -39,6 +39,7 @@
 
   <ItemGroup>
     <Folder Include="Modules\" />
+    <Folder Include="Pages\Pages\Projects\" />
     <Folder Include="Workers\" />
   </ItemGroup>
 

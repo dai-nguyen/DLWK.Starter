@@ -188,9 +188,9 @@ namespace ApplicationCore.Features.Contacts.Queries
             //RuleFor(_ => _.CustomerId)
             //    .NotEmpty().WithMessage(_localizer["CustomerId is required"]);
 
-            RuleFor(_ => _.PageNumber)
-                .GreaterThan(0)
-                .WithMessage(_localizer[Const.Messages.PageNumberGreaterThanZero]);
+            //RuleFor(_ => _.PageNumber)
+            //    .GreaterThan(0)
+            //    .WithMessage(_localizer[Const.Messages.PageNumberGreaterThanZero]);
             RuleFor(_ => _.PageSize)
                 .InclusiveBetween(1, 100)
                 .WithMessage(_localizer[Const.Messages.PageSizeBetweenOneAndOneHundred]);

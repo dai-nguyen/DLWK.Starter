@@ -1,0 +1,48 @@
+﻿@using ApplicationCore.Features.Contacts.Queries
+@using ApplicationCore;
+@using ApplicationCore.Constants
+@attribute [Authorize(Policy = @Const.ClaimNames.contacts)]
+
+@* <AuthorizeView Policy="@Const.ClaimNames.contacts">
+    <Authorized> *@
+        <MudTable ServerData="@(new Func<TableState, Task<TableData<GetPaginatedContactsQueryResponse>>>(ReloadData))"
+                  Dense="true" Hover="true" @ref="_table" Context="iContext">
+            <ToolBarContent>
+                <MudButton Variant="Variant.Filled" OnClick="NagivateToCreatePage" Disabled="!_canCreate">Add Contact</MudButton>
+                <MudSpacer />
+                <MudTextField T="string" ValueChanged="@(s=>OnSearch(s))" Placeholder="Search" Adornment="Adornment.Start"
+                              AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+            </ToolBarContent>
+            <HeaderContent>
+                <MudTh></MudTh>
+                <MudTh><MudTableSortLabel SortLabel="FirstName" T="GetPaginatedContactsQueryResponse">First Name</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortLabel="LastName" T="GetPaginatedContactsQueryResponse">Last Name</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortLabel="Email" T="GetPaginatedContactsQueryResponse">Email</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortLabel="Phone" T="GetPaginatedContactsQueryResponse">Phone</MudTableSortLabel></MudTh>
+                <MudTh></MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd></MudTd>
+                <MudTd DataLabel="FirstName">@iContext.FirstName</MudTd>
+                <MudTd DataLabel="LastName">@iContext.LastName</MudTd>
+                <MudTd DataLabel="Email">@iContext.Email</MudTd>
+                <MudTd DataLabel="Phone">@iContext.Phone</MudTd>
+                <MudTd>
+                    <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="(() => NavigateToEditPage(iContext.Id))">View</MudButton>
+                </MudTd>
+            </RowTemplate>
+            <NoRecordsContent>
+                <MudText>No matching records found</MudText>
+            </NoRecordsContent>
+            <LoadingContent>
+                <MudText>Loading...</MudText>
+            </LoadingContent>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+@*      </Authorized>
+    <NotAuthorized>
+        <p>You are not authorized to see this page.</p>
+    </NotAuthorized>
+</AuthorizeView> *@

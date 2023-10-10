@@ -6,6 +6,7 @@
 <MudPaper Class="pa-4">
     <AuthorizeView Policy="@Const.ClaimNames.customers">
         <Authorized>
+            
             <EditForm Model="@_command" OnValidSubmit="SubmitAsync" Context="iContext">
                 <MudGrid>
                     <MudItem xs="12" md="12">
@@ -15,25 +16,25 @@
                     <MudItem xs="12" md="6">
                         <MudTextField T="string"
                         @bind-Value="_command.Name"
-                                      Label="Name"
-                                      For="@(() => _command.Name)"
-                                      Variant="Variant.Outlined" />
+                                        Label="Name"
+                                        For="@(() => _command.Name)"
+                                        Variant="Variant.Outlined" />
                     </MudItem>
 
                     <MudItem xs="12" md="6">
                         <MudTextField T="string"
                         @bind-Value="_command.Description"
-                                      Label="Description"
-                                      For="@(() => _command.Description)"
-                                      Variant="Variant.Outlined" />
+                                        Label="Description"
+                                        For="@(() => _command.Description)"
+                                        Variant="Variant.Outlined" />
                     </MudItem>
 
                     <MudItem xs="12" md="6">
                         <MudSelect T="string"
-                                   Label="Industries"                                   
-                                   Variant="Variant.Text"
-                                   MultiSelection="true"
-                                   @bind-SelectedValues="_command.Industries">
+                                    Label="Industries"
+                                    Variant="Variant.Text"
+                                    MultiSelection="true"
+                        @bind-SelectedValues="_command.Industries">
                             @foreach (var industry in Industries)
                             {
                                 <MudSelectItem T="string" Value="industry">@industry</MudSelectItem>
@@ -44,84 +45,82 @@
                     <MudItem xs="12" md="6">
                         <MudTextField T="string"
                         @bind-Value="_command.Address1"
-                                      Label="Address 1"
-                                      For="@(() => _command.Address1)"
-                                      Variant="Variant.Outlined"></MudTextField>
+                                        Label="Address 1"
+                                        For="@(() => _command.Address1)"
+                                        Variant="Variant.Outlined"></MudTextField>
                     </MudItem>
 
                     <MudItem xs="12" md="6">
                         <MudTextField T="string"
                         @bind-Value="_command.Address2"
-                                      Label="Address 2"
-                                      For="@(() => _command.Address2)"
-                                      Variant="Variant.Outlined" />
-                    </MudItem>                  
+                                        Label="Address 2"
+                                        For="@(() => _command.Address2)"
+                                        Variant="Variant.Outlined" />
+                    </MudItem>
 
                     <MudItem xs="12" md="6">
                         <MudTextField T="string"
                         @bind-Value="_command.City"
-                                      Label="City"
-                                      For="@(() => _command.City)"
-                                      Variant="Variant.Outlined" />
+                                        Label="City"
+                                        For="@(() => _command.City)"
+                                        Variant="Variant.Outlined" />
                     </MudItem>
 
                     <MudItem xs="12" md="6">
                         <MudTextField T="string"
                         @bind-Value="_command.State"
-                                      Label="State"
-                                      For="@(() => _command.State)"
-                                      Variant="Variant.Outlined" />
+                                        Label="State"
+                                        For="@(() => _command.State)"
+                                        Variant="Variant.Outlined" />
                     </MudItem>
 
                     <MudItem xs="12" md="6">
                         <MudTextField T="string"
                         @bind-Value="_command.Zip"
-                                      Label="Zip"
-                                      For="@(() => _command.Zip)"
-                                      Variant="Variant.Outlined" />
+                                        Label="Zip"
+                                        For="@(() => _command.Zip)"
+                                        Variant="Variant.Outlined" />
                     </MudItem>
 
                     <MudItem xs="12" md="6">
                         <MudTextField T="string"
                         @bind-Value="_command.Country"
-                                      Label="Country"
-                                      For="@(() => _command.Country)"
-                                      Variant="Variant.Outlined" />
+                                        Label="Country"
+                                        For="@(() => _command.Country)"
+                                        Variant="Variant.Outlined" />
                     </MudItem>
 
                     <MudItem xs="12" md="6">
                         <MudTextField T="string"
                         @bind-Value="_command.ExternalId"
-                                      Label="External ID"
-                                      For="@(() => _command.ExternalId)"
-                                      Variant="Variant.Outlined" />
+                                        Label="External ID"
+                                        For="@(() => _command.ExternalId)"
+                                        Variant="Variant.Outlined" />
                     </MudItem>
 
                     <MudItem xs="4" md="2">
                         <MudButton Variant="Variant.Filled"
-                                   Color="Color.Primary"
-                                   ButtonType="ButtonType.Submit"
-                                   Size="Size.Large"
-                                   FullWidth="true"
-                                   Disabled="!_canCreate">Add Customer</MudButton>
+                                    Color="Color.Primary"
+                                    ButtonType="ButtonType.Submit"
+                                    Size="Size.Large"
+                                    FullWidth="true"
+                                    Disabled="!_canCreate">Add Customer</MudButton>
                     </MudItem>
                     <MudItem xs="4" md="2">
                         <MudButton Variant="Variant.Filled"
-                                   Color="Color.Default"
-                                   Size="Size.Large"
-                                   OnClick="GoBack"
-                                   FullWidth="true">Back</MudButton>
+                                    Color="Color.Default"
+                                    Size="Size.Large"
+                                    OnClick="GoBack"
+                                    FullWidth="true">Back</MudButton>
                     </MudItem>
 
                 </MudGrid>
             </EditForm>
+            
+            
         </Authorized>
         <NotAuthorized>
 
         </NotAuthorized>
     </AuthorizeView>
 </MudPaper>
-
-
-
-
