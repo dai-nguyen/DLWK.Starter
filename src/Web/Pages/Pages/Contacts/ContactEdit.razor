@@ -1,0 +1,52 @@
+﻿
+
+<MudDialog>
+    <DialogContent>
+        <EditForm Model="@_command" OnValidSubmit="SubmitAsync" Context="iContext">
+            <MudGrid>
+                <MudItem xs="12" md="12">
+                    <FluentValidationValidator />
+                </MudItem>
+
+                <MudItem xs="12" md="6">
+                    <MudTextField T="string"
+                    @bind-Value="_command.FirstName"
+                                  Label="First Name"
+                                  For="@(() => _command.FirstName)"
+                                  Variant="Variant.Outlined" />
+                </MudItem>
+
+                <MudItem xs="12" md="6">
+                    <MudTextField T="string"
+                    @bind-Value="_command.LastName"
+                                  Label="LastName"
+                                  For="@(() => _command.LastName)"
+                                  Variant="Variant.Outlined" />
+                </MudItem>
+                
+                <MudItem xs="12" md="6">
+                    <MudTextField T="string"
+                    @bind-Value="_command.Email"
+                                  Label="Email"
+                                  For="@(() => _command.Email)"
+                                  Variant="Variant.Outlined"></MudTextField>
+                </MudItem>
+
+                <MudItem xs="12" md="6">
+                    <MudTextField T="string"
+                    @bind-Value="_command.Phone"
+                                  Label="Phone"
+                                  For="@(() => _command.Phone)"
+                                  Variant="Variant.Outlined" />
+                </MudItem>               
+            </MudGrid>
+        </EditForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" 
+                   Variant="Variant.Filled" 
+                   Disabled="!_canEdit" 
+                   OnClick="SubmitAsync">Save</MudButton>
+    </DialogActions>
+</MudDialog>

@@ -4,6 +4,7 @@ using ApplicationCore.Helpers;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor;
+using Web.Pages.Pages.Customers;
 
 namespace Web.Pages.Pages.Contacts
 {
@@ -73,6 +74,35 @@ namespace Web.Pages.Pages.Contacts
         async Task OnSearch(string text)
         {
             _searchString = text;
+            await _table.ReloadServerData();
+        }
+
+        async Task OpenCreateDialogAsync()
+        {
+            var dialogOptions = new DialogOptions()
+            {
+                FullScreen = true,
+                CloseButton = true,
+            };
+
+            await DialogService.ShowAsync<ContactCreate>("Create Contact", dialogOptions);
+            await _table.ReloadServerData();
+        }
+
+        async Task OpenEditDialog(string id)
+        {
+            var dialogOptions = new DialogOptions()
+            {
+                FullScreen = true,
+                CloseButton = true,
+            };
+
+            var parameters = new DialogParameters<string>
+            {
+                { "id", id }
+            };
+
+            await DialogService.ShowAsync<ContactEdit>("Edit Contact", parameters, dialogOptions);
             await _table.ReloadServerData();
         }
 

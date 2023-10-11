@@ -2,13 +2,14 @@
 @using ApplicationCore;
 @using ApplicationCore.Constants
 @attribute [Authorize(Policy = @Const.ClaimNames.contacts)]
+@inject IDialogService DialogService
 
 @* <AuthorizeView Policy="@Const.ClaimNames.contacts">
     <Authorized> *@
         <MudTable ServerData="@(new Func<TableState, Task<TableData<GetPaginatedContactsQueryResponse>>>(ReloadData))"
                   Dense="true" Hover="true" @ref="_table" Context="iContext">
             <ToolBarContent>
-                <MudButton Variant="Variant.Filled" OnClick="NagivateToCreatePage" Disabled="!_canCreate">Add Contact</MudButton>
+                <MudButton Variant="Variant.Filled" OnClick="OpenCreateDialogAsync" Disabled="!_canCreate">Add Contact</MudButton>
                 <MudSpacer />
                 <MudTextField T="string" ValueChanged="@(s=>OnSearch(s))" Placeholder="Search" Adornment="Adornment.Start"
                               AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
@@ -28,7 +29,7 @@
                 <MudTd DataLabel="Email">@iContext.Email</MudTd>
                 <MudTd DataLabel="Phone">@iContext.Phone</MudTd>
                 <MudTd>
-                    <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="(() => NavigateToEditPage(iContext.Id))">View</MudButton>
+                    <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="(() => OpenEditDialog(iContext.Id))">View</MudButton>
                 </MudTd>
             </RowTemplate>
             <NoRecordsContent>
