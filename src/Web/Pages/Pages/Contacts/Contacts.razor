@@ -2,7 +2,6 @@
 @using ApplicationCore;
 @using ApplicationCore.Constants
 @attribute [Authorize(Policy = @Const.ClaimNames.contacts)]
-@inject IDialogService DialogService
 
 @* <AuthorizeView Policy="@Const.ClaimNames.contacts">
     <Authorized> *@
@@ -16,20 +15,22 @@
             </ToolBarContent>
             <HeaderContent>
                 <MudTh></MudTh>
-                <MudTh><MudTableSortLabel SortLabel="FirstName" T="GetPaginatedContactsQueryResponse">First Name</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortLabel="FirstName" InitialDirection="SortDirection.Ascending" T="GetPaginatedContactsQueryResponse">First Name</MudTableSortLabel></MudTh>
                 <MudTh><MudTableSortLabel SortLabel="LastName" T="GetPaginatedContactsQueryResponse">Last Name</MudTableSortLabel></MudTh>
                 <MudTh><MudTableSortLabel SortLabel="Email" T="GetPaginatedContactsQueryResponse">Email</MudTableSortLabel></MudTh>
                 <MudTh><MudTableSortLabel SortLabel="Phone" T="GetPaginatedContactsQueryResponse">Phone</MudTableSortLabel></MudTh>
                 <MudTh></MudTh>
             </HeaderContent>
             <RowTemplate>
-                <MudTd></MudTd>
+                <MudTd>
+            <MudIconButton Icon="@Icons.Material.Filled.Edit" Size="Size.Small" aria-label="delete" OnClick="(() => OpenEditDialog(iContext.Id))"></MudIconButton>
+                </MudTd>
                 <MudTd DataLabel="FirstName">@iContext.FirstName</MudTd>
                 <MudTd DataLabel="LastName">@iContext.LastName</MudTd>
                 <MudTd DataLabel="Email">@iContext.Email</MudTd>
                 <MudTd DataLabel="Phone">@iContext.Phone</MudTd>
-                <MudTd>
-                    <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="(() => OpenEditDialog(iContext.Id))">View</MudButton>
+                <MudTd>                    
+                    <MudIconButton Icon="@Icons.Material.Filled.Delete" Size="Size.Small" Color="Color.Error" aria-label="delete" OnClick="(() => Delete(iContext))"></MudIconButton>
                 </MudTd>
             </RowTemplate>
             <NoRecordsContent>

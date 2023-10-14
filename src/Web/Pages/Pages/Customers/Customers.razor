@@ -15,20 +15,22 @@
             </ToolBarContent>
             <HeaderContent>
                 <MudTh></MudTh>
-                <MudTh><MudTableSortLabel SortLabel="Name" T="GetPaginatedCustomersQueryResponse">Name</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortLabel="Name" InitialDirection="SortDirection.Ascending" T="GetPaginatedCustomersQueryResponse">Name</MudTableSortLabel></MudTh>
                 <MudTh><MudTableSortLabel SortLabel="Industries" T="GetPaginatedCustomersQueryResponse">Industries</MudTableSortLabel></MudTh>
                 <MudTh><MudTableSortLabel SortLabel="City" T="GetPaginatedCustomersQueryResponse">City</MudTableSortLabel></MudTh>
                 <MudTh><MudTableSortLabel SortLabel="State" T="GetPaginatedCustomersQueryResponse">State</MudTableSortLabel></MudTh>
                 <MudTh></MudTh>
             </HeaderContent>
             <RowTemplate>
-                <MudTd></MudTd>
+                <MudTd>
+                    <MudIconButton Icon="@Icons.Material.Filled.Edit" Size="Size.Small" aria-label="delete" OnClick="(() => NavigateToEditPage(iContext.Id))"></MudIconButton>
+                </MudTd>
                 <MudTd DataLabel="Name">@iContext.Name</MudTd>
                 <MudTd DataLabel="Industries">@iContext.Industries</MudTd>
                 <MudTd DataLabel="City">@iContext.City</MudTd>
                 <MudTd DataLabel="State">@iContext.State</MudTd>
-                <MudTd>
-                    <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="(() => NavigateToEditPage(iContext.Id))">View</MudButton>
+                <MudTd>                    
+                    <MudIconButton Icon="@Icons.Material.Filled.Delete" Size="Size.Small" Color="Color.Error" aria-label="delete" OnClick="(() => Delete(iContext))"></MudIconButton>                    
                 </MudTd>
             </RowTemplate>
             <NoRecordsContent>

@@ -1,10 +1,10 @@
 ﻿using ApplicationCore.Constants;
+using ApplicationCore.Features.Contacts.Commands;
 using ApplicationCore.Features.Contacts.Queries;
 using ApplicationCore.Helpers;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor;
-using Web.Pages.Pages.Customers;
 
 namespace Web.Pages.Pages.Contacts
 {
@@ -34,7 +34,7 @@ namespace Web.Pages.Pages.Contacts
                 {
                     _canCreate = permission.can_create;
                 }
-            }
+            }            
 
             await base.OnInitializedAsync();
         }
@@ -85,7 +85,7 @@ namespace Web.Pages.Pages.Contacts
                 CloseButton = true,
             };
 
-            await DialogService.ShowAsync<ContactCreate>("Create Contact", dialogOptions);
+            await _dialogService.ShowAsync<ContactCreate>("Create Contact", dialogOptions);
             await _table.ReloadServerData();
         }
 
@@ -102,18 +102,53 @@ namespace Web.Pages.Pages.Contacts
                 { "id", id }
             };
 
-            await DialogService.ShowAsync<ContactEdit>("Edit Contact", parameters, dialogOptions);
+            await _dialogService.ShowAsync<ContactEdit>("Edit Contact", parameters, dialogOptions);
             await _table.ReloadServerData();
         }
 
-        void NagivateToCreatePage()
+        async Task Delete(GetPaginatedContactsQueryResponse model)
         {
-            _navigationManager.NavigateTo("/pages/contacts/create");
-        }
+            var dialogOptions = new DialogOptions()
+            {
+                CloseButton = true,
+                CloseOnEscapeKey = true,
+            };
 
-        void NavigateToEditPage(string id)
-        {
-            _navigationManager.NavigateTo($"/pages/contacts/edit/{id}");
+            var msgBoxOption = new MessageBoxOptions()
+            {
+                Title = "Are you sure?",
+                Message = $"Are you sure you want to delete '{model.FirstName} {model.LastName}'?",
+                YesText = "Yes",
+                NoText = "No"
+            };
+
+            var result = await _dialogService.ShowMessageBox(msgBoxOption, dialogOptions);
+
+            if (result.HasValue && result.Value) 
+            {
+                var deleteCmd = new DeleteContactCommand()
+                {
+                    Id = model.Id
+                };
+
+                var res = await _mediator.Send(deleteCmd);
+
+                if (!res.Succeeded)
+                {
+                    foreach (var msg in res.Messages)
+                    {
+                        _snackBar.Add(msg, MudBlazor.Severity.Error);
+                    }
+                }
+                else
+                {
+                    foreach (var msg in res.Messages)
+                    {
+                        _snackBar.Add(msg, MudBlazor.Severity.Success);
+                    }                    
+                    await _table.ReloadServerData();
+                }
+            }
         }
     }
 }

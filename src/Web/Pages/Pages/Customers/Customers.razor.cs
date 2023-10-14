@@ -1,4 +1,6 @@
 ﻿using ApplicationCore.Constants;
+using ApplicationCore.Features.Contacts.Commands;
+using ApplicationCore.Features.Contacts.Queries;
 using ApplicationCore.Features.Customers.Queries;
 using ApplicationCore.Helpers;
 using Microsoft.AspNetCore.Components;
@@ -79,6 +81,51 @@ namespace Web.Pages.Pages.Customers
         void NavigateToEditPage(string id)
         {
             _navigationManager.NavigateTo($"/pages/customers/edit/{id}");
+        }
+
+        async Task Delete(GetPaginatedCustomersQueryResponse model)
+        {
+            var dialogOptions = new DialogOptions()
+            {
+                CloseButton = true,
+                CloseOnEscapeKey = true,
+            };
+
+            var msgBoxOption = new MessageBoxOptions()
+            {
+                Title = "Are you sure?",
+                Message = $"Are you sure you want to delete '{model.Name}'?",
+                YesText = "Yes",
+                NoText = "No"
+            };
+
+            var result = await _dialogService.ShowMessageBox(msgBoxOption, dialogOptions);
+
+            if (result.HasValue && result.Value)
+            {
+                var deleteCmd = new DeleteContactCommand()
+                {
+                    Id = model.Id
+                };
+
+                var res = await _mediator.Send(deleteCmd);
+
+                if (!res.Succeeded)
+                {
+                    foreach (var msg in res.Messages)
+                    {
+                        _snackBar.Add(msg, MudBlazor.Severity.Error);
+                    }
+                }
+                else
+                {
+                    foreach (var msg in res.Messages)
+                    {
+                        _snackBar.Add(msg, MudBlazor.Severity.Success);
+                    }
+                    await _table.ReloadServerData();
+                }
+            }
         }
     }
 }

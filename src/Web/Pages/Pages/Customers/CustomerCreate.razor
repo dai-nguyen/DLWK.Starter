@@ -97,21 +97,23 @@
                                         For="@(() => _command.ExternalId)"
                                         Variant="Variant.Outlined" />
                     </MudItem>
+                    <MudItem xs="4" md="8">
 
-                    <MudItem xs="4" md="2">
-                        <MudButton Variant="Variant.Filled"
-                                    Color="Color.Primary"
-                                    ButtonType="ButtonType.Submit"
-                                    Size="Size.Large"
-                                    FullWidth="true"
-                                    Disabled="!_canCreate">Add Customer</MudButton>
                     </MudItem>
                     <MudItem xs="4" md="2">
                         <MudButton Variant="Variant.Filled"
-                                    Color="Color.Default"
-                                    Size="Size.Large"
-                                    OnClick="GoBack"
-                                    FullWidth="true">Back</MudButton>
+                                   Color="Color.Default"
+                                   Size="Size.Large"
+                                   OnClick="GoBack"
+                                   FullWidth="true">Back</MudButton>                        
+                    </MudItem>
+                    <MudItem xs="4" md="2">
+                        <MudButton Variant="Variant.Filled"
+                                   Color="Color.Primary"
+                                   ButtonType="ButtonType.Submit"
+                                   Size="Size.Large"
+                                   FullWidth="true"
+                                   Disabled="!_canCreate">Save</MudButton>
                     </MudItem>
 
                 </MudGrid>

@@ -56,6 +56,8 @@ namespace ApplicationCore.Features.Contacts.Commands
 
                     _dbContext.Contacts.Remove(entity);
                     await _dbContext.SaveChangesAsync(cancellationToken);
+
+                    transaction.Commit();
                 }
 
                 return Result<string>.Success(entity.Id,
