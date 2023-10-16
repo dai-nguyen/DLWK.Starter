@@ -1,12 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using ApplicationCore.Enums;
 
 namespace ApplicationCore.Entities
 {
-    internal class CustomAttributeDefinition
+    public class CustomAttributeDefinition : AuditableEntity<string>
     {
+        public string EntityName { get; set; }        
+        public string AttributeLabel { get; set; }
+        public string AttributeCode { get; set; }
+        public CustomAttributeType AttributeType { get; set; }
+        public string[] DropdownValues { get; set; }
+
+        public virtual IEnumerable<CustomAttribute> CustomAttributes { get; set; }
     }
 }

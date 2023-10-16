@@ -22,7 +22,8 @@ namespace ApplicationCore.Data
         public DbSet<Industry> Industries { get; set; }
         public DbSet<WebhookSubscriber> WebhookSubsribers { get; set; }
         public DbSet<WebhookMessage> WebhookMessages { get; set; }
-
+        public DbSet<CustomAttributeDefinition> CustomAttributeDefinitions { get; set; }
+        public DbSet<CustomAttribute> CustomAttributes { get; set; }
 
         public AppDbContext(
             DbContextOptions options,
@@ -88,6 +89,8 @@ namespace ApplicationCore.Data
             builder.ApplyConfiguration(new IndustryConfiguration());
             builder.ApplyConfiguration(new WebhookSubscriberConfiguration());
             builder.ApplyConfiguration(new WebhookMessageConfiguration());
+            builder.ApplyConfiguration(new CustomAttributeDefinitionConfiguration());
+            builder.ApplyConfiguration(new CustomAttributeConfiguration());
 
             base.OnModelCreating(builder);
         }
