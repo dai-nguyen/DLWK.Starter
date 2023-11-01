@@ -14,16 +14,15 @@ namespace ApplicationCore.Data
         readonly ILoggerFactory _loggerFactory;
         readonly IUserSessionService _userSession;
 
-        public DbSet<BulkJob> BulkJobs { get; set; }
-        public DbSet<Document> Documents { get; set; }
-        public DbSet<Customer> Customers { get; set; }
-        public DbSet<Contact> Contacts { get; set; }
-        public DbSet<Project> Projects { get; set; }
-        public DbSet<Industry> Industries { get; set; }
-        public DbSet<WebhookSubscriber> WebhookSubsribers { get; set; }
-        public DbSet<WebhookMessage> WebhookMessages { get; set; }
-        public DbSet<CustomAttributeDefinition> CustomAttributeDefinitions { get; set; }
-        public DbSet<CustomAttribute> CustomAttributes { get; set; }
+        public DbSet<BulkJob> BulkJobs => Set<BulkJob>();
+        public DbSet<Document> Documents => Set<Document>();
+        public DbSet<Customer> Customers => Set<Customer>();
+        public DbSet<Contact> Contacts => Set<Contact>();
+        public DbSet<Project> Projects => Set<Project>();
+        public DbSet<Industry> Industries => Set<Industry>();
+        public DbSet<WebhookSubscriber> WebhookSubsribers => Set<WebhookSubscriber>();
+        public DbSet<WebhookMessage> WebhookMessages => Set<WebhookMessage>();
+        public DbSet<UserDefinedDefinition> UserDefinedDefinitions => Set<UserDefinedDefinition>();        
 
         public AppDbContext(
             DbContextOptions options,
@@ -89,8 +88,7 @@ namespace ApplicationCore.Data
             builder.ApplyConfiguration(new IndustryConfiguration());
             builder.ApplyConfiguration(new WebhookSubscriberConfiguration());
             builder.ApplyConfiguration(new WebhookMessageConfiguration());
-            builder.ApplyConfiguration(new CustomAttributeDefinitionConfiguration());
-            builder.ApplyConfiguration(new CustomAttributeConfiguration());
+            builder.ApplyConfiguration(new UserDefinedDefinitionConfiguration());
 
             base.OnModelCreating(builder);
         }

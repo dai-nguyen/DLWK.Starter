@@ -16,7 +16,15 @@ namespace ApplicationCore.Entities
 
         public NpgsqlTsVector SearchVector { get; set; }
 
+        public virtual CustomerUd? UserDefined { get; set; }
+
         public virtual IEnumerable<Contact> Contacts { get; set; }
         public virtual IEnumerable<Project> Projects { get; set; }
+    }
+
+    public class CustomerUd : AuditableEntity<string>
+    {
+        public string CustomerId { get; set; }
+        public virtual Customer Customer { get; set; }
     }
 }

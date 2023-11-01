@@ -30,6 +30,25 @@ namespace ApplicationCore.Data.Configurations
                 _ => new { _.Name, _.Description })
                 .HasIndex(_ => _.SearchVector)
                 .HasMethod("GIN");
+
+            builder.HasOne(_ => _.UserDefined)
+                .WithOne(_ => _.Customer)
+                .HasForeignKey<CustomerUd>(_ => _.CustomerId)
+                .IsRequired();
+        }
+
+        public class CustomerUdConfiguration : IEntityTypeConfiguration<CustomerUd>
+        {
+            public void Configure(EntityTypeBuilder<CustomerUd> builder)
+            {
+                builder.HasKey(_ => _.Id);
+                builder.Property(_ => _.Id).HasMaxLength(37);
+
+                builder.HasOne(_ => _.Customer)
+                    .WithOne(_ => _.UserDefined)
+                    .HasForeignKey<CustomerUd>(_ => _.CustomerId)
+                    .IsRequired();
+            }
         }
     }
 }

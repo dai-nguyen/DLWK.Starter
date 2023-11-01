@@ -14,10 +14,18 @@ namespace ApplicationCore.Entities
 
         public NpgsqlTsVector SearchVector { get; set; }
 
+        public virtual ProjectUd? UserDefined { get; set; }
+
         public string CustomerId { get; set; }
         public virtual Customer Customer { get; set; }
 
         public string ContactId { get; set; }
         public virtual Contact Contact { get; set; }
+    }
+
+    public class ProjectUd : AuditableEntity<string>
+    {
+        public string ProjectId { get; set; }
+        public virtual Project Project { get; set; }
     }
 }

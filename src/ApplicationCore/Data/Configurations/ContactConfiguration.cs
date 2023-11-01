@@ -25,10 +25,29 @@ namespace ApplicationCore.Data.Configurations
                 .HasIndex(_ => _.SearchVector)
                 .HasMethod("GIN");
 
-            builder.HasOne(_ => _.Customer)
+            builder.HasOne(_ => _.UserDefined)
+               .WithOne(_ => _.Contact)
+               .HasForeignKey<ContactUd>(_ => _.ContactId)
+               .IsRequired();
+
+            builder.HasOne(_ => _.Customer)                
                 .WithMany(_ => _.Contacts)
                 .HasForeignKey(_ => _.CustomerId)
                 .OnDelete(DeleteBehavior.NoAction);
+        }
+    }
+
+    public class ContactUdConfiguration : IEntityTypeConfiguration<ContactUd>
+    {
+        public void Configure(EntityTypeBuilder<ContactUd> builder)
+        {
+            builder.HasKey(_ => _.Id);
+            builder.Property(_ => _.Id).HasMaxLength(37);
+
+            builder.HasOne(_ => _.Contact)
+                .WithOne(_ => _.UserDefined)
+                .HasForeignKey<ContactUd>(_ => _.ContactId)
+                .IsRequired();
         }
     }
 }

@@ -18,6 +18,19 @@ namespace ApplicationCore.Data.Configurations
             builder.Property(_ => _.DateStart).IsRequired();
             builder.Property(_ => _.DateDue).IsRequired();
 
+            // full index
+            builder.HasGeneratedTsVectorColumn(_ =>
+                _.SearchVector,
+                "english",
+                _ => new { _.Name, _.Description })
+                .HasIndex(_ => _.SearchVector)
+                .HasMethod("GIN");
+
+            builder.HasOne(_ => _.UserDefined)
+               .WithOne(_ => _.Project)
+               .HasForeignKey<ProjectUd>(_ => _.ProjectId)
+               .IsRequired();
+
             builder.HasOne(_ => _.Customer)
                 .WithMany(_ => _.Projects)
                 .HasForeignKey(_ => _.CustomerId)
@@ -27,6 +40,20 @@ namespace ApplicationCore.Data.Configurations
                 .WithMany(_ => _.Projects)
                 .HasForeignKey(_ => _.ContactId)
                 .OnDelete(DeleteBehavior.SetNull);
+        }
+    }
+
+    public class ProjectUdConfiguration : IEntityTypeConfiguration<ProjectUd>
+    {
+        public void Configure(EntityTypeBuilder<ProjectUd> builder)
+        {
+            builder.HasKey(_ => _.Id);
+            builder.Property(_ => _.Id).HasMaxLength(37);
+
+            builder.HasOne(_ => _.Project)
+                .WithOne(_ => _.UserDefined)
+                .HasForeignKey<ProjectUd>(_ => _.ProjectId)
+                .IsRequired();
         }
     }
 }

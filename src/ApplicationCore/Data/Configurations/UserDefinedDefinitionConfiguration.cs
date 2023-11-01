@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ApplicationCore.Data.Configurations
 {
-    public class CustomAttributeDefinitionConfiguration : IEntityTypeConfiguration<CustomAttributeDefinition>
+    public class UserDefinedDefinitionConfiguration : IEntityTypeConfiguration<UserDefinedDefinition>
     {
-        public void Configure(EntityTypeBuilder<CustomAttributeDefinition> builder)
+        public void Configure(EntityTypeBuilder<UserDefinedDefinition> builder)
         {
             builder.HasKey(_ => _.Id);
             builder.Property(_ => _.Id).HasMaxLength(37);
