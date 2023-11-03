@@ -22,7 +22,7 @@ namespace ApplicationCore.Data
         public DbSet<Industry> Industries => Set<Industry>();
         public DbSet<WebhookSubscriber> WebhookSubsribers => Set<WebhookSubscriber>();
         public DbSet<WebhookMessage> WebhookMessages => Set<WebhookMessage>();
-        public DbSet<UserDefinedDefinition> UserDefinedDefinitions => Set<UserDefinedDefinition>();        
+        public DbSet<ContactUdDefinition> ContactUdDefinitions => Set<ContactUdDefinition>();        
 
         public AppDbContext(
             DbContextOptions options,
@@ -88,7 +88,7 @@ namespace ApplicationCore.Data
             builder.ApplyConfiguration(new IndustryConfiguration());
             builder.ApplyConfiguration(new WebhookSubscriberConfiguration());
             builder.ApplyConfiguration(new WebhookMessageConfiguration());
-            builder.ApplyConfiguration(new UserDefinedDefinitionConfiguration());
+            builder.ApplyConfiguration(new ContactUdDefinitionConfiguration());
 
             base.OnModelCreating(builder);
         }

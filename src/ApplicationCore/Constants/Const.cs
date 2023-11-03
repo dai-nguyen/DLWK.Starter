@@ -59,7 +59,6 @@ namespace ApplicationCore.Constants
         {
             public const string Pending = "Pending";
             public const string Completed = "Completed";
-
         }
     }
 }

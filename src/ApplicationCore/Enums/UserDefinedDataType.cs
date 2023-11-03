@@ -1,8 +1,10 @@
 ﻿namespace ApplicationCore.Enums
 {
-    public enum CustomAttributeType
+    public enum UserDefinedDataType
     {
-        Text,        
+        Text,
+        Integer,
+        Decimal,
         Date,
         YesNo,
         Dropdown
