@@ -23,7 +23,7 @@ namespace ApplicationCore.Migrations
                     DateUpdated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     CreatedBy = table.Column<string>(type: "varchar(128)", nullable: false),
                     UpdatedBy = table.Column<string>(type: "varchar(128)", nullable: false),
-                    ExternalId = table.Column<string>(type: "text", nullable: false),
+                    ExternalId = table.Column<string>(type: "varchar(128)", nullable: false),
                     Description = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     SearchVector = table.Column<NpgsqlTsVector>(type: "tsvector", nullable: false)
                         .Annotation("Npgsql:TsVectorConfig", "english")
@@ -46,7 +46,7 @@ namespace ApplicationCore.Migrations
                     DateUpdated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     CreatedBy = table.Column<string>(type: "varchar(128)", nullable: false),
                     UpdatedBy = table.Column<string>(type: "varchar(128)", nullable: false),
-                    ExternalId = table.Column<string>(type: "text", nullable: false),
+                    ExternalId = table.Column<string>(type: "varchar(128)", nullable: false),
                     FirstName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     LastName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     Title = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
@@ -83,7 +83,7 @@ namespace ApplicationCore.Migrations
                     UserId = table.Column<string>(type: "text", nullable: false),
                     Type = table.Column<string>(type: "text", nullable: false),
                     TableName = table.Column<string>(type: "text", nullable: false),
-                    DateTime = table.Column<Instant>(type: "timestamp with time zone", nullable: false),
+                    DateTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     OldValues = table.Column<string>(type: "text", nullable: false),
                     NewValues = table.Column<string>(type: "text", nullable: false),
                     AffectedColumns = table.Column<string>(type: "text", nullable: false),
@@ -103,15 +103,35 @@ namespace ApplicationCore.Migrations
                     Error = table.Column<string>(type: "text", nullable: false),
                     Processed = table.Column<int>(type: "integer", nullable: false),
                     Failed = table.Column<int>(type: "integer", nullable: false),
-                    DateCreated = table.Column<Instant>(type: "timestamp with time zone", nullable: false),
-                    DateUpdated = table.Column<Instant>(type: "timestamp with time zone", nullable: false),
+                    DateCreated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    DateUpdated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     CreatedBy = table.Column<string>(type: "varchar(128)", nullable: false),
                     UpdatedBy = table.Column<string>(type: "varchar(128)", nullable: false),
-                    ExternalId = table.Column<string>(type: "text", nullable: false)
+                    ExternalId = table.Column<string>(type: "varchar(128)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_BulkJobs", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ContactUdDefinitions",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "character varying(37)", maxLength: 37, nullable: false),
+                    Label = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
+                    Code = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
+                    DataType = table.Column<int>(type: "integer", nullable: false),
+                    DropdownValues = table.Column<string[]>(type: "text[]", nullable: true),
+                    DateCreated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    DateUpdated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    CreatedBy = table.Column<string>(type: "varchar(128)", nullable: false),
+                    UpdatedBy = table.Column<string>(type: "varchar(128)", nullable: false),
+                    ExternalId = table.Column<string>(type: "varchar(128)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ContactUdDefinitions", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -123,7 +143,7 @@ namespace ApplicationCore.Migrations
                     Description = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
                     Industries = table.Column<string[]>(type: "text[]", nullable: false),
                     Address1 = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
-                    Address2 = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
+                    Address2 = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: true),
                     City = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
                     State = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
                     Zip = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: false),
@@ -131,15 +151,35 @@ namespace ApplicationCore.Migrations
                     SearchVector = table.Column<NpgsqlTsVector>(type: "tsvector", nullable: false)
                         .Annotation("Npgsql:TsVectorConfig", "english")
                         .Annotation("Npgsql:TsVectorProperties", new[] { "Name", "Description" }),
-                    DateCreated = table.Column<Instant>(type: "timestamp with time zone", nullable: false),
-                    DateUpdated = table.Column<Instant>(type: "timestamp with time zone", nullable: false),
+                    DateCreated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    DateUpdated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     CreatedBy = table.Column<string>(type: "varchar(128)", nullable: false),
                     UpdatedBy = table.Column<string>(type: "varchar(128)", nullable: false),
-                    ExternalId = table.Column<string>(type: "text", nullable: false)
+                    ExternalId = table.Column<string>(type: "varchar(128)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Customers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CustomerUdDefinitions",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "character varying(37)", maxLength: 37, nullable: false),
+                    Label = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
+                    Code = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
+                    DataType = table.Column<int>(type: "integer", nullable: false),
+                    DropdownValues = table.Column<string[]>(type: "text[]", nullable: true),
+                    DateCreated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    DateUpdated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    CreatedBy = table.Column<string>(type: "varchar(128)", nullable: false),
+                    UpdatedBy = table.Column<string>(type: "varchar(128)", nullable: false),
+                    ExternalId = table.Column<string>(type: "varchar(128)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CustomerUdDefinitions", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -155,11 +195,11 @@ namespace ApplicationCore.Migrations
                     SearchVector = table.Column<NpgsqlTsVector>(type: "tsvector", nullable: false)
                         .Annotation("Npgsql:TsVectorConfig", "english")
                         .Annotation("Npgsql:TsVectorProperties", new[] { "Title", "Description" }),
-                    DateCreated = table.Column<Instant>(type: "timestamp with time zone", nullable: false),
-                    DateUpdated = table.Column<Instant>(type: "timestamp with time zone", nullable: false),
+                    DateCreated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    DateUpdated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     CreatedBy = table.Column<string>(type: "varchar(128)", nullable: false),
                     UpdatedBy = table.Column<string>(type: "varchar(128)", nullable: false),
-                    ExternalId = table.Column<string>(type: "text", nullable: false)
+                    ExternalId = table.Column<string>(type: "varchar(128)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -172,11 +212,11 @@ namespace ApplicationCore.Migrations
                 {
                     Id = table.Column<string>(type: "character varying(37)", maxLength: 37, nullable: false),
                     Name = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
-                    DateCreated = table.Column<Instant>(type: "timestamp with time zone", nullable: false),
-                    DateUpdated = table.Column<Instant>(type: "timestamp with time zone", nullable: false),
+                    DateCreated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    DateUpdated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     CreatedBy = table.Column<string>(type: "varchar(128)", nullable: false),
                     UpdatedBy = table.Column<string>(type: "varchar(128)", nullable: false),
-                    ExternalId = table.Column<string>(type: "text", nullable: false)
+                    ExternalId = table.Column<string>(type: "varchar(128)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -243,6 +283,26 @@ namespace ApplicationCore.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ProjectUdDefinitions",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "character varying(37)", maxLength: 37, nullable: false),
+                    Label = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
+                    Code = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
+                    DataType = table.Column<int>(type: "integer", nullable: false),
+                    DropdownValues = table.Column<string[]>(type: "text[]", nullable: true),
+                    DateCreated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    DateUpdated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    CreatedBy = table.Column<string>(type: "varchar(128)", nullable: false),
+                    UpdatedBy = table.Column<string>(type: "varchar(128)", nullable: false),
+                    ExternalId = table.Column<string>(type: "varchar(128)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProjectUdDefinitions", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "WebhookSubsribers",
                 columns: table => new
                 {
@@ -252,11 +312,11 @@ namespace ApplicationCore.Migrations
                     Url = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
                     IsEnabled = table.Column<bool>(type: "boolean", nullable: false),
                     FailedCount = table.Column<int>(type: "integer", nullable: false),
-                    DateCreated = table.Column<Instant>(type: "timestamp with time zone", nullable: false),
-                    DateUpdated = table.Column<Instant>(type: "timestamp with time zone", nullable: false),
+                    DateCreated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    DateUpdated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     CreatedBy = table.Column<string>(type: "varchar(128)", nullable: false),
                     UpdatedBy = table.Column<string>(type: "varchar(128)", nullable: false),
-                    ExternalId = table.Column<string>(type: "text", nullable: false)
+                    ExternalId = table.Column<string>(type: "varchar(128)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -377,16 +437,16 @@ namespace ApplicationCore.Migrations
                     FirstName = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
                     LastName = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
                     Email = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
-                    Phone = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
+                    Phone = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: true),
                     SearchVector = table.Column<NpgsqlTsVector>(type: "tsvector", nullable: false)
                         .Annotation("Npgsql:TsVectorConfig", "english")
                         .Annotation("Npgsql:TsVectorProperties", new[] { "FirstName", "LastName", "Email", "Phone", "ExternalId" }),
                     CustomerId = table.Column<string>(type: "character varying(37)", nullable: false),
-                    DateCreated = table.Column<Instant>(type: "timestamp with time zone", nullable: false),
-                    DateUpdated = table.Column<Instant>(type: "timestamp with time zone", nullable: false),
+                    DateCreated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    DateUpdated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     CreatedBy = table.Column<string>(type: "varchar(128)", nullable: false),
                     UpdatedBy = table.Column<string>(type: "varchar(128)", nullable: false),
-                    ExternalId = table.Column<string>(type: "text", nullable: false)
+                    ExternalId = table.Column<string>(type: "varchar(128)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -396,6 +456,29 @@ namespace ApplicationCore.Migrations
                         column: x => x.CustomerId,
                         principalTable: "Customers",
                         principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CustomerUd",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "character varying(37)", maxLength: 37, nullable: false),
+                    CustomerId = table.Column<string>(type: "character varying(37)", nullable: false),
+                    DateCreated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    DateUpdated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    CreatedBy = table.Column<string>(type: "varchar(128)", nullable: false),
+                    UpdatedBy = table.Column<string>(type: "varchar(128)", nullable: false),
+                    ExternalId = table.Column<string>(type: "varchar(128)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CustomerUd", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_CustomerUd_Customers_CustomerId",
+                        column: x => x.CustomerId,
+                        principalTable: "Customers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -430,11 +513,11 @@ namespace ApplicationCore.Migrations
                     EntityId = table.Column<string>(type: "character varying(37)", maxLength: 37, nullable: false),
                     IsOkResponse = table.Column<bool>(type: "boolean", nullable: true),
                     SubscriberId = table.Column<string>(type: "character varying(37)", nullable: false),
-                    DateCreated = table.Column<Instant>(type: "timestamp with time zone", nullable: false),
-                    DateUpdated = table.Column<Instant>(type: "timestamp with time zone", nullable: false),
+                    DateCreated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    DateUpdated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     CreatedBy = table.Column<string>(type: "varchar(128)", nullable: false),
                     UpdatedBy = table.Column<string>(type: "varchar(128)", nullable: false),
-                    ExternalId = table.Column<string>(type: "text", nullable: false)
+                    ExternalId = table.Column<string>(type: "varchar(128)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -443,6 +526,29 @@ namespace ApplicationCore.Migrations
                         name: "FK_WebhookMessages_WebhookSubsribers_SubscriberId",
                         column: x => x.SubscriberId,
                         principalTable: "WebhookSubsribers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ContactUd",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "character varying(37)", maxLength: 37, nullable: false),
+                    ContactId = table.Column<string>(type: "character varying(37)", nullable: false),
+                    DateCreated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    DateUpdated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    CreatedBy = table.Column<string>(type: "varchar(128)", nullable: false),
+                    UpdatedBy = table.Column<string>(type: "varchar(128)", nullable: false),
+                    ExternalId = table.Column<string>(type: "varchar(128)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ContactUd", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ContactUd_Contacts_ContactId",
+                        column: x => x.ContactId,
+                        principalTable: "Contacts",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -457,14 +563,16 @@ namespace ApplicationCore.Migrations
                     Status = table.Column<byte>(type: "smallint", maxLength: 128, nullable: false),
                     DateStart = table.Column<Instant>(type: "timestamp with time zone", nullable: false),
                     DateDue = table.Column<Instant>(type: "timestamp with time zone", nullable: false),
-                    SearchVector = table.Column<NpgsqlTsVector>(type: "tsvector", nullable: false),
+                    SearchVector = table.Column<NpgsqlTsVector>(type: "tsvector", nullable: false)
+                        .Annotation("Npgsql:TsVectorConfig", "english")
+                        .Annotation("Npgsql:TsVectorProperties", new[] { "Name", "Description" }),
                     CustomerId = table.Column<string>(type: "character varying(37)", nullable: false),
                     ContactId = table.Column<string>(type: "character varying(37)", nullable: false),
-                    DateCreated = table.Column<Instant>(type: "timestamp with time zone", nullable: false),
-                    DateUpdated = table.Column<Instant>(type: "timestamp with time zone", nullable: false),
+                    DateCreated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    DateUpdated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     CreatedBy = table.Column<string>(type: "varchar(128)", nullable: false),
                     UpdatedBy = table.Column<string>(type: "varchar(128)", nullable: false),
-                    ExternalId = table.Column<string>(type: "text", nullable: false)
+                    ExternalId = table.Column<string>(type: "varchar(128)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -514,6 +622,29 @@ namespace ApplicationCore.Migrations
                         column: x => x.AuthorizationId,
                         principalTable: "OpenIddictAuthorizations",
                         principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProjectUd",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "character varying(37)", maxLength: 37, nullable: false),
+                    ProjectId = table.Column<string>(type: "character varying(37)", nullable: false),
+                    DateCreated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    DateUpdated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    CreatedBy = table.Column<string>(type: "varchar(128)", nullable: false),
+                    UpdatedBy = table.Column<string>(type: "varchar(128)", nullable: false),
+                    ExternalId = table.Column<string>(type: "varchar(128)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProjectUd", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProjectUd_Projects_ProjectId",
+                        column: x => x.ProjectId,
+                        principalTable: "Projects",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -577,6 +708,18 @@ namespace ApplicationCore.Migrations
                 .Annotation("Npgsql:IndexMethod", "GIN");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ContactUd_ContactId",
+                table: "ContactUd",
+                column: "ContactId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ContactUdDefinitions_Code",
+                table: "ContactUdDefinitions",
+                column: "Code",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Customers_Name",
                 table: "Customers",
                 column: "Name",
@@ -587,6 +730,18 @@ namespace ApplicationCore.Migrations
                 table: "Customers",
                 column: "SearchVector")
                 .Annotation("Npgsql:IndexMethod", "GIN");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CustomerUd_CustomerId",
+                table: "CustomerUd",
+                column: "CustomerId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CustomerUdDefinitions_Code",
+                table: "CustomerUdDefinitions",
+                column: "Code",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Documents_SearchVector",
@@ -665,6 +820,24 @@ namespace ApplicationCore.Migrations
                 column: "CustomerId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Projects_SearchVector",
+                table: "Projects",
+                column: "SearchVector")
+                .Annotation("Npgsql:IndexMethod", "GIN");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjectUd_ProjectId",
+                table: "ProjectUd",
+                column: "ProjectId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjectUdDefinitions_Code",
+                table: "ProjectUdDefinitions",
+                column: "Code",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_WebhookMessages_SubscriberId",
                 table: "WebhookMessages",
                 column: "SubscriberId");
@@ -707,6 +880,18 @@ namespace ApplicationCore.Migrations
                 name: "BulkJobs");
 
             migrationBuilder.DropTable(
+                name: "ContactUd");
+
+            migrationBuilder.DropTable(
+                name: "ContactUdDefinitions");
+
+            migrationBuilder.DropTable(
+                name: "CustomerUd");
+
+            migrationBuilder.DropTable(
+                name: "CustomerUdDefinitions");
+
+            migrationBuilder.DropTable(
                 name: "Documents");
 
             migrationBuilder.DropTable(
@@ -722,7 +907,10 @@ namespace ApplicationCore.Migrations
                 name: "OpenIddictTokens");
 
             migrationBuilder.DropTable(
-                name: "Projects");
+                name: "ProjectUd");
+
+            migrationBuilder.DropTable(
+                name: "ProjectUdDefinitions");
 
             migrationBuilder.DropTable(
                 name: "WebhookMessages");
@@ -737,13 +925,16 @@ namespace ApplicationCore.Migrations
                 name: "OpenIddictAuthorizations");
 
             migrationBuilder.DropTable(
-                name: "Contacts");
+                name: "Projects");
 
             migrationBuilder.DropTable(
                 name: "WebhookSubsribers");
 
             migrationBuilder.DropTable(
                 name: "OpenIddictApplications");
+
+            migrationBuilder.DropTable(
+                name: "Contacts");
 
             migrationBuilder.DropTable(
                 name: "Customers");

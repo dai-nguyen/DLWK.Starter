@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using NodaTime;
+using static ApplicationCore.Data.Configurations.CustomerConfiguration;
 
 namespace ApplicationCore.Data
 {
@@ -17,12 +18,15 @@ namespace ApplicationCore.Data
         public DbSet<BulkJob> BulkJobs => Set<BulkJob>();
         public DbSet<Document> Documents => Set<Document>();
         public DbSet<Customer> Customers => Set<Customer>();
+        public DbSet<CustomerUdDefinition> CustomerUdDefinitions => Set<CustomerUdDefinition>();
         public DbSet<Contact> Contacts => Set<Contact>();
+        public DbSet<ContactUdDefinition> ContactUdDefinitions => Set<ContactUdDefinition>();
         public DbSet<Project> Projects => Set<Project>();
+        public DbSet<ProjectUdDefinition> ProjectUdDefinitions => Set<ProjectUdDefinition>();
         public DbSet<Industry> Industries => Set<Industry>();
         public DbSet<WebhookSubscriber> WebhookSubsribers => Set<WebhookSubscriber>();
         public DbSet<WebhookMessage> WebhookMessages => Set<WebhookMessage>();
-        public DbSet<ContactUdDefinition> ContactUdDefinitions => Set<ContactUdDefinition>();        
+        
 
         public AppDbContext(
             DbContextOptions options,
@@ -72,7 +76,7 @@ namespace ApplicationCore.Data
 
             foreach (var property in properties)
             {
-                if (property.Name is "CreatedBy" or "UpdatedBy")
+                if (property.Name is "CreatedBy" or "UpdatedBy" or "ExternalId")
                     property.SetColumnType("varchar(128)");                
             }
 
@@ -83,12 +87,18 @@ namespace ApplicationCore.Data
             builder.ApplyConfiguration(new BulkJobConfiguration());
             builder.ApplyConfiguration(new DocumentConfiguration());            
             builder.ApplyConfiguration(new CustomerConfiguration());
+            builder.ApplyConfiguration(new CustomerUdConfiguration());
+            builder.ApplyConfiguration(new CustomerUdDefinitionConfiguration());
             builder.ApplyConfiguration(new ContactConfiguration());
+            builder.ApplyConfiguration(new ContactUdConfiguration());
+            builder.ApplyConfiguration(new ContactUdDefinitionConfiguration());
             builder.ApplyConfiguration(new ProjectConfiguration());
+            builder.ApplyConfiguration(new ProjectUdConfiguration());
+            builder.ApplyConfiguration(new ProjectUdDefinitionConfiguration());
             builder.ApplyConfiguration(new IndustryConfiguration());
             builder.ApplyConfiguration(new WebhookSubscriberConfiguration());
             builder.ApplyConfiguration(new WebhookMessageConfiguration());
-            builder.ApplyConfiguration(new ContactUdDefinitionConfiguration());
+            
 
             base.OnModelCreating(builder);
         }

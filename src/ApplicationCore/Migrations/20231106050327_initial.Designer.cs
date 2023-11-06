@@ -14,15 +14,15 @@ using NpgsqlTypes;
 namespace ApplicationCore.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20231009044116_customeAddress2Req")]
-    partial class customeAddress2Req
+    [Migration("20231106050327_initial")]
+    partial class initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.11")
+                .HasAnnotation("ProductVersion", "7.0.13")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -53,7 +53,7 @@ namespace ApplicationCore.Migrations
 
                     b.Property<string>("ExternalId")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("varchar(128)");
 
                     b.Property<string>("Name")
                         .HasMaxLength(256)
@@ -118,7 +118,7 @@ namespace ApplicationCore.Migrations
 
                     b.Property<string>("ExternalId")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("varchar(128)");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
@@ -313,7 +313,7 @@ namespace ApplicationCore.Migrations
 
                     b.Property<string>("ExternalId")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("varchar(128)");
 
                     b.Property<int>("Failed")
                         .HasColumnType("integer");
@@ -362,7 +362,7 @@ namespace ApplicationCore.Migrations
 
                     b.Property<string>("ExternalId")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("varchar(128)");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
@@ -398,6 +398,90 @@ namespace ApplicationCore.Migrations
                     NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("SearchVector"), "GIN");
 
                     b.ToTable("Contacts");
+                });
+
+            modelBuilder.Entity("ApplicationCore.Entities.ContactUd", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasMaxLength(37)
+                        .HasColumnType("character varying(37)");
+
+                    b.Property<string>("ContactId")
+                        .IsRequired()
+                        .HasColumnType("character varying(37)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("varchar(128)");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("DateUpdated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ExternalId")
+                        .IsRequired()
+                        .HasColumnType("varchar(128)");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasColumnType("varchar(128)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ContactId")
+                        .IsUnique();
+
+                    b.ToTable("ContactUd");
+                });
+
+            modelBuilder.Entity("ApplicationCore.Entities.ContactUdDefinition", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasMaxLength(37)
+                        .HasColumnType("character varying(37)");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("varchar(128)");
+
+                    b.Property<int>("DataType")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("DateUpdated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string[]>("DropdownValues")
+                        .HasColumnType("text[]");
+
+                    b.Property<string>("ExternalId")
+                        .IsRequired()
+                        .HasColumnType("varchar(128)");
+
+                    b.Property<string>("Label")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasColumnType("varchar(128)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.ToTable("ContactUdDefinitions");
                 });
 
             modelBuilder.Entity("ApplicationCore.Entities.Customer", b =>
@@ -442,7 +526,7 @@ namespace ApplicationCore.Migrations
 
                     b.Property<string>("ExternalId")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("varchar(128)");
 
                     b.Property<string[]>("Industries")
                         .IsRequired()
@@ -486,6 +570,90 @@ namespace ApplicationCore.Migrations
                     b.ToTable("Customers");
                 });
 
+            modelBuilder.Entity("ApplicationCore.Entities.CustomerUd", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasMaxLength(37)
+                        .HasColumnType("character varying(37)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("varchar(128)");
+
+                    b.Property<string>("CustomerId")
+                        .IsRequired()
+                        .HasColumnType("character varying(37)");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("DateUpdated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ExternalId")
+                        .IsRequired()
+                        .HasColumnType("varchar(128)");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasColumnType("varchar(128)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId")
+                        .IsUnique();
+
+                    b.ToTable("CustomerUd");
+                });
+
+            modelBuilder.Entity("ApplicationCore.Entities.CustomerUdDefinition", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasMaxLength(37)
+                        .HasColumnType("character varying(37)");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("varchar(128)");
+
+                    b.Property<int>("DataType")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("DateUpdated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string[]>("DropdownValues")
+                        .HasColumnType("text[]");
+
+                    b.Property<string>("ExternalId")
+                        .IsRequired()
+                        .HasColumnType("varchar(128)");
+
+                    b.Property<string>("Label")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasColumnType("varchar(128)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.ToTable("CustomerUdDefinitions");
+                });
+
             modelBuilder.Entity("ApplicationCore.Entities.Document", b =>
                 {
                     b.Property<string>("Id")
@@ -518,7 +686,7 @@ namespace ApplicationCore.Migrations
 
                     b.Property<string>("ExternalId")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("varchar(128)");
 
                     b.Property<NpgsqlTsVector>("SearchVector")
                         .IsRequired()
@@ -566,7 +734,7 @@ namespace ApplicationCore.Migrations
 
                     b.Property<string>("ExternalId")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("varchar(128)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -622,7 +790,7 @@ namespace ApplicationCore.Migrations
 
                     b.Property<string>("ExternalId")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("varchar(128)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -631,7 +799,10 @@ namespace ApplicationCore.Migrations
 
                     b.Property<NpgsqlTsVector>("SearchVector")
                         .IsRequired()
-                        .HasColumnType("tsvector");
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("tsvector")
+                        .HasAnnotation("Npgsql:TsVectorConfig", "english")
+                        .HasAnnotation("Npgsql:TsVectorProperties", new[] { "Name", "Description" });
 
                     b.Property<byte>("Status")
                         .HasMaxLength(128)
@@ -647,7 +818,95 @@ namespace ApplicationCore.Migrations
 
                     b.HasIndex("CustomerId");
 
+                    b.HasIndex("SearchVector");
+
+                    NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("SearchVector"), "GIN");
+
                     b.ToTable("Projects");
+                });
+
+            modelBuilder.Entity("ApplicationCore.Entities.ProjectUd", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasMaxLength(37)
+                        .HasColumnType("character varying(37)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("varchar(128)");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("DateUpdated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ExternalId")
+                        .IsRequired()
+                        .HasColumnType("varchar(128)");
+
+                    b.Property<string>("ProjectId")
+                        .IsRequired()
+                        .HasColumnType("character varying(37)");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasColumnType("varchar(128)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId")
+                        .IsUnique();
+
+                    b.ToTable("ProjectUd");
+                });
+
+            modelBuilder.Entity("ApplicationCore.Entities.ProjectUdDefinition", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasMaxLength(37)
+                        .HasColumnType("character varying(37)");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("varchar(128)");
+
+                    b.Property<int>("DataType")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("DateUpdated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string[]>("DropdownValues")
+                        .HasColumnType("text[]");
+
+                    b.Property<string>("ExternalId")
+                        .IsRequired()
+                        .HasColumnType("varchar(128)");
+
+                    b.Property<string>("Label")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasColumnType("varchar(128)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.ToTable("ProjectUdDefinitions");
                 });
 
             modelBuilder.Entity("ApplicationCore.Entities.WebhookMessage", b =>
@@ -673,7 +932,7 @@ namespace ApplicationCore.Migrations
 
                     b.Property<string>("ExternalId")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("varchar(128)");
 
                     b.Property<bool?>("IsOkResponse")
                         .HasColumnType("boolean");
@@ -716,7 +975,7 @@ namespace ApplicationCore.Migrations
 
                     b.Property<string>("ExternalId")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("varchar(128)");
 
                     b.Property<int>("FailedCount")
                         .HasColumnType("integer");
@@ -1065,6 +1324,28 @@ namespace ApplicationCore.Migrations
                     b.Navigation("Customer");
                 });
 
+            modelBuilder.Entity("ApplicationCore.Entities.ContactUd", b =>
+                {
+                    b.HasOne("ApplicationCore.Entities.Contact", "Contact")
+                        .WithOne("UserDefined")
+                        .HasForeignKey("ApplicationCore.Entities.ContactUd", "ContactId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Contact");
+                });
+
+            modelBuilder.Entity("ApplicationCore.Entities.CustomerUd", b =>
+                {
+                    b.HasOne("ApplicationCore.Entities.Customer", "Customer")
+                        .WithOne("UserDefined")
+                        .HasForeignKey("ApplicationCore.Entities.CustomerUd", "CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
+                });
+
             modelBuilder.Entity("ApplicationCore.Entities.Project", b =>
                 {
                     b.HasOne("ApplicationCore.Entities.Contact", "Contact")
@@ -1082,6 +1363,17 @@ namespace ApplicationCore.Migrations
                     b.Navigation("Contact");
 
                     b.Navigation("Customer");
+                });
+
+            modelBuilder.Entity("ApplicationCore.Entities.ProjectUd", b =>
+                {
+                    b.HasOne("ApplicationCore.Entities.Project", "Project")
+                        .WithOne("UserDefined")
+                        .HasForeignKey("ApplicationCore.Entities.ProjectUd", "ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Project");
                 });
 
             modelBuilder.Entity("ApplicationCore.Entities.WebhookMessage", b =>
@@ -1173,6 +1465,8 @@ namespace ApplicationCore.Migrations
             modelBuilder.Entity("ApplicationCore.Entities.Contact", b =>
                 {
                     b.Navigation("Projects");
+
+                    b.Navigation("UserDefined");
                 });
 
             modelBuilder.Entity("ApplicationCore.Entities.Customer", b =>
@@ -1180,6 +1474,13 @@ namespace ApplicationCore.Migrations
                     b.Navigation("Contacts");
 
                     b.Navigation("Projects");
+
+                    b.Navigation("UserDefined");
+                });
+
+            modelBuilder.Entity("ApplicationCore.Entities.Project", b =>
+                {
+                    b.Navigation("UserDefined");
                 });
 
             modelBuilder.Entity("ApplicationCore.Entities.WebhookSubscriber", b =>

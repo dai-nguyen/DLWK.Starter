@@ -8,3 +8,5 @@ add-migration -Context AppDbContext
 update-database -Context AppDbContext
 
 https://docs.fluentvalidation.net/en/latest/built-in-validators.html
+
+DROP DATABASE "DLWK_Starter" WITH (FORCE)
