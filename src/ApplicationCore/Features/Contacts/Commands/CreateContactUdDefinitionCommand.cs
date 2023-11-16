@@ -7,11 +7,6 @@ using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ApplicationCore.Features.Contacts.Commands
 {
@@ -31,22 +26,21 @@ namespace ApplicationCore.Features.Contacts.Commands
         readonly IStringLocalizer _localizer;
         readonly AppDbContext _dbContext;
         readonly IMapper _mapper;
-        readonly IValidator<CreateContactUdDefinitionCommand> _validator;
+        
 
         public CreateContactUdDefinitionCommandHandler(
             ILogger<CreateContactUdDefinitionCommandHandler> logger,
             IUserSessionService userSession,
             IStringLocalizer<CreateContactUdDefinitionCommandHandler> localizer,
             AppDbContext dbContext,
-            IMapper mapper,
-            IValidator<CreateContactUdDefinitionCommand> validator)
+            IMapper mapper)
         {
             _logger = logger;
             _userSession = userSession;
             _localizer = localizer;
             _dbContext = dbContext;
             _mapper = mapper;
-            _validator = validator;
+            
         }
 
 

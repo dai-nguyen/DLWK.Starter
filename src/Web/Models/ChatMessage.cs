@@ -1,5 +1,5 @@
 ﻿
-namespace Web.Shared
+namespace Web.Models
 {
     public class ChatMessage
     {

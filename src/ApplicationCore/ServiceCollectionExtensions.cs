@@ -126,7 +126,7 @@ namespace ApplicationCore
             services.AddScoped<IValidator<UpdateCustomerCommand>, UpdateCustomerCommandValidator>();
             
             services.AddScoped<IValidator<CreateContactCommand>, CreateContactCommandValidator>();
-            services.AddScoped<IValidator<UpdateContactCommand>, UpdateContactCommandValidator>();
+            services.AddScoped<IValidator<UpdateContactCommand>, UpdateContactCommandValidator>();            
 
             services.AddScoped<IValidator<CreateProjectCommand>, CreateProjectCommandValidator>();
             services.AddScoped<IValidator<UpdateProjectCommand>, UpdateProjectCommandValidator>();

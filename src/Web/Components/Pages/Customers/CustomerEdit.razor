@@ -1,0 +1,138 @@
+﻿@page "/pages/customers/edit/{id}"
+@using ApplicationCore.Features.Customers.Commands
+@using ApplicationCore;
+@using ApplicationCore.Constants;
+@using Web.Components.Pages.Contacts
+
+<MudPaper Class="pa-4">
+    <AuthorizeView Policy="@Const.ClaimNames.customers">
+        <Authorized>
+
+            <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+                <MudTabPanel Text="Customer">
+                    <EditForm Model="@_command" OnValidSubmit="SubmitAsync" Context="iContext">
+                        <MudGrid>
+                            <MudItem xs="12" md="12">
+                                <FluentValidationValidator />
+                            </MudItem>
+
+                            <MudItem xs="12" md="6">
+                                <MudTextField T="string"
+                                @bind-Value="_command.Name"
+                                              Label="Name"
+                                              For="@(() => _command.Name)"
+                                              Variant="Variant.Outlined" />
+                            </MudItem>
+
+                            <MudItem xs="12" md="6">
+                                <MudTextField T="string"
+                                @bind-Value="_command.Description"
+                                              Label="Description"
+                                              For="@(() => _command.Description)"
+                                              Variant="Variant.Outlined" />
+                            </MudItem>
+
+                            <MudItem xs="12" md="6">
+                                <MudSelect T="string"
+                                           Label="Industries"
+                                           Variant="Variant.Text"
+                                           MultiSelection="true"
+                                @bind-SelectedValues="_command.Industries">
+                                    @foreach (var industry in Industries)
+                                    {
+                                        <MudSelectItem T="string" Value="industry">@industry</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudItem>
+
+                            <MudItem xs="12" md="6">
+                                <MudTextField T="string"
+                                @bind-Value="_command.Address1"
+                                              Label="Address 1"
+                                              For="@(() => _command.Address1)"
+                                              Variant="Variant.Outlined"></MudTextField>
+                            </MudItem>
+
+                            <MudItem xs="12" md="6">
+                                <MudTextField T="string"
+                                @bind-Value="_command.Address2"
+                                              Label="Address 2"
+                                              For="@(() => _command.Address2)"
+                                              Variant="Variant.Outlined" />
+                            </MudItem>
+
+                            <MudItem xs="12" md="6">
+                                <MudTextField T="string"
+                                @bind-Value="_command.City"
+                                              Label="City"
+                                              For="@(() => _command.City)"
+                                              Variant="Variant.Outlined" />
+                            </MudItem>
+
+                            <MudItem xs="12" md="6">
+                                <MudTextField T="string"
+                                @bind-Value="_command.State"
+                                              Label="State"
+                                              For="@(() => _command.State)"
+                                              Variant="Variant.Outlined" />
+                            </MudItem>
+
+                            <MudItem xs="12" md="6">
+                                <MudTextField T="string"
+                                @bind-Value="_command.Zip"
+                                              Label="Zip"
+                                              For="@(() => _command.Zip)"
+                                              Variant="Variant.Outlined" />
+                            </MudItem>
+
+                            <MudItem xs="12" md="6">
+                                <MudTextField T="string"
+                                @bind-Value="_command.Country"
+                                              Label="Country"
+                                              For="@(() => _command.Country)"
+                                              Variant="Variant.Outlined" />
+                            </MudItem>
+
+                            <MudItem xs="12" md="6">
+                                <MudTextField T="string"
+                                @bind-Value="_command.ExternalId"
+                                              Label="External ID"
+                                              For="@(() => _command.ExternalId)"
+                                              Variant="Variant.Outlined" />
+                            </MudItem>
+                            
+                            <MudItem xs="4" md="8">
+                                
+                            </MudItem>
+                            <MudItem xs="4" md="2">
+                                <MudButton Variant="Variant.Filled"
+                                           Color="Color.Default"
+                                           Size="Size.Large"
+                                           OnClick="GoBack"
+                                           FullWidth="true">Back</MudButton>
+                            </MudItem>
+                            <MudItem xs="4" md="2">
+                                <MudButton Variant="Variant.Filled"
+                                           Color="Color.Primary"
+                                           ButtonType="ButtonType.Submit"
+                                           Size="Size.Large"
+                                           FullWidth="true"
+                                           Disabled="!_canEdit">Save</MudButton>
+                            </MudItem>
+                        </MudGrid>
+                    </EditForm>
+                </MudTabPanel>
+                <MudTabPanel Text="Contacts">                    
+                    <Contacts CustomerId="@_command.Id" />
+                </MudTabPanel>
+                <MudTabPanel Text="Projects">
+                    <MudText>Content Projects</MudText>
+                </MudTabPanel>
+            </MudTabs>            
+            
+        </Authorized>
+        <NotAuthorized>
+
+        </NotAuthorized>
+    </AuthorizeView>
+</MudPaper>

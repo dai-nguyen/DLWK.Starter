@@ -20,6 +20,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text.Json.Serialization;
 using System.Threading.RateLimiting;
 using Web;
+using Web.Components;
 using Web.Data;
 using Web.Middleware;
 using Web.Services;
@@ -111,7 +112,8 @@ builder.WebHost.ConfigureServices((context, services) =>
 
 // Add services to the container.
 builder.Services.AddRazorPages();
-builder.Services.AddServerSideBlazor();
+builder.Services.AddRazorComponents()
+    .AddInteractiveServerComponents();
 builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<AppUser>>();
 builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddMudServices();
@@ -292,13 +294,17 @@ app.UseRateLimiter();
 //app.MapBlazorHub();
 //app.MapFallbackToPage("/_Host");
 
+app.MapRazorComponents<App>()
+    .AddInteractiveServerRenderMode();
+app.UseAntiforgery();
+
 app.UseEndpoints(options =>
 {    
     options.MapControllers();
     options.MapDefaultControllerRoute();
     options.MapSwagger();
-    options.MapBlazorHub();
-    options.MapFallbackToPage("/_Host");
+    //options.MapBlazorHub();
+    //options.MapFallbackToPage("/_Host");
 });
 
 
