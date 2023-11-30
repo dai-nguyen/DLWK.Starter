@@ -1,10 +1,12 @@
-﻿using ApplicationCore.Data;
+﻿using ApplicationCore.Constants;
+using ApplicationCore.Data;
 using ApplicationCore.Enums;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Models;
 using AutoMapper;
 using FluentValidation;
 using MediatR;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
@@ -39,8 +41,7 @@ namespace ApplicationCore.Features.Contacts.Commands
             _userSession = userSession;
             _localizer = localizer;
             _dbContext = dbContext;
-            _mapper = mapper;
-            
+            _mapper = mapper;            
         }
 
 
@@ -49,6 +50,36 @@ namespace ApplicationCore.Features.Contacts.Commands
             CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
+        }
+    }
+
+    public class CreateContactUdDefinitionCommandValidator : AbstractValidator<CreateContactUdDefinitionCommand>
+    {
+        readonly ILogger _logger;
+        readonly IStringLocalizer _localizer;
+        readonly AppDbContext _appDbContext;
+        readonly IMemoryCache _cache;
+
+        public CreateContactUdDefinitionCommandValidator(
+            ILogger<CreateContactUdDefinitionCommandValidator> logger, 
+            IStringLocalizer localizer, 
+            AppDbContext appDbContext, 
+            IMemoryCache cache)
+        {
+            _logger = logger;
+            _localizer = localizer;
+            _appDbContext = appDbContext;
+            _cache = cache;
+
+            RuleFor(_ => _.Label)
+                .NotEmpty().WithMessage(localizer["Label is required"])
+                .MaximumLength(UserDefinedDefinitionConst.LabelMaxLength)
+                .WithMessage(_localizer[$"Label cannot be longer than {UserDefinedDefinitionConst.LabelMaxLength}"]);
+
+            RuleFor(_ => _.Code)
+                .NotEmpty().WithMessage(localizer["Code is required"])
+                .MaximumLength(UserDefinedDefinitionConst.CodeMaxLength)
+                .WithMessage(_localizer[$"Label cannot be longer than {UserDefinedDefinitionConst.CodeMaxLength}"]);
         }
     }
 }
