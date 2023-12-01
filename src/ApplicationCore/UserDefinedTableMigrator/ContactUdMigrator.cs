@@ -9,6 +9,7 @@ using SqlKata.Execution;
 
 namespace ApplicationCore.UserDefinedMigrator
 {
+    [Migration(1)]
     public class ContactUdMigrator : Migration
     {
         readonly ILogger _logger;
@@ -92,7 +93,7 @@ namespace ApplicationCore.UserDefinedMigrator
                 }
             }
 
-            if (toDeletes.Any())
+            if (toDeletes.Count != 0)
             {
                 foreach (var delete in toDeletes)
                 {

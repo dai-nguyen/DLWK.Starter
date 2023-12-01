@@ -24,6 +24,9 @@ using Web.Components;
 using Web.Data;
 using Web.Middleware;
 using Web.Services;
+using FluentMigrator.Runner;
+using FluentMigrator.Runner.Initialization;
+using ApplicationCore.UserDefinedMigrator;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -132,7 +135,6 @@ builder.Services.AddRateLimiter(options =>
                     builder.Configuration.GetValue<int>("RateLimiter:AuthWindowInSeconds") : builder.Configuration.GetValue<int>("RateLimiter:NonAuthWindowInSecond")),
             }));
 });
-
 
 builder.Services.UseApplicationCore(builder.Configuration);
 
@@ -258,7 +260,6 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy(Const.ClaimNames.customers,
         policy => policy.RequireClaim(Const.ClaimNames.customers));
 });
-
 
 var app = builder.Build();
 

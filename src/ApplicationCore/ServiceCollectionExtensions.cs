@@ -6,6 +6,8 @@ using ApplicationCore.Features.Projects.Commands;
 using ApplicationCore.Features.Users.Commands;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Services;
+using ApplicationCore.UserDefinedMigrator;
+using FluentMigrator.Runner;
 using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -34,6 +36,7 @@ namespace ApplicationCore
                 cfg.RegisterServicesFromAssemblies(typeof(ServiceCollectionExtensions).Assembly);
             });
             services.AddValidations();
+            services.AddFluentMigrator(configuration);
 
             services.AddTransient<IFileService, FileService>();            
 
@@ -130,6 +133,19 @@ namespace ApplicationCore
 
             services.AddScoped<IValidator<CreateProjectCommand>, CreateProjectCommandValidator>();
             services.AddScoped<IValidator<UpdateProjectCommand>, UpdateProjectCommandValidator>();
+
+            return services;
+        }
+
+        internal static IServiceCollection AddFluentMigrator(
+            this IServiceCollection services,
+            IConfiguration configuration)
+        {
+            services.AddFluentMigratorCore()
+                .ConfigureRunner(rb => rb
+                    .AddPostgres()
+                    .WithGlobalConnectionString(configuration.GetSection("DefaultConnection").Value)
+                    .ScanIn(typeof(ContactUdMigrator).Assembly).For.Migrations());
 
             return services;
         }
