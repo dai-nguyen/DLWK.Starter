@@ -105,20 +105,14 @@ namespace ApplicationCore.Features.Customers.Commands
     public class UpdateCustomerCommandValidator : AbstractValidator<UpdateCustomerCommand>
     {
         readonly ILogger _logger;
-        readonly IStringLocalizer _localizer;
-        readonly AppDbContext _appDbContext;
-        readonly IMemoryCache _cache;
+        readonly IStringLocalizer _localizer;        
 
         public UpdateCustomerCommandValidator(
            ILogger<UpdateCustomerCommandValidator> logger,
-           IStringLocalizer<UpdateCustomerCommandValidator> localizer,
-           AppDbContext appDbContext,
-           IMemoryCache cache)
+           IStringLocalizer<UpdateCustomerCommandValidator> localizer)
         {
             _logger = logger;
-            _localizer = localizer;
-            _appDbContext = appDbContext;
-            _cache = cache;
+            _localizer = localizer;            
 
             RuleFor(_ => _.Name)
                 .NotEmpty().WithMessage(_localizer["Name is required"])

@@ -8,39 +8,36 @@ using AutoMapper;
 using FluentMigrator.Runner;
 using FluentValidation;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
 namespace ApplicationCore.Features.Contacts.Commands
 {
-    public class CreateContactUdDefinitionCommand : CreateRequestBase, IRequest<Result<string>>
+    public class UpdateContactUdDefinitionCommand : UpdateRequestBase, IRequest<Result<string>>
     {
-        public string Label { get; set; }
-        public string Code { get; set; }
+        public string Label { get; set; }        
         public UserDefinedDataType DataType { get; set; }
         public string[] DropdownValues { get; set; }
     }
 
-    internal class CreateContactUdDefinitionCommandHandler :
-        IRequestHandler<CreateContactUdDefinitionCommand, Result<string>>
+    internal class UpdateContactUdDefinitionCommandHandler :
+        IRequestHandler<UpdateContactUdDefinitionCommand, Result<string>>
     {
         readonly ILogger _logger;
         readonly IUserSessionService _userSession;
         readonly IStringLocalizer _localizer;
         readonly AppDbContext _dbContext;
         readonly IMapper _mapper;
-        readonly IValidator<CreateContactUdDefinitionCommand> _validator;
+        readonly IValidator<UpdateContactUdDefinitionCommand> _validator;
         readonly IMigrationRunner _migrationRunner;
 
-        public CreateContactUdDefinitionCommandHandler(
-            ILogger<CreateContactUdDefinitionCommandHandler> logger,
+        public UpdateContactUdDefinitionCommandHandler(
+            ILogger<UpdateContactUdDefinitionCommandHandler> logger,
             IUserSessionService userSession,
-            IStringLocalizer<CreateContactUdDefinitionCommandHandler> localizer,
+            IStringLocalizer<UpdateContactUdDefinitionCommandHandler> localizer,
             AppDbContext dbContext,
             IMapper mapper,
-            IValidator<CreateContactUdDefinitionCommand> validator,
+            IValidator<UpdateContactUdDefinitionCommand> validator,
             IMigrationRunner migrationRunner)
         {
             _logger = logger;
@@ -54,7 +51,7 @@ namespace ApplicationCore.Features.Contacts.Commands
 
 
         public async Task<Result<string>> Handle(
-            CreateContactUdDefinitionCommand command, 
+            UpdateContactUdDefinitionCommand command, 
             CancellationToken cancellationToken)
         {
             try
@@ -70,9 +67,7 @@ namespace ApplicationCore.Features.Contacts.Commands
 
                 _dbContext.ContactUdDefinitions.Add(entity);
                 await _dbContext.SaveChangesAsync(cancellationToken);
-                
-                _migrationRunner.MigrateUp(UdfMigrationConst.Contact);
-                
+                                                
                 return Result<string>.Success(entity.Id,
                     _localizer[Const.Messages.Saved]);
             }
@@ -86,36 +81,22 @@ namespace ApplicationCore.Features.Contacts.Commands
         }
     }
 
-    public class CreateContactUdDefinitionCommandValidator : AbstractValidator<CreateContactUdDefinitionCommand>
+    public class UpdateContactUdDefinitionCommandValidator : AbstractValidator<UpdateContactUdDefinitionCommand>
     {
         readonly ILogger _logger;
-        readonly IStringLocalizer _localizer;
-        readonly AppDbContext _appDbContext;
-        readonly IMemoryCache _cache;
+        readonly IStringLocalizer _localizer;        
 
-        public CreateContactUdDefinitionCommandValidator(
-            ILogger<CreateContactUdDefinitionCommandValidator> logger, 
-            IStringLocalizer<CreateContactUdDefinitionCommandValidator> localizer, 
-            AppDbContext appDbContext, 
-            IMemoryCache cache)
+        public UpdateContactUdDefinitionCommandValidator(
+            ILogger<UpdateContactUdDefinitionCommandValidator> logger, 
+            IStringLocalizer<UpdateContactUdDefinitionCommandValidator> localizer)
         {
             _logger = logger;
-            _localizer = localizer;
-            _appDbContext = appDbContext;
-            _cache = cache;
+            _localizer = localizer;            
 
             RuleFor(_ => _.Label)
                 .NotEmpty().WithMessage(localizer["Label is required"])
                 .MaximumLength(UserDefinedDefinitionConst.LabelMaxLength)
                 .WithMessage(_localizer[$"Label cannot be longer than {UserDefinedDefinitionConst.LabelMaxLength}"]);
-
-            RuleFor(_ => _.Code)
-                .NotEmpty().WithMessage(localizer["Code is required"])
-                .MaximumLength(UserDefinedDefinitionConst.CodeMaxLength)
-                .WithMessage(_localizer[$"Label cannot be longer than {UserDefinedDefinitionConst.CodeMaxLength}"])
-                .Must(IsUniqueCode)
-                .WithMessage(_localizer["Contact UD Code must be unique"])
-                .When(_ => !string.IsNullOrEmpty(_.Code));
 
             RuleFor(_ => _.DropdownValues)
                 .Must((model, dropdownValues) =>
@@ -128,38 +109,15 @@ namespace ApplicationCore.Features.Contacts.Commands
                     return true;
                 }).WithMessage(_localizer["DropdownValues is required for Dropdown data type"]);
         }
-
-        private bool IsUniqueCode(string code)
-        {
-            try
-            {
-                if (string.IsNullOrWhiteSpace(code) || string.IsNullOrWhiteSpace(code))
-                    return false;
-
-                code = code.Trim().ToLower();
-
-                return _cache.GetOrCreate(
-                    $"ContactUd:IsUniqueCode:{code.Trim().ToLower()}",
-                    entry =>
-                    {
-                        entry.SlidingExpiration = TimeSpan.FromSeconds(5);
-                        return _appDbContext.ContactUdDefinitions.Any(_ => EF.Functions.ILike(_.Code, code)) == false;
-                    });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error checking for unique Contact UD Code");
-            }
-            return false;
-        }
     }
 
-    public class CreateContactUdDefinitionCommandProfile : Profile
+    public class UpdateContactUdDefinitionCommandProfile : Profile
     {
-        public CreateContactUdDefinitionCommandProfile()
+        public UpdateContactUdDefinitionCommandProfile()
         {
             CreateMap<CreateContactUdDefinitionCommand, ContactUdDefinition>()
-                .IncludeBase<CreateRequestBase, AuditableEntity<string>>();
+                .ForMember(dest => dest.DataType, opt => opt.Ignore())
+                .IncludeBase<UpdateRequestBase, AuditableEntity<string>>();
         }
     }
 }

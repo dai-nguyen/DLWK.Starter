@@ -9,16 +9,16 @@ using Npgsql;
 using SqlKata.Compilers;
 using SqlKata.Execution;
 
-namespace ApplicationCore.UserDefinedMigrator
+namespace ApplicationCore.UserDefinedTableMigrator
 {
-    [Migration(UdfMigrationConst.Contact)]
-    public class ContactUdMigrator : Migration
+    [Migration(UdfMigrationConst.Customer)]
+    public class CustomerUdMigrator : Migration
     {
         readonly ILogger _logger;
         readonly AppDbContext _appDbContext;
 
-        public ContactUdMigrator(
-            ILogger<ContactUdMigrator> logger,
+        public CustomerUdMigrator(
+            ILogger<CustomerUdMigrator> logger,
             AppDbContext appDbContext)
         {
             _logger = logger;
@@ -31,18 +31,18 @@ namespace ApplicationCore.UserDefinedMigrator
 
             try
             {
-                var newColumns = _appDbContext.ContactUdDefinitions.ToArray();
+                var newColumns = _appDbContext.CustomerUdDefinitions.ToArray();
 
                 var conn = new NpgsqlConnection(_appDbContext.Database.GetConnectionString());
                 var compiler = new PostgresCompiler();
                 var db = new QueryFactory(conn, compiler);
 
                 var oldColumns = db.Query("information_schema.columns")
-                    .Where("table_name", "ContactUd")
+                    .Where("table_name", "CustomerUd")
                     .Select("column_name", "data_type")
                     .Get<TableSchema>();
 
-                var toAdds = new List<ContactUdDefinition>();
+                var toAdds = new List<CustomerUdDefinition>();
                 var toDeletes = new List<string>();
 
                 foreach (var newCol in newColumns)
@@ -53,7 +53,7 @@ namespace ApplicationCore.UserDefinedMigrator
                         toAdds.Add(newCol);
                 }
 
-                var ignoreCols = typeof(ContactUd).GetProperties().Select(_ => _.Name).ToArray();
+                var ignoreCols = typeof(CustomerUd).GetProperties().Select(_ => _.Name).ToArray();
 
                 foreach (var oldCol in oldColumns)
                 {
@@ -72,31 +72,31 @@ namespace ApplicationCore.UserDefinedMigrator
                         if (add.DataType == Enums.UserDefinedDataType.Text
                             || add.DataType == Enums.UserDefinedDataType.Dropdown)
                         {
-                            Alter.Table("ContactUd")
+                            Alter.Table("CustomerUd")
                                 .AddColumn(add.Code)
                                 .AsString();
                         }
                         else if (add.DataType == Enums.UserDefinedDataType.Integer)
                         {
-                            Alter.Table("ContactUd")
+                            Alter.Table("CustomerUd")
                                 .AddColumn(add.Code)
                                 .AsInt64();
                         }
                         else if (add.DataType == Enums.UserDefinedDataType.Decimal)
                         {
-                            Alter.Table("ContactUd")
+                            Alter.Table("CustomerUd")
                                 .AddColumn(add.Code)
                                 .AsFloat();
                         }
                         else if (add.DataType == Enums.UserDefinedDataType.YesNo)
                         {
-                            Alter.Table("ContactUd")
+                            Alter.Table("CustomerUd")
                                 .AddColumn(add.Code)
                                 .AsBoolean();
                         }
                         else if (add.DataType == Enums.UserDefinedDataType.Date)
                         {
-                            Alter.Table("ContactUd")
+                            Alter.Table("CustomerUd")
                                 .AddColumn(add.Code)
                                 .AsDateTime();
                         }
@@ -107,14 +107,14 @@ namespace ApplicationCore.UserDefinedMigrator
                 {
                     foreach (var delete in toDeletes)
                     {
-                        Delete.Column(delete).FromTable("ContactUd");
+                        Delete.Column(delete).FromTable("CustomerUd");
                     }
                 }
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 _logger.LogError(ex, "Error while running {0}", GetType().Name);
-            }   
+            }
             finally
             {
                 _logger.LogInformation("{0} has ended", GetType().Name);
@@ -123,7 +123,7 @@ namespace ApplicationCore.UserDefinedMigrator
 
         public override void Down()
         {
-
-        }
+            
+        }       
     }
 }
