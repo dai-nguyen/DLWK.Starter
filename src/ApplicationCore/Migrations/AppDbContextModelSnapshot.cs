@@ -285,7 +285,7 @@ namespace ApplicationCore.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AuditTrails");
+                    b.ToTable("AuditTrails", (string)null);
                 });
 
             modelBuilder.Entity("ApplicationCore.Entities.BulkJob", b =>
@@ -329,7 +329,7 @@ namespace ApplicationCore.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("BulkJobs");
+                    b.ToTable("BulkJobs", (string)null);
                 });
 
             modelBuilder.Entity("ApplicationCore.Entities.Contact", b =>
@@ -394,7 +394,7 @@ namespace ApplicationCore.Migrations
 
                     NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("SearchVector"), "GIN");
 
-                    b.ToTable("Contacts");
+                    b.ToTable("Contacts", (string)null);
                 });
 
             modelBuilder.Entity("ApplicationCore.Entities.ContactUd", b =>
@@ -430,7 +430,7 @@ namespace ApplicationCore.Migrations
                     b.HasIndex("ContactId")
                         .IsUnique();
 
-                    b.ToTable("ContactUd");
+                    b.ToTable("ContactUd", (string)null);
                 });
 
             modelBuilder.Entity("ApplicationCore.Entities.ContactUdDefinition", b =>
@@ -478,7 +478,7 @@ namespace ApplicationCore.Migrations
                     b.HasIndex("Code")
                         .IsUnique();
 
-                    b.ToTable("ContactUdDefinitions");
+                    b.ToTable("ContactUdDefinitions", (string)null);
                 });
 
             modelBuilder.Entity("ApplicationCore.Entities.Customer", b =>
@@ -564,7 +564,7 @@ namespace ApplicationCore.Migrations
 
                     NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("SearchVector"), "GIN");
 
-                    b.ToTable("Customers");
+                    b.ToTable("Customers", (string)null);
                 });
 
             modelBuilder.Entity("ApplicationCore.Entities.CustomerUd", b =>
@@ -600,7 +600,7 @@ namespace ApplicationCore.Migrations
                     b.HasIndex("CustomerId")
                         .IsUnique();
 
-                    b.ToTable("CustomerUd");
+                    b.ToTable("CustomerUd", (string)null);
                 });
 
             modelBuilder.Entity("ApplicationCore.Entities.CustomerUdDefinition", b =>
@@ -648,7 +648,7 @@ namespace ApplicationCore.Migrations
                     b.HasIndex("Code")
                         .IsUnique();
 
-                    b.ToTable("CustomerUdDefinitions");
+                    b.ToTable("CustomerUdDefinitions", (string)null);
                 });
 
             modelBuilder.Entity("ApplicationCore.Entities.Document", b =>
@@ -710,7 +710,7 @@ namespace ApplicationCore.Migrations
 
                     NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("SearchVector"), "GIN");
 
-                    b.ToTable("Documents");
+                    b.ToTable("Documents", (string)null);
                 });
 
             modelBuilder.Entity("ApplicationCore.Entities.Industry", b =>
@@ -747,7 +747,7 @@ namespace ApplicationCore.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Industries");
+                    b.ToTable("Industries", (string)null);
                 });
 
             modelBuilder.Entity("ApplicationCore.Entities.Project", b =>
@@ -819,7 +819,7 @@ namespace ApplicationCore.Migrations
 
                     NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("SearchVector"), "GIN");
 
-                    b.ToTable("Projects");
+                    b.ToTable("Projects", (string)null);
                 });
 
             modelBuilder.Entity("ApplicationCore.Entities.ProjectUd", b =>
@@ -855,7 +855,7 @@ namespace ApplicationCore.Migrations
                     b.HasIndex("ProjectId")
                         .IsUnique();
 
-                    b.ToTable("ProjectUd");
+                    b.ToTable("ProjectUd", (string)null);
                 });
 
             modelBuilder.Entity("ApplicationCore.Entities.ProjectUdDefinition", b =>
@@ -903,7 +903,7 @@ namespace ApplicationCore.Migrations
                     b.HasIndex("Code")
                         .IsUnique();
 
-                    b.ToTable("ProjectUdDefinitions");
+                    b.ToTable("ProjectUdDefinitions", (string)null);
                 });
 
             modelBuilder.Entity("ApplicationCore.Entities.WebhookMessage", b =>
@@ -946,7 +946,7 @@ namespace ApplicationCore.Migrations
 
                     b.HasIndex("SubscriberId");
 
-                    b.ToTable("WebhookMessages");
+                    b.ToTable("WebhookMessages", (string)null);
                 });
 
             modelBuilder.Entity("ApplicationCore.Entities.WebhookSubscriber", b =>
@@ -1003,7 +1003,7 @@ namespace ApplicationCore.Migrations
                     b.HasIndex("EntityName", "Operation", "Url")
                         .IsUnique();
 
-                    b.ToTable("WebhookSubsribers");
+                    b.ToTable("WebhookSubsribers", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

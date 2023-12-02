@@ -95,8 +95,7 @@ namespace ApplicationCore
 
         internal static IServiceCollection AddServerLocalization(this IServiceCollection services)
         {
-            services.AddLocalization(options => options.ResourcesPath = "Resources");
-            //services.AddTransient(typeof(IStringLocalizer<>), typeof(ServerLocalizer<>));
+            services.AddLocalization(options => options.ResourcesPath = "Resources");            
             return services;
         }
 
@@ -129,6 +128,7 @@ namespace ApplicationCore
             services.AddScoped<IValidator<UpdateCustomerCommand>, UpdateCustomerCommandValidator>();
             
             services.AddScoped<IValidator<CreateContactCommand>, CreateContactCommandValidator>();
+            services.AddScoped<IValidator<CreateContactUdDefinitionCommand>, CreateContactUdDefinitionCommandValidator>();
             services.AddScoped<IValidator<UpdateContactCommand>, UpdateContactCommandValidator>();            
 
             services.AddScoped<IValidator<CreateProjectCommand>, CreateProjectCommandValidator>();

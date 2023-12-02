@@ -95,7 +95,7 @@ namespace ApplicationCore.Features.Contacts.Commands
 
         public CreateContactUdDefinitionCommandValidator(
             ILogger<CreateContactUdDefinitionCommandValidator> logger, 
-            IStringLocalizer localizer, 
+            IStringLocalizer<CreateContactUdDefinitionCommandValidator> localizer, 
             AppDbContext appDbContext, 
             IMemoryCache cache)
         {
@@ -116,6 +116,17 @@ namespace ApplicationCore.Features.Contacts.Commands
                 .Must(IsUniqueCode)
                 .WithMessage(_localizer["Contact UD Code must be unique"])
                 .When(_ => !string.IsNullOrEmpty(_.Code));
+
+            RuleFor(_ => _.DropdownValues)
+                .Must((model, dropdownValues) =>
+                {
+                    if (model.DataType == UserDefinedDataType.Dropdown 
+                        && (dropdownValues == null || dropdownValues.Length == 0))
+                    {
+                        return false;
+                    }
+                    return true;
+                }).WithMessage(_localizer["DropdownValues is required for Dropdown data type"]);
         }
 
         private bool IsUniqueCode(string code)

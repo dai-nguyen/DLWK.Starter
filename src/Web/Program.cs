@@ -24,9 +24,6 @@ using Web.Components;
 using Web.Data;
 using Web.Middleware;
 using Web.Services;
-using FluentMigrator.Runner;
-using FluentMigrator.Runner.Initialization;
-using ApplicationCore.UserDefinedMigrator;
 
 var builder = WebApplication.CreateBuilder(args);
 

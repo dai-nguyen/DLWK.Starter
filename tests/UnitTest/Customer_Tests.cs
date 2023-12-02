@@ -4,19 +4,12 @@ using Bogus;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Threading.Tasks;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace UnitTest
 {
     [TestClass]
     public class Customer_Tests : TestBase
-    {
-        public Customer_Tests() 
-            : base() 
-        { 
-
-        }        
-
+    {     
         [TestMethod]
         public async Task CreateTestAsync()
         {
@@ -39,7 +32,7 @@ namespace UnitTest
             }
             catch (Exception ex)
             {
-
+                Assert.Fail(ex.Message);
             }
         }
 
