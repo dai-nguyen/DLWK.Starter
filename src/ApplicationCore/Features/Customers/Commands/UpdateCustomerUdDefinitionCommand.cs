@@ -8,38 +8,36 @@ using AutoMapper;
 using FluentMigrator.Runner;
 using FluentValidation;
 using MediatR;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
 namespace ApplicationCore.Features.Customers.Commands
 {
-    public class CreateCustomerUdDefinitionCommand : CreateRequestBase, IRequest<Result<string>>
+    public class UpdateCustomerUdDefinitionCommand : UpdateRequestBase, IRequest<Result<string>>
     {
         public string Label { get; set; }
-        public string Code { get; set; }
         public UserDefinedDataType DataType { get; set; }
         public string[] DropdownValues { get; set; }
     }
 
-    internal class CreateCustomerUdDefinitionCommandHandler :
-        IRequestHandler<CreateCustomerUdDefinitionCommand, Result<string>>
+    internal class UpdateCustomerUdDefinitionCommandHandler :
+        IRequestHandler<UpdateCustomerUdDefinitionCommand, Result<string>>
     {
         readonly ILogger _logger;
         readonly IUserSessionService _userSession;
         readonly IStringLocalizer _localizer;
         readonly AppDbContext _dbContext;
         readonly IMapper _mapper;
-        readonly IValidator<CreateCustomerUdDefinitionCommand> _validator;
+        readonly IValidator<UpdateCustomerUdDefinitionCommand> _validator;
         readonly IMigrationRunner _migrationRunner;
 
-        public CreateCustomerUdDefinitionCommandHandler(
-            ILogger<CreateCustomerUdDefinitionCommandHandler> logger,
+        public UpdateCustomerUdDefinitionCommandHandler(
+            ILogger<UpdateCustomerUdDefinitionCommandHandler> logger,
             IUserSessionService userSession,
-            IStringLocalizer<CreateCustomerUdDefinitionCommandHandler> localizer,
+            IStringLocalizer<UpdateCustomerUdDefinitionCommandHandler> localizer,
             AppDbContext dbContext,
             IMapper mapper,
-            IValidator<CreateCustomerUdDefinitionCommand> validator,
+            IValidator<UpdateCustomerUdDefinitionCommand> validator,
             IMigrationRunner migrationRunner)
         {
             _logger = logger;
@@ -53,7 +51,7 @@ namespace ApplicationCore.Features.Customers.Commands
 
 
         public async Task<Result<string>> Handle(
-            CreateCustomerUdDefinitionCommand command,
+            UpdateCustomerUdDefinitionCommand command,
             CancellationToken cancellationToken)
         {
             try
@@ -65,12 +63,13 @@ namespace ApplicationCore.Features.Customers.Commands
                     return Result<string>.Fail(validationResult.Errors.Select(_ => _.ErrorMessage).ToArray());
                 }
 
-                var entity = _mapper.Map<CustomerUdDefinition>(command);
+                var entity = await _dbContext.CustomerUdDefinitions.FindAsync(command.Id);
 
-                _dbContext.CustomerUdDefinitions.Add(entity);
+                if (entity == null)
+                    return Result<string>.Fail(_localizer[Const.Messages.NotFound]);
+
+                _mapper.Map(command, entity);
                 await _dbContext.SaveChangesAsync(cancellationToken);
-
-                _migrationRunner.MigrateUp(UdfMigrationConst.Customer);
 
                 return Result<string>.Success(entity.Id,
                     _localizer[Const.Messages.Saved]);
@@ -85,36 +84,22 @@ namespace ApplicationCore.Features.Customers.Commands
         }
     }
 
-    public class CreateCustomerUdDefinitionCommandValidator : AbstractValidator<CreateCustomerUdDefinitionCommand>
+    public class UpdateCustomerUdDefinitionCommandValidator : AbstractValidator<UpdateCustomerUdDefinitionCommand>
     {
         readonly ILogger _logger;
         readonly IStringLocalizer _localizer;
-        readonly AppDbContext _appDbContext;
-        readonly IMemoryCache _cache;
 
-        public CreateCustomerUdDefinitionCommandValidator(
-            ILogger<CreateCustomerUdDefinitionCommandValidator> logger,
-            IStringLocalizer<CreateCustomerUdDefinitionCommandValidator> localizer,
-            AppDbContext appDbContext,
-            IMemoryCache cache)
+        public UpdateCustomerUdDefinitionCommandValidator(
+            ILogger<UpdateCustomerUdDefinitionCommandValidator> logger,
+            IStringLocalizer<UpdateCustomerUdDefinitionCommandValidator> localizer)
         {
             _logger = logger;
             _localizer = localizer;
-            _appDbContext = appDbContext;
-            _cache = cache;
 
             RuleFor(_ => _.Label)
                 .NotEmpty().WithMessage(localizer["Label is required"])
                 .MaximumLength(UserDefinedDefinitionConst.LabelMaxLength)
                 .WithMessage(_localizer[$"Label cannot be longer than {UserDefinedDefinitionConst.LabelMaxLength}"]);
-
-            RuleFor(_ => _.Code)
-                .NotEmpty().WithMessage(localizer["Code is required"])
-                .MaximumLength(UserDefinedDefinitionConst.CodeMaxLength)
-                .WithMessage(_localizer[$"Label cannot be longer than {UserDefinedDefinitionConst.CodeMaxLength}"])
-                .Must(IsUniqueCode)
-                .WithMessage(_localizer["Customer UD Code must be unique"])
-                .When(_ => !string.IsNullOrEmpty(_.Code));
 
             RuleFor(_ => _.DropdownValues)
                 .Must((model, dropdownValues) =>
@@ -127,38 +112,15 @@ namespace ApplicationCore.Features.Customers.Commands
                     return true;
                 }).WithMessage(_localizer["DropdownValues is required for Dropdown data type"]);
         }
-
-        private bool IsUniqueCode(string code)
-        {
-            try
-            {
-                if (string.IsNullOrWhiteSpace(code) || string.IsNullOrWhiteSpace(code))
-                    return false;
-
-                code = code.Trim().ToLower();
-
-                return _cache.GetOrCreate(
-                    $"CustomerUd:IsUniqueCode:{code.Trim().ToLower()}",
-                    entry =>
-                    {
-                        entry.SlidingExpiration = TimeSpan.FromSeconds(5);
-                        return _appDbContext.CustomerUdDefinitions.Any(_ => EF.Functions.ILike(_.Code, code)) == false;
-                    });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error checking for unique Customer UD Code");
-            }
-            return false;
-        }
     }
 
-    public class CreateCustomerUdDefinitionCommandProfile : Profile
+    public class UpdateCustomerUdDefinitionCommandProfile : Profile
     {
-        public CreateCustomerUdDefinitionCommandProfile()
+        public UpdateCustomerUdDefinitionCommandProfile()
         {
             CreateMap<CreateCustomerUdDefinitionCommand, CustomerUdDefinition>()
-                .IncludeBase<CreateRequestBase, AuditableEntity<string>>();
+                .ForMember(dest => dest.DataType, opt => opt.Ignore())
+                .IncludeBase<UpdateRequestBase, AuditableEntity<string>>();
         }
     }
 }

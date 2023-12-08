@@ -63,9 +63,13 @@ namespace ApplicationCore.Features.Contacts.Commands
                     return Result<string>.Fail(validationResult.Errors.Select(_ => _.ErrorMessage).ToArray());
                 }
 
-                var entity = _mapper.Map<ContactUdDefinition>(command);
+                var entity = await _dbContext.ContactUdDefinitions.FindAsync(command.Id);
 
-                _dbContext.ContactUdDefinitions.Add(entity);
+                if (entity == null)                
+                    return Result<string>.Fail(_localizer[Const.Messages.NotFound]);                
+                
+                _mapper.Map(command, entity);
+                
                 await _dbContext.SaveChangesAsync(cancellationToken);
                                                 
                 return Result<string>.Success(entity.Id,

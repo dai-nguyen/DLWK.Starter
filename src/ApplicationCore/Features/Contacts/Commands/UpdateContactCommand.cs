@@ -61,10 +61,8 @@ namespace ApplicationCore.Features.Contacts.Commands
 
                 var entity = await _dbContext.Contacts.FindAsync(command.Id);
 
-                if (entity == null)
-                {
-                    return Result<string>.Fail(_localizer[Const.Messages.NotFound]);
-                }
+                if (entity == null)                
+                    return Result<string>.Fail(_localizer[Const.Messages.NotFound]);                
 
                 _mapper.Map(command, entity);
 
