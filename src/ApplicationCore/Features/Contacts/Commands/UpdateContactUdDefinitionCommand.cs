@@ -119,7 +119,7 @@ namespace ApplicationCore.Features.Contacts.Commands
     {
         public UpdateContactUdDefinitionCommandProfile()
         {
-            CreateMap<CreateContactUdDefinitionCommand, ContactUdDefinition>()
+            CreateMap<UpdateContactUdDefinitionCommand, ContactUdDefinition>()
                 .ForMember(dest => dest.DataType, opt => opt.Ignore())
                 .IncludeBase<UpdateRequestBase, AuditableEntity<string>>();
         }

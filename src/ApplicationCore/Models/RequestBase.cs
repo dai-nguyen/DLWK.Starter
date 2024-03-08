@@ -7,6 +7,6 @@
 
     public class UpdateRequestBase : CreateRequestBase
     {
-        public string Id { get; set; }        
+        public string? Id { get; set; }        
     }
 }

@@ -15,9 +15,9 @@ namespace ApplicationCore.Features.Customers.Commands
 {
     public class UpdateCustomerUdDefinitionCommand : UpdateRequestBase, IRequest<Result<string>>
     {
-        public string Label { get; set; }
+        public string? Label { get; set; }
         public UserDefinedDataType DataType { get; set; }
-        public string[] DropdownValues { get; set; }
+        public string[]? DropdownValues { get; set; }
     }
 
     internal class UpdateCustomerUdDefinitionCommandHandler :
@@ -118,7 +118,7 @@ namespace ApplicationCore.Features.Customers.Commands
     {
         public UpdateCustomerUdDefinitionCommandProfile()
         {
-            CreateMap<CreateCustomerUdDefinitionCommand, CustomerUdDefinition>()
+            CreateMap<UpdateCustomerUdDefinitionCommand, CustomerUdDefinition>()
                 .ForMember(dest => dest.DataType, opt => opt.Ignore())
                 .IncludeBase<UpdateRequestBase, AuditableEntity<string>>();
         }

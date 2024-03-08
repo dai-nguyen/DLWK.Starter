@@ -8,6 +8,7 @@ using AutoMapper;
 using FluentMigrator.Runner;
 using FluentValidation;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -16,10 +17,10 @@ namespace ApplicationCore.Features.Customers.Commands
 {
     public class CreateCustomerUdDefinitionCommand : CreateRequestBase, IRequest<Result<string>>
     {
-        public string Label { get; set; }
-        public string Code { get; set; }
+        public string? Label { get; set; }
+        public string? Code { get; set; }
         public UserDefinedDataType DataType { get; set; }
-        public string[] DropdownValues { get; set; }
+        public string[]? DropdownValues { get; set; }
     }
 
     internal class CreateCustomerUdDefinitionCommandHandler :

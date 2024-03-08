@@ -14,7 +14,7 @@ using NpgsqlTypes;
 namespace ApplicationCore.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20231106050327_initial")]
+    [Migration("20240308035520_initial")]
     partial class initial
     {
         /// <inheritdoc />
@@ -22,7 +22,7 @@ namespace ApplicationCore.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.13")
+                .HasAnnotation("ProductVersion", "8.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -1121,12 +1121,20 @@ namespace ApplicationCore.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("text");
 
+                    b.Property<string>("ApplicationType")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
                     b.Property<string>("ClientId")
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
                     b.Property<string>("ClientSecret")
                         .HasColumnType("text");
+
+                    b.Property<string>("ClientType")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.Property<string>("ConcurrencyToken")
                         .IsConcurrencyToken()
@@ -1141,6 +1149,9 @@ namespace ApplicationCore.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("DisplayNames")
+                        .HasColumnType("text");
+
+                    b.Property<string>("JsonWebKeySet")
                         .HasColumnType("text");
 
                     b.Property<string>("Permissions")
@@ -1158,9 +1169,8 @@ namespace ApplicationCore.Migrations
                     b.Property<string>("Requirements")
                         .HasColumnType("text");
 
-                    b.Property<string>("Type")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                    b.Property<string>("Settings")
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 

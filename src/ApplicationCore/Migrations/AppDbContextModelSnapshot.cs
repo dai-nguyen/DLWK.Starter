@@ -19,7 +19,7 @@ namespace ApplicationCore.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.13")
+                .HasAnnotation("ProductVersion", "8.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -285,7 +285,7 @@ namespace ApplicationCore.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AuditTrails", (string)null);
+                    b.ToTable("AuditTrails");
                 });
 
             modelBuilder.Entity("ApplicationCore.Entities.BulkJob", b =>
@@ -329,7 +329,7 @@ namespace ApplicationCore.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("BulkJobs", (string)null);
+                    b.ToTable("BulkJobs");
                 });
 
             modelBuilder.Entity("ApplicationCore.Entities.Contact", b =>
@@ -394,7 +394,7 @@ namespace ApplicationCore.Migrations
 
                     NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("SearchVector"), "GIN");
 
-                    b.ToTable("Contacts", (string)null);
+                    b.ToTable("Contacts");
                 });
 
             modelBuilder.Entity("ApplicationCore.Entities.ContactUd", b =>
@@ -430,7 +430,7 @@ namespace ApplicationCore.Migrations
                     b.HasIndex("ContactId")
                         .IsUnique();
 
-                    b.ToTable("ContactUd", (string)null);
+                    b.ToTable("ContactUd");
                 });
 
             modelBuilder.Entity("ApplicationCore.Entities.ContactUdDefinition", b =>
@@ -478,7 +478,7 @@ namespace ApplicationCore.Migrations
                     b.HasIndex("Code")
                         .IsUnique();
 
-                    b.ToTable("ContactUdDefinitions", (string)null);
+                    b.ToTable("ContactUdDefinitions");
                 });
 
             modelBuilder.Entity("ApplicationCore.Entities.Customer", b =>
@@ -564,7 +564,7 @@ namespace ApplicationCore.Migrations
 
                     NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("SearchVector"), "GIN");
 
-                    b.ToTable("Customers", (string)null);
+                    b.ToTable("Customers");
                 });
 
             modelBuilder.Entity("ApplicationCore.Entities.CustomerUd", b =>
@@ -600,7 +600,7 @@ namespace ApplicationCore.Migrations
                     b.HasIndex("CustomerId")
                         .IsUnique();
 
-                    b.ToTable("CustomerUd", (string)null);
+                    b.ToTable("CustomerUd");
                 });
 
             modelBuilder.Entity("ApplicationCore.Entities.CustomerUdDefinition", b =>
@@ -648,7 +648,7 @@ namespace ApplicationCore.Migrations
                     b.HasIndex("Code")
                         .IsUnique();
 
-                    b.ToTable("CustomerUdDefinitions", (string)null);
+                    b.ToTable("CustomerUdDefinitions");
                 });
 
             modelBuilder.Entity("ApplicationCore.Entities.Document", b =>
@@ -710,7 +710,7 @@ namespace ApplicationCore.Migrations
 
                     NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("SearchVector"), "GIN");
 
-                    b.ToTable("Documents", (string)null);
+                    b.ToTable("Documents");
                 });
 
             modelBuilder.Entity("ApplicationCore.Entities.Industry", b =>
@@ -747,7 +747,7 @@ namespace ApplicationCore.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Industries", (string)null);
+                    b.ToTable("Industries");
                 });
 
             modelBuilder.Entity("ApplicationCore.Entities.Project", b =>
@@ -819,7 +819,7 @@ namespace ApplicationCore.Migrations
 
                     NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("SearchVector"), "GIN");
 
-                    b.ToTable("Projects", (string)null);
+                    b.ToTable("Projects");
                 });
 
             modelBuilder.Entity("ApplicationCore.Entities.ProjectUd", b =>
@@ -855,7 +855,7 @@ namespace ApplicationCore.Migrations
                     b.HasIndex("ProjectId")
                         .IsUnique();
 
-                    b.ToTable("ProjectUd", (string)null);
+                    b.ToTable("ProjectUd");
                 });
 
             modelBuilder.Entity("ApplicationCore.Entities.ProjectUdDefinition", b =>
@@ -903,7 +903,7 @@ namespace ApplicationCore.Migrations
                     b.HasIndex("Code")
                         .IsUnique();
 
-                    b.ToTable("ProjectUdDefinitions", (string)null);
+                    b.ToTable("ProjectUdDefinitions");
                 });
 
             modelBuilder.Entity("ApplicationCore.Entities.WebhookMessage", b =>
@@ -946,7 +946,7 @@ namespace ApplicationCore.Migrations
 
                     b.HasIndex("SubscriberId");
 
-                    b.ToTable("WebhookMessages", (string)null);
+                    b.ToTable("WebhookMessages");
                 });
 
             modelBuilder.Entity("ApplicationCore.Entities.WebhookSubscriber", b =>
@@ -1003,7 +1003,7 @@ namespace ApplicationCore.Migrations
                     b.HasIndex("EntityName", "Operation", "Url")
                         .IsUnique();
 
-                    b.ToTable("WebhookSubsribers", (string)null);
+                    b.ToTable("WebhookSubsribers");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -1118,12 +1118,20 @@ namespace ApplicationCore.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("text");
 
+                    b.Property<string>("ApplicationType")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
                     b.Property<string>("ClientId")
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
                     b.Property<string>("ClientSecret")
                         .HasColumnType("text");
+
+                    b.Property<string>("ClientType")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.Property<string>("ConcurrencyToken")
                         .IsConcurrencyToken()
@@ -1138,6 +1146,9 @@ namespace ApplicationCore.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("DisplayNames")
+                        .HasColumnType("text");
+
+                    b.Property<string>("JsonWebKeySet")
                         .HasColumnType("text");
 
                     b.Property<string>("Permissions")
@@ -1155,9 +1166,8 @@ namespace ApplicationCore.Migrations
                     b.Property<string>("Requirements")
                         .HasColumnType("text");
 
-                    b.Property<string>("Type")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                    b.Property<string>("Settings")
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 

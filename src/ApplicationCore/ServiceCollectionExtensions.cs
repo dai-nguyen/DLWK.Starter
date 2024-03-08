@@ -30,7 +30,7 @@ namespace ApplicationCore
             services.AddServerLocalization();
             services.AddEmailSender(configuration);
 
-            services.AddAutoMapper(Assembly.GetExecutingAssembly());
+            services.AddAutoMapper(Assembly.GetExecutingAssembly());            
             services.AddMediatR(cfg =>
             {
                 cfg.RegisterServicesFromAssemblies(typeof(ServiceCollectionExtensions).Assembly);
@@ -124,15 +124,23 @@ namespace ApplicationCore
             services.AddScoped<IValidator<UpdateUserCommand>, UpdateUserCommandValidator>();
             services.AddScoped<IValidator<UpdateUserProfileCommand>, UpdateUserProfileCommandValidator>();
 
+            // customer
             services.AddScoped<IValidator<CreateCustomerCommand>, CreateCustomerCommandValidator>();
             services.AddScoped<IValidator<UpdateCustomerCommand>, UpdateCustomerCommandValidator>();
-            
+            services.AddScoped<IValidator<CreateCustomerUdDefinitionCommand>, CreateCustomerUdDefinitionCommandValidator>();
+            services.AddScoped<IValidator<UpdateCustomerUdDefinitionCommand>, UpdateCustomerUdDefinitionCommandValidator>();
+
+            //contact
             services.AddScoped<IValidator<CreateContactCommand>, CreateContactCommandValidator>();
             services.AddScoped<IValidator<CreateContactUdDefinitionCommand>, CreateContactUdDefinitionCommandValidator>();
-            services.AddScoped<IValidator<UpdateContactCommand>, UpdateContactCommandValidator>();            
+            services.AddScoped<IValidator<UpdateContactCommand>, UpdateContactCommandValidator>();
+            services.AddScoped<IValidator<UpdateContactUdDefinitionCommand>, UpdateContactUdDefinitionCommandValidator>();
 
+            // project
             services.AddScoped<IValidator<CreateProjectCommand>, CreateProjectCommandValidator>();
             services.AddScoped<IValidator<UpdateProjectCommand>, UpdateProjectCommandValidator>();
+
+            
 
             return services;
         }
